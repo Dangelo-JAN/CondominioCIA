@@ -28,11 +28,31 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 
 
+// --- CONFIGURACIÓN DE CORS CON REGEX ---
+const allowedOrigins = [
+  process.env.CLIENT_URL, // Tu URL local o fija
+  /\.vercel\.app$/,       // CUALQUIER deploy o branch de Vercel
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL, // Adjust this to match your front-end origin exactly
-  credentials: true, // This is optional and depends on whether you’re using cookies
+  origin: function (origin, callback) {
+    // Permitir peticiones sin origen (como Postman o móviles)
+    if (!origin) return callback(null, true);
+    
+    const isAllowed = allowedOrigins.some((pattern) => 
+      pattern instanceof RegExp ? pattern.test(origin) : pattern === origin
+    );
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS (Regex Vercel)'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
-// app.options('*', cors())
 
 app.use("/api/auth/employee", EmployeeAuthRouter) 
 
