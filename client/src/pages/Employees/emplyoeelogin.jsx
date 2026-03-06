@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom'
 import { CommonStateHandler } from "../../utils/commonhandler.js"
 
 export const EmployeeLogin = () => {
-
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const loadingbar = useRef(null)
@@ -21,23 +20,27 @@ export const EmployeeLogin = () => {
         CommonStateHandler(signinform, set_signinform, event)
     }
 
-    const handlesigninsubmit = async (e) => {
+    const handlesigninsubmit = (e) => {
         e.preventDefault();
-        loadingbar.current.continuousStart();
+        loadingbar.current?.continuousStart();
         dispatch(HandlePostEmployees({ apiroute: "LOGIN", data: signinform }))
     }
 
-
+    // Función de redirección segura con encadenamiento opcional
     const RedirectToDashbaord = () => {
-        loadingbar.current.complete()
+        loadingbar.current?.complete()
         navigate("/auth/employee/employee-dashboard")
     }
 
-    if (EmployeeState.error.status) {
-        loadingbar.current.complete()
-    }
+    // CORRECCIÓN: Este efecto ahora sí reacciona cuando hay un error en el login
+    useEffect(() => {
+        if (EmployeeState.error?.status) {
+            loadingbar.current?.complete()
+        }
+    }, [EmployeeState.error]) // Dependencia añadida
 
     useEffect(() => {
+        // Solo hacemos el CHECK si no estamos autenticados
         if (!EmployeeState.isAuthenticated) {
             dispatch(HandleGetEmployees({ apiroute: "CHECKELOGIN" }))
         }
@@ -45,13 +48,26 @@ export const EmployeeLogin = () => {
         if (EmployeeState.isAuthenticated) {
             RedirectToDashbaord()
         }
-    }, [EmployeeState.isAuthenticated])
+    }, [EmployeeState.isAuthenticated, dispatch]) // Dependencias completas
+
+    // Limpieza al desmontar el componente
+    useEffect(() => {
+        return () => loadingbar.current?.complete();
+    }, []);
 
     return (
         <div className="employee-login-container">
-            <LoadingBar ref={loadingbar} />
+            {/* Se agrega el color para asegurar visibilidad */}
+            <LoadingBar color='#f11946' ref={loadingbar} />
             <div className="employee-login-content flex justify-center items-center h-[100vh]">
-                <SignIn image={"../../src/assets/Employee-Welcome.jpg"} handlesigninform={handlesigninform} handlesigninsubmit={handlesigninsubmit} targetedstate={EmployeeState} statevalue={signinform} redirectpath={"/auth/employee/forgot-password"} />
+                <SignIn 
+                    image={"../../src/assets/Employee-Welcome.jpg"} 
+                    handlesigninform={handlesigninform} 
+                    handlesigninsubmit={handlesigninsubmit} 
+                    targetedstate={EmployeeState} 
+                    statevalue={signinform} 
+                    redirectpath={"/auth/employee/forgot-password"} 
+                />
             </div>
         </div>
     )

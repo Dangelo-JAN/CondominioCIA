@@ -1,7 +1,6 @@
 import { SignUP } from "../../components/common/sign-up"
 import { useState, useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
-// import { HandlePostEmployees, HandleGetEmployees } from "../../redux/Thunks/EmployeeThunk.js"
 import LoadingBar from 'react-top-loading-bar'
 import { useNavigate } from 'react-router-dom'
 import { CommonStateHandler } from "../../utils/commonhandler.js"
@@ -30,25 +29,26 @@ export const HRSignupPage = () => {
         CommonStateHandler(signupform, set_signuform, event)
     }
 
-    // 1. Usa encadenamiento opcional (?.) en el submit
     const handlesubmitform = (event) => {
-        event.preventDefault(); // Ponlo al inicio siempre
+        event.preventDefault(); 
         if (signupform.textpassword === signupform.password) {
             seterrorpopup(false);
-            loadingbar.current?.continuousStart(); // El '?' evita el crash
+            loadingbar.current?.continuousStart(); 
             dispatch(HandlePostHumanResources({ apiroute: "SIGNUP", data: signupform }));
         } else {
             seterrorpopup(true);
         }
     };
 
-    // 3. Usa un useEffect para manejar el error de la barra de carga
+    // EFECTO 1: Manejo del error para detener la barra
     useEffect(() => {
+        // Corregido: Se eliminó el '?' del array de dependencias que causaba error de sintaxis
         if (HRState.error?.status) {
             loadingbar.current?.complete();
         }
     }, [HRState.error]);
 
+    // EFECTO 2: Verificación de login y navegación
     useEffect(() => {
         if (!HRState.isAuthenticated && !HRState.isVerified) {
             dispatch(HandleGetHumanResources({ apiroute: "CHECKLOGIN" }))
@@ -60,15 +60,23 @@ export const HRSignupPage = () => {
             const target = HRState.isVerified ? "/HR/dashboard/dashboard-data" : "/auth/HR/verify-email";
             navigate(target);
         }
-    }, [HRState.isAuthenticated, HRState.isVerified])
+    }, [HRState.isAuthenticated, HRState.isVerified, navigate, dispatch]);
 
-    // console.log(signupform)
-    // console.log(HRState)
+    // EFECTO 3: Limpieza al desmontar el componente (Previene crash n.current null)
+    useEffect(() => {
+        return () => loadingbar.current?.complete();
+    }, []);
 
     return (
         <div className="HRsignup-page-container h-screen flex justify-center min-[900px]:justify-center min-[900px]:items-center">
-            <LoadingBar ref={loadingbar} />
-            <SignUP stateformdata={signupform} handlesignupform={handlesignupform} handlesubmitform={handlesubmitform} errorpopup={errorpopup} />
+            {/* Se recomienda color para visibilidad */}
+            <LoadingBar color='#f11946' ref={loadingbar} />
+            <SignUP 
+                stateformdata={signupform} 
+                handlesignupform={handlesignupform} 
+                handlesubmitform={handlesubmitform} 
+                errorpopup={errorpopup} 
+            />
         </div>
     )
 }

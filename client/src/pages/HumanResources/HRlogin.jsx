@@ -27,9 +27,12 @@ export const HRLogin = () => {
 
     }
 
-    if (HRState.error.status) {
-        loadingbar.current.complete()
-    }
+    // EFECTO 1: Detener la barra si hay error del servidor
+    useEffect(() => {
+        if (HRState.error?.status) {
+            loadingbar.current?.complete()
+        }
+    }, [HRState.error?.status])
 
     useEffect(() => {
         if (!HRState.isAuthenticated) {
@@ -42,6 +45,12 @@ export const HRLogin = () => {
         }
     }, [HRState.isAuthenticated])
 
+    // EFECTO 3: Limpieza al desmontar el componente
+    useEffect(() => {
+        return () => loadingbar.current?.complete();
+    }, []);
+
+    console.log(HRState)
 
     return (
         <div>
