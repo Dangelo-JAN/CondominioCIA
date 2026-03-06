@@ -30,23 +30,24 @@ export const HRSignupPage = () => {
         CommonStateHandler(signupform, set_signuform, event)
     }
 
+    // 1. Usa encadenamiento opcional (?.) en el submit
     const handlesubmitform = (event) => {
+        event.preventDefault(); // Ponlo al inicio siempre
         if (signupform.textpassword === signupform.password) {
-            event.preventDefault();
-            seterrorpopup(false)
-            loadingbar.current.continuousStart();
-            dispatch(HandlePostHumanResources({ apiroute: "SIGNUP", data: signupform }))
+            seterrorpopup(false);
+            loadingbar.current?.continuousStart(); // El '?' evita el crash
+            dispatch(HandlePostHumanResources({ apiroute: "SIGNUP", data: signupform }));
+        } else {
+            seterrorpopup(true);
         }
-        else {
-            event.preventDefault();
-            seterrorpopup(true)
+    };
+
+    // 3. Usa un useEffect para manejar el error de la barra de carga
+    useEffect(() => {
+        if (HRState.error?.status) {
+            loadingbar.current?.complete();
         }
-    }
-
-
-    if (HRState.error.status) {
-        loadingbar.current.complete()
-    }
+    }, [HRState.error]);
 
     useEffect(() => {
         if (!HRState.isAuthenticated && !HRState.isVerified) {
@@ -54,14 +55,10 @@ export const HRSignupPage = () => {
             dispatch(HandleGetHumanResources({ apiroute: "CHECK_VERIFY_EMAIL" }))
         }
 
-        if (HRState.isAuthenticated && HRState.isVerified) {
-            loadingbar.current.complete()
-            navigate("/HR/dashboard/dashboard-data")
-        }
-
-        if (HRState.isAuthenticated && !HRState.isVerified) {
-            loadingbar.current.complete()
-            navigate("/auth/HR/verify-email")
+        if (HRState.isAuthenticated) {
+            loadingbar.current?.complete();
+            const target = HRState.isVerified ? "/HR/dashboard/dashboard-data" : "/auth/HR/verify-email";
+            navigate(target);
         }
     }, [HRState.isAuthenticated, HRState.isVerified])
 
