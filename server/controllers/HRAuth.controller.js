@@ -137,7 +137,12 @@ export const HandleHRLogin = async (req, res) => {
 
 export const HandleHRLogout = async (req, res) => {
     try {
-        res.clearCookie("HRtoken")
+        // No basta con res.clearCookie("HRtoken"), debe tener los mismos atributos:
+        res.clearCookie("HRtoken", {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none'
+        });
         return res.status(200).json({ success: true, message: "HR Logged Out Successfully" })
     } catch (error) {
         return res.status(500).json({ success: false, message: "Internal server Error", error: error })
@@ -187,7 +192,12 @@ export const HandleHRResetPassword = async (req, res) => {
 
     try {
         if (req.cookies.HRtoken) {
-            res.clearCookie("HRtoken")
+            // No basta con res.clearCookie("HRtoken"), debe tener los mismos atributos:
+            res.clearCookie("HRtoken", {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none'
+            });
         }
 
         const HR = await HumanResources.findOne({ resetpasswordtoken: token, resetpasswordexpires: { $gt: Date.now() } })
