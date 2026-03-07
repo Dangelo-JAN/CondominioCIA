@@ -2,10 +2,22 @@ import { createBrowserRouter } from "react-router-dom";
 import { EmployeeRoutes } from "./employeeroutes.jsx"
 import { HRRoutes } from "./HRroutes.jsx";
 
-export const router = createBrowserRouter([
-    ...EmployeeRoutes,
-    ...HRRoutes 
-],
+export const router = createBrowserRouter(
+    [
+        {
+            path: "/",
+            element: <EntryPage />,
+        },
+        // Unificamos las rutas en un solo árbol para que el Splat de React Router 
+        // y el Rewrite de Vercel no choquen al buscar sub-rutas.
+        ...EmployeeRoutes,
+        ...HRRoutes,
+        // Ruta de captura para evitar el 404 de React (diferente al de Vercel)
+        {
+            path: "*",
+            element: <Navigate to="/" replace />,
+        }
+    ],
     {
         future: {
             v7_relativeSplatPath: true,
