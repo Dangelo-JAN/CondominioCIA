@@ -1,38 +1,48 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-// import { AppSidebar } from "@/components/app-sidebar"
 import { HRdashboardSidebar } from "../../components/ui/HRsidebar.jsx"
-import { Outlet } from "react-router-dom"
-import { useNavigate, useLocation } from "react-router-dom"
+import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useEffect } from "react"
 
 export const HRDashbaord = () => {
     const location = useLocation()
     const navigate = useNavigate()
-    const pathArray = location.pathname.split("/")
-
 
     useEffect(() => {
-        navigate(`/HR/dashboard/${pathArray[pathArray.length - 1]}`)
-    }, [])
-
-
-    console.log("this is the current path location", location)
-
+        // Redirección inteligente: solo si entras a la raíz del dashboard
+        if (location.pathname === "/HR/dashboard" || location.pathname === "/HR/dashboard/") {
+            navigate("/HR/dashboard/dashboard-data")
+        }
+    }, [location.pathname, navigate])
 
     return (
-        <div className="HR-dashboard-container flex">
-
-            <div className="HRDashboard-sidebar">
-                <SidebarProvider>
+        <div className="flex min-h-screen bg-[#f8fafc]"> {/* Fondo Slate 50 estilo Clockify */}
+            <SidebarProvider>
+                <div className="HRDashboard-sidebar border-r border-gray-200 bg-white">
                     <HRdashboardSidebar />
-                    <div className="sidebar-container min-[250px]:absolute md:relative">
-                        <SidebarTrigger />
+                </div>
+                
+                <main className="flex-1 flex flex-col w-full overflow-hidden">
+                    {/* Header Superior Estilo Clockify */}
+                    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sticky top-0 z-10">
+                        <div className="flex items-center gap-4">
+                            <SidebarTrigger className="text-gray-500 hover:bg-gray-100" />
+                            <h2 className="font-semibold text-gray-700 text-lg">Panel de Control</h2>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs">
+                                AD
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Contenedor de contenido con scroll */}
+                    <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                        <div className="max-w-7xl mx-auto w-full">
+                            <Outlet />
+                        </div>
                     </div>
-                </SidebarProvider>
-            </div>
-            <div className="HRdashboard-container h-screen w-full min-[250px]:mx-1 md:mx-2 flex flex-col">
-                <Outlet />
-            </div>
+                </main>
+            </SidebarProvider>
         </div>
     )
 }
