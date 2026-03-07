@@ -8,11 +8,12 @@ export const HRDashbaord = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        // Redirección inteligente: solo si entras a la raíz del dashboard
-        if (location.pathname === "/HR/dashboard" || location.pathname === "/HR/dashboard/") {
-            navigate("/HR/dashboard/dashboard-data")
+        // Si la ruta es EXACTAMENTE el dashboard, redirigimos a la sub-ruta por defecto
+        if (location.pathname === "/auth/HR/dashboard" || location.pathname === "/auth/HR/dashboard/") {
+            navigate("/auth/HR/dashboard/dashboard-data", { replace: true });
         }
-    }, [location.pathname, navigate])
+    }, [location.pathname, navigate]);
+
 
     return (
         <div className="flex min-h-screen bg-[#f8fafc]"> {/* Fondo Slate 50 estilo Clockify */}

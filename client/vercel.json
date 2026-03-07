@@ -1,6 +1,12 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://onrender.com" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/api/:path*",
+      "destination": "https://onrender.com*"
+    },
+    {
+      "source": "/((?!api|assets|favicon.ico).*)",
+      "destination": "/index.html"
+    }
   ]
 }
