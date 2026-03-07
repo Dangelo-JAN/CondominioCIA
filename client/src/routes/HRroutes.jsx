@@ -24,6 +24,10 @@ export const HRRoutes = [
         element: <HRDashbaord />,
         children: [
             {
+                index: true, // Esto hace que sea la ruta por defecto
+                element: <HRDashboardPage />
+            },
+            {
                 // CORRECCIÓN: Se elimina el path absoluto. 
                 // Al dejarlo vacío "", se convierte en la ruta por defecto del padre.
                 path: "dashboard-data", 

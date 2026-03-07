@@ -4,12 +4,19 @@ import { DashboardEndPoints } from "../apis/APIsEndpoints";
 
 export const HandleGetDashboard = createAsyncThunk("HandleGetDashboard", async (DashboardData, { rejectWithValue }) => {
     try {
-        const { apiroute } = DashboardData
-        const response = await apiService.get(`${DashboardEndPoints[apiroute]}`, { 
+        const { apiroute } = DashboardData;
+        const endpoint = DashboardEndPoints[apiroute];
+        
+        // Verificación de seguridad antes de la petición
+        if (!endpoint) throw new Error("Ruta de API no definida");
+
+        const response = await apiService.get(endpoint, { 
             withCredentials: true
-        })
-        return response.data
+        });
+        return response.data;
     } catch (error) {
-        return rejectWithValue(error.response.data); 
+        // Esto ayudará a ver el 404 exacto en la consola si persiste
+        console.error("Dashboard Thunk Error:", error.response || error);
+        return rejectWithValue(error.response?.data || "Error de conexión"); 
     }
 })

@@ -81,8 +81,22 @@ export const HandleHRSignup = async (req, res) => {
             GenerateJwtTokenAndSetCookiesHR(res, newHR._id, newHR.role, organization._id)
             const VerificationEmailStatus = await SendVerificationEmail(email, verificationcode)
             return res.status(201).json({ success: true, message: "HR Registered Successfully", type: "signup", VerificationEmailStatus: VerificationEmailStatus, HRid: newHR._id })
+
+        }
+        // Envío de Email con Verificación de Log en Servidor
+        const VerificationEmailStatus = await SendVerificationEmail(email, verificationcode);
+        
+        if (!VerificationEmailStatus) {
+            console.error(`[EMAIL_ERROR]: Falló el envío a ${email}. Verifica credenciales de Gmail en Render.`);
         }
 
+        return res.status(201).json({ 
+            success: true, 
+            message: "HR Registered Successfully", 
+            VerificationEmailStatus: VerificationEmailStatus, 
+            type: "signup", 
+            HRid: newHR._id 
+        });
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message, type: "signup" })
     }
@@ -240,8 +254,17 @@ export const HandleHRResetverifyEmail = async (req, res) => {
         await HR.save()
 
         const SendVerificationEmailStatus = await SendVerificationEmail(email, verificationcode)
-        return res.status(200).json({ success: true, message: "Verification Email Sent Successfully", SendVerificationEmailStatus: SendVerificationEmailStatus, type: "HRResendVerifyEmail" })
 
+        if (!SendVerificationEmailStatus) {
+            console.error(`[EMAIL_ERROR]: Reenvío fallido a ${email}`);
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            message: "Verification Email Sent Successfully", 
+            SendVerificationEmailStatus: SendVerificationEmailStatus, 
+            type: "HRResendVerifyEmail" 
+        })
     }
     catch (error) {
         return res.status(500).json({ success: false, message: "Internal Server Error", error: error })

@@ -8,16 +8,31 @@ import { Balance } from "../models/Balance.model.js"
 
 export const HandleHRDashboard = async (req, res) => {
     try {
-        const employees = await Employee.countDocuments({ organizationID: req.ORGID })
-        const departments = await Department.countDocuments({ organizationID: req.ORGID })
-        const leaves = await Leave.countDocuments({ organizationID: req.ORGID })
-        const requestes = await GenerateRequest.countDocuments({ organizationID: req.ORGID })
-        const balance = await Balance.find({ organizationID: req.ORGID })
-        const notices = await Notice.find({ organizationID: req.ORGID }).sort({ createdAt: -1 }).limit(10).populate("createdby", "firstname lastname")
+        const [employees, departments, leaves, requestes, balance, notices] = await Promise.all([
+            Employee.countDocuments({ organizationID: req.ORGID }),
+            Department.countDocuments({ organizationID: req.ORGID }),
+            Leave.countDocuments({ organizationID: req.ORGID }),
+            GenerateRequest.countDocuments({ organizationID: req.ORGID }),
+            Balance.find({ organizationID: req.ORGID }).sort({ createdAt: 1 }),
+            Notice.find({ organizationID: req.ORGID }).sort({ createdAt: -1 }).limit(10).populate("createdby", "firstname lastname")
+        ]);
 
-        return res.status(200).json({ success: true, data: { employees: employees, departments: departments, leaves: leaves, requestes: requestes, balance: balance, notices: notices } })
-    }
-    catch (error) {
-        return res.status(500).json({ success: false, error: error, message: "internal server error" })
+        // Si el balance está vacío, enviamos un array con un objeto inicial en 0 para evitar el crash del frontend
+        const safeBalance = balance.length > 0 ? balance : [{ AvailableAmount: 0, TotalAmount: 0, SpentAmount: 0 }];
+
+        return res.status(200).json({ 
+            success: true, 
+            data: { 
+                employees, 
+                departments, 
+                leaves, 
+                requestes, 
+                balance: safeBalance, 
+                notices 
+            } 
+        });
+    } catch (error) {
+        console.error("Dashboard Error:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
     }
 }

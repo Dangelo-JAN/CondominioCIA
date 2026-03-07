@@ -33,6 +33,7 @@ export const VerifyhHRToken = (req, res, next) => {
         }
         req.HRid = decoded.HRid
         req.ORGID = decoded.ORGID
+        req.HRole = decoded.HRrole
         req.Role = decoded.HRrole
         next()
     } catch (error) {
