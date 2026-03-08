@@ -22,26 +22,39 @@ export const HRLogin = () => {
 
     const handlesigninsubmit = (e) => {
         e.preventDefault();
-        loadingbar.current.continuousStart();
+        loadingbar.current?.continuousStart();
         dispatch(HandlePostHumanResources({ apiroute: "LOGIN", data: signinform }))
 
     }
 
-    if (HRState.error.status) {
-        loadingbar.current.complete()
-    }
-
     useEffect(() => {
-        if (!HRState.isAuthenticated) {
+        if (HRState.error?.status) {
+            loadingbar.current?.complete()
+        }
+    }, [HRState.error])
+
+    // ✅ Alinear con HRSignup.jsx
+    useEffect(() => {
+        if (!HRState.isAuthenticated && !HRState.isVerified) {
             dispatch(HandleGetHumanResources({ apiroute: "CHECKLOGIN" }))
+            dispatch(HandleGetHumanResources({ apiroute: "CHECK_VERIFY_EMAIL" }))
         }
 
-        if (HRState.isAuthenticated) {
-            loadingbar.current.complete()
-            navigate("/auth/HR/dashboard")
+        if (HRState.isAuthenticated && HRState.isVerified) {
+            loadingbar.current?.complete()
+            navigate("/HR/dashboard/dashboard-data")
         }
-    }, [HRState.isAuthenticated])
 
+        if (HRState.isAuthenticated && !HRState.isVerified) {
+            loadingbar.current?.complete()
+            navigate("/auth/HR/verify-email")
+        }
+    }, [HRState.isAuthenticated, HRState.isVerified])
+
+    // Limpieza al desmontar el componente
+    useEffect(() => {
+        return () => loadingbar.current?.complete();
+    }, []);
 
     return (
         <div>

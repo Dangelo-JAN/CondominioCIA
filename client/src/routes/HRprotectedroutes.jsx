@@ -1,7 +1,6 @@
 import { HandleGetHumanResources } from "../redux/Thunks/HRThunk.js"
 import { useDispatch, useSelector } from "react-redux"
-import { useEffect, useState } from "react"
-import { Navigate } from "react-router-dom"
+import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Loading } from "../components/common/loading.jsx"
 
@@ -10,28 +9,33 @@ export const HRProtectedRoutes = ({ children }) => {
     const dispatch = useDispatch()
     const HRState = useSelector((state) => state.HRReducer)
 
+    // Solo al montar — sin condición compuesta que bloquee los dispatches
     useEffect(() => {
-        if (!HRState.isAuthenticated && !HRState.isAuthourized && !HRState.isVerified && !HRState.error.content) {
-            dispatch(HandleGetHumanResources({ apiroute: "CHECKLOGIN" }))
-            dispatch(HandleGetHumanResources({ apiroute: "CHECK_VERIFY_EMAIL" }))
+        const checkAuth = async () => {
+            // Secuencial: primero login, luego verificación
+            await dispatch(HandleGetHumanResources({ apiroute: "CHECKLOGIN" }))
+            await dispatch(HandleGetHumanResources({ apiroute: "CHECK_VERIFY_EMAIL" }))
         }
+        checkAuth()
+    }, [])
 
-        if (HRState.isAuthenticated && HRState.isAuthourized && !HRState.isVerified && HRState.error.content) {
+    // Navegación reactiva — separada y limpia
+    useEffect(() => {
+        if (HRState.isLoading) return
+
+        if (HRState.isAuthenticated && HRState.isAuthourized && !HRState.isVerified) {
             navigate("/auth/HR/reset-email-validation")
+            return
         }
 
-        if (!HRState.isAuthenticated && !HRState.isAuthourized && !HRState.isVerified && HRState.error.content) {
+        if (!HRState.isAuthenticated && HRState.error.content) {
             navigate("/auth/HR/signup")
         }
-    }, [HRState.isAuthenticated, HRState.isAuthourized, HRState.isVerified, HRState.error.content])
+    }, [HRState.isLoading, HRState.isAuthenticated, HRState.isAuthourized, HRState.isVerified, HRState.error.content])
 
-    if (HRState.isLoading) {
-        return (
-            <Loading />
-        )
-    }
+    if (HRState.isLoading) return <Loading />
 
-    return (
-        (HRState.isAuthenticated && HRState.isAuthourized && HRState.isVerified) ? children : null
-    )
+    return (HRState.isAuthenticated && HRState.isAuthourized && HRState.isVerified)
+        ? children
+        : null
 }

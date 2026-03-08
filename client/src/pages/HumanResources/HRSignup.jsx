@@ -34,7 +34,7 @@ export const HRSignupPage = () => {
         if (signupform.textpassword === signupform.password) {
             event.preventDefault();
             seterrorpopup(false)
-            loadingbar.current.continuousStart();
+            loadingbar.current?.continuousStart();
             dispatch(HandlePostHumanResources({ apiroute: "SIGNUP", data: signupform }))
         }
         else {
@@ -43,10 +43,11 @@ export const HRSignupPage = () => {
         }
     }
 
-
-    if (HRState.error.status) {
-        loadingbar.current.complete()
-    }
+    useEffect(() => {
+        if (HRState.error?.status) {
+            loadingbar.current?.complete()
+        }
+    }, [HRState.error])
 
     useEffect(() => {
         if (!HRState.isAuthenticated && !HRState.isVerified) {
@@ -55,18 +56,20 @@ export const HRSignupPage = () => {
         }
 
         if (HRState.isAuthenticated && HRState.isVerified) {
-            loadingbar.current.complete()
+            loadingbar.current?.complete()
             navigate("/HR/dashboard/dashboard-data")
         }
 
         if (HRState.isAuthenticated && !HRState.isVerified) {
-            loadingbar.current.complete()
+            loadingbar.current?.complete()
             navigate("/auth/HR/verify-email")
         }
     }, [HRState.isAuthenticated, HRState.isVerified])
 
-    // console.log(signupform)
-    // console.log(HRState)
+    // Limpieza al desmontar el componente
+    useEffect(() => {
+        return () => loadingbar.current?.complete();
+    }, []);
 
     return (
         <div className="HRsignup-page-container h-screen flex justify-center min-[900px]:justify-center min-[900px]:items-center">

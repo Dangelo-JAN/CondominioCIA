@@ -70,6 +70,7 @@ export const HRAsyncReducer = (builder, thunk) => {
                 state.isSignUp = true
                 state.isLoading = false;
                 state.isAuthenticated = true
+                state.isAuthourized = true  // ✅ línea agregada   
                 if (action.payload.alreadyverified) {
                     state.isVerified = true
                 }
@@ -109,6 +110,7 @@ export const HRAsyncReducer = (builder, thunk) => {
                 // state.isSignUp = true
                 state.isLoading = false;
                 // state.isAuthenticated = true
+                state.isAuthourized = true
                 state.isVerified = false
                 state.isVerifiedEmailAvailable = false
                 state.error.status = false;

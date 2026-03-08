@@ -22,7 +22,7 @@ export const VerifyEmailPage = () => {
     }
 
     const handleOTPsubmit = () => {
-        loadingbar.current.continuousStart();
+        loadingbar.current?.continuousStart();
         dispatch(HandlePostHumanResources({ apiroute: "VERIFY_EMAIL", data: { verificationcode: verificationcode } }))
     }
 
@@ -36,14 +36,15 @@ export const VerifyEmailPage = () => {
         }
 
         if (HRState.isVerified) {
-            loadingbar.current.complete()
-            navigate("/auth/HR/dashboard") 
+            loadingbar.current?.complete()
+            navigate("/HR/dashboard/dashboard-data") 
         }
     }, [HRState.isVerified, HRState.isVerifiedEmailAvailable, HRState.error.content])
 
-    // console.log(HRState)
-    // console.log(HRState.isVerified)
-    // console.log(checkHREmail) 
+    // Limpieza al desmontar el componente
+    useEffect(() => {
+        return () => loadingbar.current?.complete();
+    }, []);
 
     return (
         <>

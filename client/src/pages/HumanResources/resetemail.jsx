@@ -16,7 +16,7 @@ export const ResetHRVerifyEmailPage = () => {
     })
 
     const handleverifybutton = () => {
-        loadingbar.current.continuousStart();
+        loadingbar.current?.continuousStart();
         dispatch(HandlePostHumanResources({ apiroute: "RESEND_VERIFY_EMAIL", data: emailvalue })) 
     }
 
@@ -24,21 +24,28 @@ export const ResetHRVerifyEmailPage = () => {
         CommonStateHandler(emailvalue, setemailvalue, event)
     }
 
-    if (HRState.error.status) {
-        loadingbar.current.complete()
-    }
+    useEffect(() => {
+        if (HRState.error?.status) {
+            loadingbar.current?.complete()
+        }
+    }, [HRState.error])
 
     useEffect(() => {
         if (HRState.isVerified) {
-            loadingbar.current.complete()
-            navigate("/auth/HR/dashboard")
+            loadingbar.current?.complete()
+            navigate("/HR/dashboard/dashboard-data")
         }
 
         if (HRState.isVerifiedEmailAvailable) {
-            loadingbar.current.complete()
+            loadingbar.current?.complete()
             navigate("/auth/HR/verify-email")
         }
     }, [HRState.isVerified, HRState.isVerifiedEmailAvailable])
+
+    // Limpieza al desmontar el componente
+    useEffect(() => {
+        return () => loadingbar.current?.complete();
+    }, []);
 
     console.log(HRState)
 
