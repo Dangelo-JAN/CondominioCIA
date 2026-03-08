@@ -235,6 +235,23 @@ export const SignUP = ({ handlesignupform, handlesubmitform, stateformdata, erro
                         <ArrowRight className="w-4 h-4" />
                     </button>
 
+                    {/* Sign in link */}
+                    <div className="flex items-center justify-center gap-2 mt-4">
+                        <span className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
+                            ¿Ya tienes una cuenta?
+                        </span>
+                        <Link to="/auth/HR/login">
+                            <button
+                                className="text-sm font-semibold transition-colors duration-200"
+                                style={{ color: "#a5b4fc" }}
+                                onMouseEnter={e => e.currentTarget.style.color = "#6366f1"}
+                                onMouseLeave={e => e.currentTarget.style.color = "#a5b4fc"}
+                            >
+                                Iniciar sesión →
+                            </button>
+                        </Link>
+                    </div>
+
                     {/* Terms */}
                     <p className="text-center text-xs mt-4" style={{ color: "rgba(255,255,255,0.2)" }}>
                         Al registrarte aceptas nuestros{" "}
