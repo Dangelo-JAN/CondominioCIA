@@ -11,8 +11,12 @@ export const HRProtectedRoutes = ({ children }) => {
 
     // Solo al montar — sin condición compuesta que bloquee los dispatches
     useEffect(() => {
-        dispatch(HandleGetHumanResources({ apiroute: "CHECKLOGIN" }))
-        dispatch(HandleGetHumanResources({ apiroute: "CHECK_VERIFY_EMAIL" }))
+        const checkAuth = async () => {
+            // Secuencial: primero login, luego verificación
+            await dispatch(HandleGetHumanResources({ apiroute: "CHECKLOGIN" }))
+            await dispatch(HandleGetHumanResources({ apiroute: "CHECK_VERIFY_EMAIL" }))
+        }
+        checkAuth()
     }, [])
 
     // Navegación reactiva — separada y limpia
