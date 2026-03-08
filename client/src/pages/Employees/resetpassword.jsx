@@ -20,7 +20,7 @@ export const ResetPassword = () => {
     const handlepasswordsubmit = (e) => {
         if (passwordform.password === passwordform.repeatpassword) {
             e.preventDefault();
-            loadingbar.current.continuousStart();
+            loadingbar.current?.continuousStart();
             setpassworderror(false)
             dispatch(HandlePostEmployees({ apiroute: token, data: { password: passwordform.password }, type: "resetpassword" }))
         }
@@ -35,12 +35,12 @@ export const ResetPassword = () => {
     }
 
     if (employeestate.error.status) {
-        loadingbar.current.complete()
+        loadingbar.current?.complete()
     }
 
     useEffect(() => {
         if (employeestate.isResetPasswords) {
-            loadingbar.current.complete()
+            loadingbar.current?.complete()
             navigate("/auth/employee/login")
         }
     }, [employeestate.isResetPasswords])

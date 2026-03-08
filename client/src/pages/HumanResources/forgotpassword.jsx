@@ -19,17 +19,17 @@ export const HRForgotPasswordPage = () => {
 
     const handleforgotpasswordsubmit = (e) => {
         e.preventDefault();
-        loadingbar.current.continuousStart();
+        loadingbar.current?.continuousStart();
         dispatch(HandlePostHumanResources({ apiroute: "FORGOT_PASSWORD", data: forgotpassowrdform }))
     }
 
     if (HRstate.error.status) {
-        loadingbar.current.complete()
+        loadingbar.current?.complete()
     }
 
     useEffect(() => {
         if (HRstate.data) {
-            loadingbar.current.complete()
+            loadingbar.current?.complete()
             navigate("/auth/HR/reset-email-confirmation")
         }
     }, [HRstate.data])

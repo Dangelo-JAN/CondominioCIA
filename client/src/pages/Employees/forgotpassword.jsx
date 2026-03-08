@@ -19,17 +19,17 @@ export const ForgotPassword = () => {
 
     const handleforgotpasswordsubmit = (e) => {
         e.preventDefault();
-        loadingbar.current.continuousStart();
+        loadingbar.current?.continuousStart();
         dispatch(HandlePostEmployees({ apiroute: "FORGOT_PASSWORD", data: forgotpassowrdform }))
     }
 
     if ((!EmplyoeeState.isLoading) && (EmplyoeeState.error.status)) { 
-        loadingbar.current.complete()
+        loadingbar.current?.complete()
     }
 
     useEffect(() => {
         if (EmplyoeeState.data) {
-            loadingbar.current.complete()
+            loadingbar.current?.complete()
             navigate("/auth/employee/reset-email-confirmation")
         }
     }, [EmplyoeeState.data])

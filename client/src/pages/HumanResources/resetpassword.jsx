@@ -24,7 +24,7 @@ export const ResetHRPasswordPage = () => {
     const handlepasswordsubmit = (e) => {
         if (passwordform.password === passwordform.repeatpassword) { 
             e.preventDefault();
-            loadingbar.current.continuousStart();
+            loadingbar.current?.continuousStart();
             setpassworderror(false)
             dispatch(HandlePostHumanResources({ apiroute: token, data: { password: passwordform.password }, type: "resetpassword" }))
         }
@@ -38,16 +38,23 @@ export const ResetHRPasswordPage = () => {
         setpasswordform({ ...passwordform, [e.target.name]: e.target.value })
     }
 
-    if (HRState.error.status) {
-        loadingbar.current.complete()
-    }
+    useEffect(() => {
+        if (HRState.error?.status) {
+            loadingbar.current?.complete()
+        }
+    }, [HRState.error])
 
     useEffect(() => {
         if (HRState.isResetPassword) {
-            loadingbar.current.complete()
+            loadingbar.current?.complete()
             navigate("/auth/HR/login")
         }
     }, [HRState.isResetPassword])
+
+    // Limpieza al desmontar el componente
+    useEffect(() => {
+        return () => loadingbar.current?.complete();
+    }, []);
 
     console.log(HRState)
 
