@@ -35,6 +35,17 @@ export const HandlePostHumanResources = createAsyncThunk("HandlePostHumanResourc
         return rejectWithValue(error.response.data);
     }
 })
+// ✅ Thunk de logout: llama al backend, limpia cookie, resetea Redux y redirige
+export const HandleHRLogout = () => async (dispatch) => {
+    try {
+        await apiService.post(HREndPoints["LOGOUT"], {}, { withCredentials: true })
+    } catch (error) {
+        // Aunque falle el backend, limpiamos el estado igual
+        console.error("Logout error:", error)
+    } finally {
+        dispatch(logoutHR())
+    }
+}
 
 export const HandlePutHumanResources = createAsyncThunk("HandlePutHumanResources", async (HRData, { rejectWithValue }) => { })
 

@@ -170,7 +170,9 @@ export function HRdashboardSidebar() {
                 <div className="px-3 py-4 border-t"
                     style={{ borderColor: "rgba(99,102,241,0.12)" }}
                 >
-                    <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200"
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer"
                         style={{ border: "1px solid transparent" }}
                         onMouseEnter={e => {
                             e.currentTarget.style.background = "rgba(239,68,68,0.08)"
@@ -181,7 +183,7 @@ export function HRdashboardSidebar() {
                             e.currentTarget.style.borderColor = "transparent"
                         }}
                     >
-                        <div className="flex items-center justify-center w-7 h-7 rounded-lg"
+                        <div className="flex items-center justify-center w-7 h-7 rounded-lg flex-shrink-0"
                             style={{ background: "rgba(239,68,68,0.1)" }}
                         >
                             <LogOut className="w-4 h-4" style={{ color: "rgba(239,68,68,0.7)" }} />
@@ -189,7 +191,7 @@ export function HRdashboardSidebar() {
                         <span className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.35)" }}>
                             Cerrar sesión
                         </span>
-                    </div>
+                    </button>
                 </div>
             </div>
         </Sidebar>
