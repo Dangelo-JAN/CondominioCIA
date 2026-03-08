@@ -1,186 +1,261 @@
 import { ErrorPopup } from "./error-popup"
 import { useSelector } from "react-redux"
-import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
+import { Zap, ArrowRight, User, Mail, Phone, Lock, Building2, Globe, AtSign, FileText } from "lucide-react"
 
+const InputField = ({ id, name, type = "text", label, icon: Icon, value, onChange, autoComplete, placeholder }) => (
+    <div className="flex flex-col gap-1.5">
+        <label htmlFor={id} className="text-xs font-semibold uppercase tracking-wider"
+            style={{ color: "rgba(255,255,255,0.45)" }}>
+            {label}
+        </label>
+        <div className="relative">
+            {Icon && (
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <Icon className="w-4 h-4" style={{ color: "rgba(99,102,241,0.6)" }} />
+                </div>
+            )}
+            <input
+                id={id}
+                name={name}
+                type={type}
+                required
+                autoComplete={autoComplete}
+                value={value}
+                onChange={onChange}
+                placeholder={placeholder}
+                className="w-full rounded-xl py-2.5 text-sm transition-all duration-200 outline-none"
+                style={{
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    color: "rgba(255,255,255,0.9)",
+                    paddingLeft: Icon ? "2.5rem" : "0.875rem",
+                    paddingRight: "0.875rem",
+                }}
+                onFocus={e => {
+                    e.target.style.border = "1px solid rgba(99,102,241,0.5)"
+                    e.target.style.background = "rgba(99,102,241,0.06)"
+                    e.target.style.boxShadow = "0 0 0 3px rgba(99,102,241,0.1)"
+                }}
+                onBlur={e => {
+                    e.target.style.border = "1px solid rgba(255,255,255,0.08)"
+                    e.target.style.background = "rgba(255,255,255,0.04)"
+                    e.target.style.boxShadow = "none"
+                }}
+            />
+        </div>
+    </div>
+)
 
 export const SignUP = ({ handlesignupform, handlesubmitform, stateformdata, errorpopup }) => {
     const employeestate = useSelector((state) => state.HRReducer)
+
     return (
-        <>
-            {employeestate.error.status ? <ErrorPopup error={employeestate.error.message} /> : null}
-            {errorpopup ? <ErrorPopup error={"Password does not match, Please try again"} /> : null}
-            <div className="HR-form-content justify-center items-center min-[250px]:w-[90%] 2xl:w-[80%] grid grid-cols-1 min-[900px]:grid-cols-2 mx-auto">
+        <div className="min-h-screen w-full flex flex-col"
+            style={{ background: "linear-gradient(160deg, #0a0a14 0%, #0d0d1c 50%, #0a0a14 100%)" }}
+        >
+            {/* Background grid */}
+            <div className="fixed inset-0 pointer-events-none" style={{
+                backgroundImage: "linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px)",
+                backgroundSize: "48px 48px"
+            }} />
 
-                <div className="form-img mx-auto">
-                    <img src="../../src/assets/Employee-Welcome.jpg" alt="Your Company" className=" min-[250px]:max-w-[15rem] min-[600px]:max-w-sm min-[900px]:max-w-sm 2xl:max-w-md" />
+            {/* Glow blobs */}
+            <div className="fixed top-0 left-1/4 w-96 h-96 rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)" }} />
+            <div className="fixed bottom-0 right-1/4 w-96 h-96 rounded-full pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%)" }} />
+
+            {/* Navbar */}
+            <nav className="relative z-10 flex items-center justify-between px-8 py-5"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+            >
+                <Link to="/" className="flex items-center gap-2.5">
+                    <div className="flex items-center justify-center w-9 h-9 rounded-xl"
+                        style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                    >
+                        <Zap className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="text-white font-bold text-lg tracking-tight">
+                        EMS<span style={{ color: "#6366f1" }}>.</span>
+                    </span>
+                </Link>
+
+                <div className="flex items-center gap-3">
+                    <span className="text-sm hidden sm:block" style={{ color: "rgba(255,255,255,0.35)" }}>
+                        ¿Ya tienes cuenta?
+                    </span>
+                    <Link to="/auth/HR/login">
+                        <button className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200"
+                            style={{
+                                background: "rgba(99,102,241,0.12)",
+                                border: "1px solid rgba(99,102,241,0.25)",
+                                color: "#a5b4fc"
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.background = "rgba(99,102,241,0.2)"
+                                e.currentTarget.style.borderColor = "rgba(99,102,241,0.4)"
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.background = "rgba(99,102,241,0.12)"
+                                e.currentTarget.style.borderColor = "rgba(99,102,241,0.25)"
+                            }}
+                        >
+                            Iniciar sesión
+                        </button>
+                    </Link>
+                </div>
+            </nav>
+
+            {/* Error popups */}
+            {employeestate.error.status && <ErrorPopup error={employeestate.error.message} />}
+            {errorpopup && <ErrorPopup error={"Las contraseñas no coinciden. Inténtalo de nuevo."} />}
+
+            {/* Main content */}
+            <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-10">
+
+                {/* Header */}
+                <div className="text-center mb-8 max-w-lg">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-4 text-xs font-semibold uppercase tracking-wider"
+                        style={{
+                            background: "rgba(99,102,241,0.1)",
+                            border: "1px solid rgba(99,102,241,0.2)",
+                            color: "#a5b4fc"
+                        }}
+                    >
+                        <Zap className="w-3 h-3" />
+                        Registro HR-Admin
+                    </div>
+                    <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
+                        Crea tu cuenta
+                        <span style={{ color: "#6366f1" }}> gratis.</span>
+                    </h1>
+                    <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.4)" }}>
+                        Gestiona tu equipo, nóminas y asistencia desde una sola plataforma.
+                    </p>
                 </div>
 
-                <div className="form-button-group w-full grid grid-cols-1 gap-5">
-
-                    <div className="form-container grid min-[250px]:grid-cols-1 sm:grid-cols-2 w-full min-[250px]:gap-3 sm:gap-10 justify-center items-center">
-
-                        <div className="form-group-1 w-full flex flex-col gap-3">
-                            <div className="label-field-pair flex flex-col ">
-                                <label htmlFor="firstname">
-                                    First Name
-                                </label>
-                                <input
-                                    id="firstname"
-                                    name="firstname"
-                                    type="text"
-                                    required
-                                    autoComplete="text"
-                                    value={stateformdata.firstname}
-                                    onChange={handlesignupform}
-                                    className="w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6 p-2" />
+                {/* Form card */}
+                <div className="w-full max-w-3xl rounded-2xl p-6 sm:p-8"
+                    style={{
+                        background: "rgba(255,255,255,0.02)",
+                        border: "1px solid rgba(255,255,255,0.07)",
+                        boxShadow: "0 24px 80px rgba(0,0,0,0.4)"
+                    }}
+                >
+                    {/* Section: Personal */}
+                    <div className="mb-6">
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="w-5 h-5 rounded-md flex items-center justify-center"
+                                style={{ background: "rgba(99,102,241,0.2)" }}>
+                                <User className="w-3 h-3" style={{ color: "#6366f1" }} />
                             </div>
-                            <div className="label-field-pair flex flex-col">
-                                <label htmlFor="lastname">
-                                    last Name
-                                </label>
-                                <input
-                                    id="lastname"
-                                    name="lastname"
-                                    type="text"
-                                    required
-                                    autoComplete="lastname"
-                                    value={stateformdata.lastname}
-                                    onChange={handlesignupform}
-                                    className="w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6 p-2" />
-                            </div>
-                            <div className="label-field-pair flex flex-col">
-                                <label htmlFor="email">
-                                    Email
-                                </label>
-                                <input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    required
-                                    autoComplete="email"
-                                    value={stateformdata.email}
-                                    onChange={handlesignupform}
-                                    className="w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6 p-2" />
-                            </div>
-                            <div className="label-field-pair flex flex-col">
-                                <label htmlFor="textpassword">
-                                    Password
-                                </label>
-                                <input
-                                    id="textpassword"
-                                    name="textpassword"
-                                    type="text"
-                                    required
-                                    autoComplete="textpassword"
-                                    value={stateformdata.textpassword}
-                                    onChange={handlesignupform}
-                                    className="w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6 p-2" />
-                            </div>
-                            <div className="label-field-pair flex flex-col">
-                                <label htmlFor="password">
-                                    Confirm Password
-                                </label>
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    required
-                                    autoComplete="password"
-                                    value={stateformdata.password}
-                                    onChange={handlesignupform}
-                                    className="w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6 p-2" />
-                            </div>
+                            <p className="text-xs font-bold uppercase tracking-widest"
+                                style={{ color: "rgba(255,255,255,0.3)" }}>
+                                Datos personales
+                            </p>
+                            <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.05)" }} />
                         </div>
 
-                        <div className="form-group-2 w-full flex flex-col gap-3">
-                            <div className="label-field-pair flex flex-col">
-                                <label htmlFor="contactnumber">
-                                    Contact Number
-                                </label>
-                                <input
-                                    id="contactnumber"
-                                    name="contactnumber"
-                                    type="number"
-                                    required
-                                    autoComplete="text"
-                                    value={stateformdata.contactnumber}
-                                    onChange={handlesignupform}
-                                    className="w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6 p-2" />
-                            </div>
-                            <div className="label-field-pair flex flex-col">
-                                <label htmlFor="name">
-                                    Organization Name
-                                </label>
-                                <input
-                                    id="name"
-                                    name="name"
-                                    type="text"
-                                    required
-                                    autoComplete="text"
-                                    value={stateformdata.name}
-                                    onChange={handlesignupform}
-                                    className="w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6 p-2" />
-                            </div>
-                            <div className="label-field-pair flex flex-col">
-                                <label htmlFor="description">
-                                    Organization Description
-                                </label>
-                                <input
-                                    id="description"
-                                    name="description"
-                                    type="text"
-                                    required
-                                    autoComplete="text"
-                                    value={stateformdata.description}
-                                    onChange={handlesignupform}
-                                    className="w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6 p-2" />
-                            </div>
-                            <div className="label-field-pair flex flex-col">
-                                <label htmlFor="OrganizationURL">
-                                    Organization URL
-                                </label>
-                                <input
-                                    id="OrganizationURL"
-                                    name="OrganizationURL"
-                                    type="text"
-                                    required
-                                    autoComplete="text"
-                                    value={stateformdata.OrganizationURL}
-                                    onChange={handlesignupform}
-                                    className="w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6 p-2" />
-                            </div>
-                            <div className="label-field-pair flex flex-col">
-                                <label htmlFor="OrganizationMail">
-                                    Organization Mail
-                                </label>
-                                <input
-                                    id="OrganizationMail"
-                                    name="OrganizationMail"
-                                    type="text"
-                                    required
-                                    autoComplete="text"
-                                    value={stateformdata.OrganizationMail}
-                                    onChange={handlesignupform}
-                                    className="w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6 p-2" />
-                            </div>
-
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <InputField id="firstname" name="firstname" label="Nombre" icon={User}
+                                value={stateformdata.firstname} onChange={handlesignupform}
+                                autoComplete="given-name" placeholder="Juan" />
+                            <InputField id="lastname" name="lastname" label="Apellido" icon={User}
+                                value={stateformdata.lastname} onChange={handlesignupform}
+                                autoComplete="family-name" placeholder="Pérez" />
+                            <InputField id="email" name="email" type="email" label="Correo electrónico" icon={Mail}
+                                value={stateformdata.email} onChange={handlesignupform}
+                                autoComplete="email" placeholder="juan@empresa.com" />
+                            <InputField id="contactnumber" name="contactnumber" type="number" label="Teléfono" icon={Phone}
+                                value={stateformdata.contactnumber} onChange={handlesignupform}
+                                autoComplete="tel" placeholder="+1 234 567 890" />
+                            <InputField id="textpassword" name="textpassword" type="text" label="Contraseña" icon={Lock}
+                                value={stateformdata.textpassword} onChange={handlesignupform}
+                                autoComplete="new-password" placeholder="Mínimo 8 caracteres" />
+                            <InputField id="password" name="password" type="password" label="Confirmar contraseña" icon={Lock}
+                                value={stateformdata.password} onChange={handlesignupform}
+                                autoComplete="new-password" placeholder="Repite la contraseña" />
                         </div>
                     </div>
 
-                    <div className="buttons w-full flex justify-between">
-                        <Button className="min-[250px]:text-xs min-[250px]:px-2 min-[250px]:py-1 sm:px-4 sm:py-2 sm:text-sm md:text-md  px-4 py-2 bg-purple-700 border-2 border-purple-700 text-white font-bold rounded-lg hover:bg-white hover:text-purple-700 hover:cursor-pointer" onClick={handlesubmitform}>Sign Up</Button>
-                        <div className="sing-in flex justify-center items-center gap-2">
-                            <p className="min-[250px]:text-xs sm:text-sm">Already Have an Account?</p>
-                            <Link to={"/auth/HR/login"}>
-                                <Button className="min-[250px]:text-xs min-[250px]:px-2 min-[250px]:py-1 sm:px-4 sm:py-2 sm:text-sm md:text-md px-4 py-2 bg-purple-700 border-2 border-purple-700 text-white font-bold rounded-lg hover:bg-white hover:text-purple-700 hover:cursor-pointer">Sign In</Button>
-                            </Link>
+                    {/* Section: Organization */}
+                    <div className="mb-8">
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="w-5 h-5 rounded-md flex items-center justify-center"
+                                style={{ background: "rgba(139,92,246,0.2)" }}>
+                                <Building2 className="w-3 h-3" style={{ color: "#8b5cf6" }} />
+                            </div>
+                            <p className="text-xs font-bold uppercase tracking-widest"
+                                style={{ color: "rgba(255,255,255,0.3)" }}>
+                                Datos de la organización
+                            </p>
+                            <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.05)" }} />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <InputField id="name" name="name" label="Nombre de la organización" icon={Building2}
+                                value={stateformdata.name} onChange={handlesignupform}
+                                autoComplete="organization" placeholder="Mi Empresa S.A." />
+                            <InputField id="contactnumber2" name="contactnumber" type="number" label="Teléfono corporativo" icon={Phone}
+                                value={stateformdata.contactnumber} onChange={handlesignupform}
+                                autoComplete="tel" placeholder="+1 234 567 890" />
+                            <div className="sm:col-span-2">
+                                <InputField id="description" name="description" label="Descripción" icon={FileText}
+                                    value={stateformdata.description} onChange={handlesignupform}
+                                    autoComplete="off" placeholder="Breve descripción de la organización" />
+                            </div>
+                            <InputField id="OrganizationURL" name="OrganizationURL" label="URL corporativa" icon={Globe}
+                                value={stateformdata.OrganizationURL} onChange={handlesignupform}
+                                autoComplete="url" placeholder="https://miempresa.com" />
+                            <InputField id="OrganizationMail" name="OrganizationMail" type="email" label="Correo corporativo" icon={AtSign}
+                                value={stateformdata.OrganizationMail} onChange={handlesignupform}
+                                autoComplete="email" placeholder="contacto@miempresa.com" />
                         </div>
                     </div>
 
-                </div>
-            </div>
+                    {/* Submit */}
+                    <button
+                        onClick={handlesubmitform}
+                        className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm text-white transition-all duration-200"
+                        style={{
+                            background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                            boxShadow: "0 8px 24px rgba(99,102,241,0.3)"
+                        }}
+                        onMouseEnter={e => {
+                            e.currentTarget.style.boxShadow = "0 12px 32px rgba(99,102,241,0.45)"
+                            e.currentTarget.style.transform = "translateY(-1px)"
+                        }}
+                        onMouseLeave={e => {
+                            e.currentTarget.style.boxShadow = "0 8px 24px rgba(99,102,241,0.3)"
+                            e.currentTarget.style.transform = "translateY(0)"
+                        }}
+                    >
+                        Crear cuenta
+                        <ArrowRight className="w-4 h-4" />
+                    </button>
 
-        </>
+                    {/* Terms */}
+                    <p className="text-center text-xs mt-4" style={{ color: "rgba(255,255,255,0.2)" }}>
+                        Al registrarte aceptas nuestros{" "}
+                        <span style={{ color: "rgba(99,102,241,0.7)", cursor: "pointer" }}>
+                            Términos de uso
+                        </span>{" "}
+                        y{" "}
+                        <span style={{ color: "rgba(99,102,241,0.7)", cursor: "pointer" }}>
+                            Política de privacidad
+                        </span>
+                    </p>
+                </div>
+            </main>
+
+            {/* Footer */}
+            <footer className="relative z-10 py-6 text-center"
+                style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
+                    © {new Date().getFullYear()} Employee Management System. Todos los derechos reservados.
+                </p>
+            </footer>
+        </div>
     )
 }
