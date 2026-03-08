@@ -33,16 +33,23 @@ export const HRLogin = () => {
         }
     }, [HRState.error])
 
+    // ✅ Alinear con HRSignup.jsx
     useEffect(() => {
-        if (!HRState.isAuthenticated) {
+        if (!HRState.isAuthenticated && !HRState.isVerified) {
             dispatch(HandleGetHumanResources({ apiroute: "CHECKLOGIN" }))
+            dispatch(HandleGetHumanResources({ apiroute: "CHECK_VERIFY_EMAIL" }))
         }
 
-        if (HRState.isAuthenticated) {
+        if (HRState.isAuthenticated && HRState.isVerified) {
             loadingbar.current?.complete()
             navigate("/HR/dashboard/dashboard-data")
         }
-    }, [HRState.isAuthenticated])
+
+        if (HRState.isAuthenticated && !HRState.isVerified) {
+            loadingbar.current?.complete()
+            navigate("/auth/HR/verify-email")
+        }
+    }, [HRState.isAuthenticated, HRState.isVerified])
 
     // Limpieza al desmontar el componente
     useEffect(() => {
