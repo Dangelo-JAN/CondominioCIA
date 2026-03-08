@@ -11,22 +11,31 @@ import {
 import { NavLink, useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import { Zap, LogOut } from "lucide-react"
+import { HandleHRLogout } from "../../redux/Thunks/HRThunk.js"
 
 const navItems = [
-    { label: "Dashboard",          path: "/HR/dashboard/dashboard-data",  icon: "/../../src/assets/HR-Dashboard/dashboard.png" },
-    { label: "Empleados",          path: "/HR/dashboard/employees",        icon: "/../../src/assets/HR-Dashboard/employee-2.png" },
-    { label: "Departamentos",      path: "/HR/dashboard/departments",      icon: "/../../src/assets/HR-Dashboard/department.png" },
-    { label: "Nóminas",            path: null,                             icon: "/../../src/assets/HR-Dashboard/salary.png" },
-    { label: "Avisos",             path: null,                             icon: "/../../src/assets/HR-Dashboard/notice.png" },
-    { label: "Ausencias",          path: null,                             icon: "/../../src/assets/HR-Dashboard/leave.png" },
-    { label: "Asistencia",         path: null,                             icon: "/../../src/assets/HR-Dashboard/attendance.png" },
-    { label: "Reclutamiento",      path: null,                             icon: "/../../src/assets/HR-Dashboard/recruitment.png" },
-    { label: "Entrevistas",        path: null,                             icon: "/../../src/assets/HR-Dashboard/interview-insights.png" },
-    { label: "Solicitudes",        path: null,                             icon: "/../../src/assets/HR-Dashboard/request.png" },
-    { label: "Perfiles HR",        path: null,                             icon: "/../../src/assets/HR-Dashboard/HR-profiles.png" },
+    { label: "Dashboard",     path: "/HR/dashboard/dashboard-data", icon: "/../../src/assets/HR-Dashboard/dashboard.png" },
+    { label: "Empleados",     path: "/HR/dashboard/employees",       icon: "/../../src/assets/HR-Dashboard/employee-2.png" },
+    { label: "Departamentos", path: "/HR/dashboard/departments",     icon: "/../../src/assets/HR-Dashboard/department.png" },
+    { label: "Nóminas",       path: null,                            icon: "/../../src/assets/HR-Dashboard/salary.png" },
+    { label: "Avisos",        path: null,                            icon: "/../../src/assets/HR-Dashboard/notice.png" },
+    { label: "Ausencias",     path: null,                            icon: "/../../src/assets/HR-Dashboard/leave.png" },
+    { label: "Asistencia",    path: null,                            icon: "/../../src/assets/HR-Dashboard/attendance.png" },
+    { label: "Reclutamiento", path: null,                            icon: "/../../src/assets/HR-Dashboard/recruitment.png" },
+    { label: "Entrevistas",   path: null,                            icon: "/../../src/assets/HR-Dashboard/interview-insights.png" },
+    { label: "Solicitudes",   path: null,                            icon: "/../../src/assets/HR-Dashboard/request.png" },
+    { label: "Perfiles HR",   path: null,                            icon: "/../../src/assets/HR-Dashboard/HR-profiles.png" },
 ]
 
 export function HRdashboardSidebar() {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    const handleLogout = async () => {
+        await dispatch(HandleHRLogout())
+        navigate("/")
+    }
+
     return (
         <Sidebar>
             <div className="flex h-full flex-col"
@@ -73,13 +82,7 @@ export function HRdashboardSidebar() {
                                         {item.path ? (
                                             <NavLink
                                                 to={item.path}
-                                                className={({ isActive }) =>
-                                                    `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
-                                                        isActive
-                                                            ? "active-nav-item"
-                                                            : "hover-nav-item"
-                                                    }`
-                                                }
+                                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200"
                                                 style={({ isActive }) => ({
                                                     background: isActive
                                                         ? "linear-gradient(135deg, rgba(99,102,241,0.25), rgba(139,92,246,0.15))"
@@ -112,7 +115,7 @@ export function HRdashboardSidebar() {
                                                                 }}
                                                             />
                                                         </div>
-                                                        <span className="text-sm font-medium transition-colors duration-200"
+                                                        <span className="text-sm font-medium"
                                                             style={{
                                                                 color: isActive
                                                                     ? "#fff"
@@ -130,9 +133,7 @@ export function HRdashboardSidebar() {
                                                 )}
                                             </NavLink>
                                         ) : (
-                                            <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-not-allowed opacity-40"
-                                                title="Próximamente"
-                                            >
+                                            <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-not-allowed opacity-40">
                                                 <div className="flex items-center justify-center w-7 h-7 rounded-lg flex-shrink-0"
                                                     style={{ background: "rgba(255,255,255,0.05)" }}
                                                 >
@@ -166,7 +167,7 @@ export function HRdashboardSidebar() {
                     </SidebarGroup>
                 </SidebarContent>
 
-                {/* Footer */}
+                {/* Footer — Logout */}
                 <div className="px-3 py-4 border-t"
                     style={{ borderColor: "rgba(99,102,241,0.12)" }}
                 >
