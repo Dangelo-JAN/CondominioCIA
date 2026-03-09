@@ -1,15 +1,11 @@
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
     DialogClose,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { ErrorPopup } from "../error-popup.jsx"
 import { Button } from "@/components/ui/button"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { CommonStateHandler } from "../../../utils/commonhandler.js"
 import { useDispatch, useSelector } from "react-redux"
 import { FormSubmitToast } from "./Toasts.jsx"
@@ -24,274 +20,162 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
-    CommandSeparator,
-    CommandShortcut,
 } from "@/components/ui/command"
 import { fetchEmployeesIDs } from "../../../redux/Thunks/EmployeesIDsThunk.js"
+import { UserPlus, Trash2, Eye, Building2, Users, X, Check } from "lucide-react"
 
+// ── Shared input style helper ──────────────────────────────────────────────
+const inputCls = `w-full rounded-xl px-3 py-2 text-sm outline-none transition-all duration-200
+    bg-gray-50 border border-gray-200 text-gray-900
+    focus:border-indigo-400 focus:bg-white focus:ring-2 focus:ring-indigo-100
+    dark:bg-[rgba(255,255,255,0.04)] dark:border-[rgba(255,255,255,0.08)] dark:text-white
+    dark:focus:border-[rgba(99,102,241,0.5)] dark:focus:bg-[rgba(99,102,241,0.06)] dark:focus:ring-0`
 
+const labelCls = `text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-[rgba(255,255,255,0.4)]`
+
+const SectionLabel = ({ children }) => (
+    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-indigo-500 dark:text-indigo-400 mb-3">
+        {children}
+    </p>
+)
+
+// ── Add Employees ──────────────────────────────────────────────────────────
 export const AddEmployeesDialogBox = () => {
-    const HREmployeesState = useSelector((state) => state.HREmployeesPageReducer)
     const [formdata, setformdata] = useState({
-        firstname: "",
-        lastname: "",
-        email: "",
-        contactnumber: "",
-        textpassword: "",
-        password: "",
+        firstname: "", lastname: "", email: "",
+        contactnumber: "", textpassword: "", password: "",
     })
 
     const handleformchange = (event) => {
         CommonStateHandler(formdata, setformdata, event)
-    }
-
-    return (
-        <div className="AddEmployees-content">
-            <Dialog>
-                <DialogTrigger className="bg-blue-800 border-2 border-blue-800 md:px-4 md:py-2 md:text-lg min-[250px]:px-2 min-[250px]:py-1 min-[250px]:text-sm text-white font-bold rounded-lg hover:bg-white hover:text-blue-800">Add Employees</DialogTrigger>
-                <DialogContent className="max-w-[315px] sm:max-w-[50vw] 2xl:max-w-[45vw]">
-                    <div className="add-employees-container flex flex-col gap-5">
-                        <div className="heading">
-                            <h1 className="font-bold text-2xl">Add Employee Info</h1>
-                        </div>
-                        <div className="form-container grid md:grid-cols-2 min-[250px]:grid-cols-1 gap-4">
-                            <div className="form-group flex flex-col gap-3">
-                                <div className="label-input-field flex flex-col gap-1">
-                                    <label htmlFor="firstname" className="md:text-md lg:text-lg font-bold">First Name</label>
-                                    <input type="text"
-                                        id="firstname"
-                                        className="border-2 border-gray-700 rounded px-2 py-1"
-                                        name="firstname"
-                                        value={formdata.firstname}
-                                        onChange={handleformchange} />
-                                </div>
-                                <div className="label-input-field flex flex-col gap-1">
-                                    <label htmlFor="lastname" className="md:text-md lg:text-lg font-bold">Last Name</label>
-                                    <input type="text"
-                                        id="lastanme"
-                                        className="border-2 border-gray-700 rounded px-2 py-1"
-                                        name="lastname"
-                                        value={formdata.lastname}
-                                        onChange={handleformchange} />
-                                </div>
-                                <div className="label-input-field flex flex-col gap-1">
-                                    <label htmlFor="email" className="md:text-md lg:text-lg font-bold">Email</label>
-                                    <input type="email"
-                                        id="email" required={true} className="border-2 border-gray-700 rounded px-2 py-1"
-                                        name="email"
-                                        value={formdata.email}
-                                        onChange={handleformchange} />
-                                </div>
-                            </div>
-                            <div className="form-group flex flex-col gap-3">
-                                <div className="label-input-field flex flex-col gap-1">
-                                    <label htmlFor="contactnumber" className="md:text-md lg:text-lg font-bold">Contact Number</label>
-                                    <input type="number"
-                                        id="contactnumber" className="border-2 border-gray-700 rounded px-2 py-1"
-                                        name="contactnumber"
-                                        value={formdata.contactnumber}
-                                        onChange={handleformchange} />
-                                </div>
-                                <div className="label-input-field flex flex-col gap-1">
-                                    <label htmlFor="text-password" className="md:text-md lg:text-lg font-bold">Password</label>
-                                    <input type="text"
-                                        id="text-password" className="border-2 border-gray-700 rounded px-2 py-1"
-                                        name="textpassword"
-                                        value={formdata.textpassword}
-                                        onChange={handleformchange} />
-                                </div>
-                                <div className="label-input-field flex flex-col gap-1">
-                                    <label htmlFor="password" className="md:text-md lg:text-lg font-bold">Confirm Password</label>
-                                    <input type="password"
-                                        id="password" required={true} className="border-2 border-gray-700 rounded px-2 py-1"
-                                        name="password"
-                                        value={formdata.password}
-                                        onChange={handleformchange} />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="add-button flex items-center justify-center">
-                            <FormSubmitToast formdata={formdata} />
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
-        </div>
-    )
-}
-
-export const EmployeeDetailsDialogBox = ({ EmployeeID }) => {
-    const HREmployeesState = useSelector((state) => state.HREmployeesPageReducer)
-    const FetchEmployeeData = (EmID) => {
-        const employee = HREmployeesState.data.find((item) => item._id === EmID)
-        return employee
-    }
-    const employeeData = FetchEmployeeData(EmployeeID)
-    return (
-        <div className="Employees-Details-container">
-            <Dialog>
-                <div>
-                    <DialogTrigger className="btn-sm btn-blue-700 text-md border-2 border-blue-800 min-[250px]:px-2 min-[250px]:py-1 sm:px-1 sm:py-0.5 xl:px-2 xl:py-1 rounded-md hover:bg-blue-800 hover:text-white">View</DialogTrigger>
-                </div>
-                <DialogContent className="max-w-[315px] lg:max-w-[55vw] 2xl:max-w-[45vw]">
-                    <div className="employee-data-container flex flex-col gap-4">
-                        <div className="employee-profile-logo flex items-center gap-3">
-                            <div className="logo border-2 border-blue-800 rounded-[50%] flex justify-center items-center">
-                                <p className="font-bold text-2xl text-blue-700 p-2">{`${employeeData.firstname.slice(0, 1).toUpperCase()} ${employeeData.lastname.slice(0, 1).toUpperCase()}`}</p>
-                            </div>
-                            <div className="employee-fullname">
-                                <p className="font-bold text-2xl">{`${employeeData.firstname} ${employeeData.lastname}`}</p>
-                            </div>
-                        </div>
-                        <div className="employees-all-details grid lg:grid-cols-2 min-[250px]:gap-2 lg:gap-10">
-                            <div className="details-group-1 flex flex-col gap-3">
-                                <div className="label-value-pair flex items-center gap-2">
-                                    <label className="font-bold md:text-sm xl:text-lg">First Name :</label>
-                                    <p className="md:text-sm xl:text-lg">{employeeData.firstname}</p>
-                                </div>
-                                <div className="label-value-pair flex items-center gap-2">
-                                    <label className="font-bold md:text-sm xl:text-lg">Last Name :</label>
-                                    <p className="md:text-sm xl:text-lg">{employeeData.lastname}</p>
-                                </div>
-                                <div className="label-value-pair flex items-center gap-2">
-                                    <label className="font-bold md:text-sm xl:text-lg">Email :</label>
-                                    <p className="md:text-sm xl:text-lg">{employeeData.email}</p>
-                                </div>
-                                <div className="label-value-pair flex items-center gap-2">
-                                    <label className="font-bold md:text-sm xl:text-lg">Contact Number :</label>
-                                    <p className="md:text-sm xl:text-lg">{employeeData.contactnumber}</p>
-                                </div>
-                                <div className="label-value-pair flex items-center gap-2">
-                                    <label className="font-bold md:text-sm xl:text-lg">Department :</label>
-                                    <p className="md:text-sm xl:text-lg">{employeeData.department ? employeeData.department.name : "Not Specified"}</p>
-                                </div>
-                            </div>
-                            <div className="details-group-1 flex flex-col gap-3">
-                                <div className="label-value-pair flex items-center gap-2">
-                                    <label className="font-bold md:text-sm xl:text-lg">Notices :</label>
-                                    <p className="md:text-sm xl:text-lg">{employeeData.notice.length}</p>
-                                </div>
-                                <div className="label-value-pair flex items-center gap-2">
-                                    <label className="font-bold md:text-sm xl:text-lg">Salary Records :</label>
-                                    <p className="md:text-sm xl:text-lg">{employeeData.salary.length}</p>
-                                </div>
-                                <div className="label-value-pair flex items-center gap-2">
-                                    <label className="font-bold md:text-sm xl:text-lg">Leave Requests :</label>
-                                    <p className="md:text-sm xl:text-lg">{employeeData.leaverequest.length}</p>
-                                </div>
-                                <div className="label-value-pair flex items-center gap-2">
-                                    <label className="font-bold md:text-sm xl:text-lg">Requests :</label>
-                                    <p className="md:text-sm xl:text-lg">{employeeData.generaterequest.length}</p>
-                                </div>
-                                <div className="label-value-pair flex items-center gap-2">
-                                    <label className="font-bold md:text-sm xl:text-lg">Email Verify :</label>
-                                    <p className="md:text-sm xl:text-lg">{employeeData.isverified ? "Verified" : "Not Verified"}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
-        </div>
-    )
-}
-
-
-export const DeleteEmployeeDialogBox = ({ EmployeeID }) => {
-    const dispatch = useDispatch()
-    const DeleteEmployee = (EMID) => {
-        dispatch(HandleDeleteHREmployees({ apiroute: `DELETE.${EMID}` }))
-    }
-    return (
-        <div className="delete-employee-dialog-container">
-            <Dialog>
-                <DialogTrigger className="btn-sm btn-blue-700 text-md border-2 border-blue-800 min-[250px]:px-2 min-[250px]:py-1 sm:px-1 sm:py-0.5 xl:px-2 xl:py-1 rounded-md hover:bg-blue-800 hover:text-white">Delete</DialogTrigger>
-                <DialogContent className="max-w-[315px] lg:max-w-[35vw] 2xl:max-w-[30vw]">
-                    <div className="flex flex-col justify-center items-center gap-4">
-                        <p className="text-lg font-bold min-[250px]:text-center">Are you sure you want to delete this employee?</p>
-                        <div className="delete-employee-button-group flex gap-2">
-                            <DialogClose asChild>
-                                <Button className="btn-sm btn-blue-700 text-md border-2 min-[250px]:px-2 min-[250px]:py-1 sm:px-1 sm:py-0.5 xl:px-2 xl:py-1 rounded-md bg-red-700 border-red-700 hover:bg-transparent hover:text-red-700" onClick={() => DeleteEmployee(EmployeeID)}>Delete</Button>
-                            </DialogClose>
-                            <DialogClose asChild>
-                                <Button className="btn-sm btn-blue-700 text-md border-2 min-[250px]:px-2 min-[250px]:py-1 sm:px-1 sm:py-0.5 xl:px-2 xl:py-1 rounded-md bg-green-700 border-green-700 hover:bg-transparent hover:text-green-700">Cancel</Button>
-                            </DialogClose>
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
-        </div>
-    )
-}
-
-
-
-export const CreateDepartmentDialogBox = () => {
-    const { toast } = useToast()
-    const dispatch = useDispatch()
-    const [formdata, setformdata] = useState({
-        name: "",
-        description: ""
-    })
-
-    const handleformchange = (event) => {
-        CommonStateHandler(formdata, setformdata, event)
-    }
-
-    const CreateDepartment = () => {
-        dispatch(HandlePostHRDepartments({ apiroute: "CREATE", data: formdata }))
-        setformdata({
-            name: "",
-            description: ""
-        })
-    }
-
-    const ShowToast = () => {
-        toast({
-            variant: "destructive",
-            title: "Uh oh! Something went wrong.",
-            description: `All Fields are required to create a department`,
-        })
     }
 
     return (
         <Dialog>
-            <DialogTrigger className="min-[250px]:text-sm sm:text-lg min-[250px]:px-2 min-[250px]:py-1 sm:px-4 sm:py-2 bg-blue-700 font-bold text-white rounded-lg border-2 border-blue-700 hover:bg-white hover:text-blue-700">Create Department</DialogTrigger>
-            <DialogContent className="max-w-[315px] lg:max-w-[35vw] 2xl:max-w-[30vw]">
-                <div className="create-department-container flex flex-col gap-4">
-                    <div className="create-department-heading">
-                        <h1 className="font-bold text-2xl">Create Department</h1>
+            <DialogTrigger className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200
+                bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200
+                dark:bg-[rgba(99,102,241,0.8)] dark:hover:bg-[rgba(99,102,241,1)] dark:shadow-[0_4px_16px_rgba(99,102,241,0.25)]">
+                <UserPlus className="w-4 h-4" />
+                Agregar Empleado
+            </DialogTrigger>
+
+            <DialogContent className="max-w-[340px] sm:max-w-[560px]
+                bg-white border border-gray-100 shadow-2xl rounded-2xl
+                dark:bg-[#13131f] dark:border-[rgba(99,102,241,0.15)]">
+                <div className="flex flex-col gap-5 p-1">
+                    <div>
+                        <SectionLabel>Nuevo Empleado</SectionLabel>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Información del empleado</h2>
+                        <p className="text-sm text-gray-400 dark:text-[rgba(255,255,255,0.3)] mt-1">
+                            Completa todos los campos para registrar al empleado.
+                        </p>
                     </div>
-                    <div className="create-department-form flex flex-col gap-4">
-                        <div className="form-group flex flex-col gap-3">
-                            <div className="label-input-field flex flex-col gap-1">
-                                <label htmlFor="departmentname" className="md:text-md lg:text-lg font-bold">Department Name</label>
-                                <input type="text"
-                                    id="departmentname"
-                                    name="name"
-                                    value={formdata.name}
-                                    onChange={handleformchange}
-                                    placeholder="Enter Department Name"
-                                    className="border-2 border-gray-700 rounded px-2 py-1" />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {[
+                            { id: "firstname", name: "firstname", label: "Nombre", type: "text", value: formdata.firstname },
+                            { id: "lastname", name: "lastname", label: "Apellido", type: "text", value: formdata.lastname },
+                            { id: "email", name: "email", label: "Correo electrónico", type: "email", value: formdata.email },
+                            { id: "contactnumber", name: "contactnumber", label: "Teléfono", type: "number", value: formdata.contactnumber },
+                            { id: "text-password", name: "textpassword", label: "Contraseña", type: "text", value: formdata.textpassword },
+                            { id: "password", name: "password", label: "Confirmar contraseña", type: "password", value: formdata.password },
+                        ].map(field => (
+                            <div key={field.id} className="flex flex-col gap-1.5">
+                                <label htmlFor={field.id} className={labelCls}>{field.label}</label>
+                                <input
+                                    id={field.id} name={field.name} type={field.type}
+                                    value={field.value} onChange={handleformchange}
+                                    className={inputCls}
+                                />
                             </div>
-                            <div className="label-input-field flex flex-col gap-1">
-                                <label htmlFor="departmentdescription" className="md:text-md lg:text-lg font-bold">Department Description</label>
-                                <textarea
-                                    id="departmentdescription"
-                                    name="description"
-                                    value={formdata.description}
-                                    onChange={handleformchange}
-                                    className="border-2 border-gray-700 rounded px-2 py-1 h-[100px]"
-                                    placeholder="Write Your Department Description Here"></textarea>
-                            </div>
+                        ))}
+                    </div>
+
+                    <div className="flex justify-end pt-1">
+                        <FormSubmitToast formdata={formdata} />
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    )
+}
+
+// ── Employee Details ───────────────────────────────────────────────────────
+export const EmployeeDetailsDialogBox = ({ EmployeeID }) => {
+    const HREmployeesState = useSelector((state) => state.HREmployeesPageReducer)
+    const employeeData = HREmployeesState.data?.find((item) => item._id === EmployeeID)
+
+    if (!employeeData) return null
+
+    const initials = `${employeeData.firstname?.slice(0,1).toUpperCase()}${employeeData.lastname?.slice(0,1).toUpperCase()}`
+
+    const details = [
+        { label: "Nombre", value: employeeData.firstname },
+        { label: "Apellido", value: employeeData.lastname },
+        { label: "Email", value: employeeData.email },
+        { label: "Teléfono", value: employeeData.contactnumber },
+        { label: "Departamento", value: employeeData.department ? employeeData.department.name : "Sin asignar" },
+    ]
+
+    const stats = [
+        { label: "Avisos", value: employeeData.notice?.length ?? 0 },
+        { label: "Registros salariales", value: employeeData.salary?.length ?? 0 },
+        { label: "Solicitudes de ausencia", value: employeeData.leaverequest?.length ?? 0 },
+        { label: "Solicitudes", value: employeeData.generaterequest?.length ?? 0 },
+        { label: "Email verificado", value: employeeData.isverified ? "✓ Verificado" : "✗ No verificado" },
+    ]
+
+    return (
+        <Dialog>
+            <DialogTrigger className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200
+                text-indigo-600 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100
+                dark:text-indigo-300 dark:bg-[rgba(99,102,241,0.1)] dark:border-[rgba(99,102,241,0.2)] dark:hover:bg-[rgba(99,102,241,0.18)]">
+                <Eye className="w-3.5 h-3.5" />
+                Ver
+            </DialogTrigger>
+
+            <DialogContent className="max-w-[340px] lg:max-w-[580px]
+                bg-white border border-gray-100 shadow-2xl rounded-2xl
+                dark:bg-[#13131f] dark:border-[rgba(99,102,241,0.15)]">
+                <div className="flex flex-col gap-5 p-1">
+                    {/* Profile header */}
+                    <div className="flex items-center gap-4 pb-4 border-b border-gray-100 dark:border-[rgba(99,102,241,0.1)]">
+                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-bold flex-shrink-0
+                            bg-indigo-100 text-indigo-600
+                            dark:bg-[rgba(99,102,241,0.15)] dark:text-indigo-300">
+                            {initials}
                         </div>
-                        <div className="create-department-button flex justify-center items-center">
-                            {
-                                (formdata.name.trim().length === 0 || formdata.description.trim().length === 0) ? <Button className="btn-sm btn-blue-700 text-md border-2 bg-blue-700 border-blue-700 px-2 py-1 rounded-md hover:bg-white hover:text-blue-700" onClick={() => ShowToast()}>Create</Button> :
-                                    <DialogClose asChild>
-                                        <Button className="btn-sm btn-blue-700 text-md border-2 bg-blue-700 border-blue-700 px-2 py-1 rounded-md hover:bg-white hover:text-blue-700" onClick={() => CreateDepartment()}>Create</Button>
-                                    </DialogClose>
-                            }
+                        <div>
+                            <p className="text-lg font-bold text-gray-900 dark:text-white">
+                                {`${employeeData.firstname} ${employeeData.lastname}`}
+                            </p>
+                            <p className="text-sm text-gray-400 dark:text-[rgba(255,255,255,0.35)]">
+                                {employeeData.email}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Personal info */}
+                        <div className="flex flex-col gap-3">
+                            <SectionLabel>Información personal</SectionLabel>
+                            {details.map(d => (
+                                <div key={d.label} className="flex flex-col gap-0.5">
+                                    <p className={labelCls}>{d.label}</p>
+                                    <p className="text-sm font-medium text-gray-800 dark:text-[rgba(255,255,255,0.8)]">{d.value}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Stats */}
+                        <div className="flex flex-col gap-3">
+                            <SectionLabel>Estadísticas</SectionLabel>
+                            {stats.map(s => (
+                                <div key={s.label} className="flex items-center justify-between py-1.5 border-b border-gray-50 dark:border-[rgba(255,255,255,0.04)]">
+                                    <p className="text-sm text-gray-500 dark:text-[rgba(255,255,255,0.4)]">{s.label}</p>
+                                    <p className="text-sm font-semibold text-gray-800 dark:text-white">{s.value}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -300,10 +184,153 @@ export const CreateDepartmentDialogBox = () => {
     )
 }
 
+// ── Delete Employee ────────────────────────────────────────────────────────
+export const DeleteEmployeeDialogBox = ({ EmployeeID }) => {
+    const dispatch = useDispatch()
 
+    const DeleteEmployee = (EMID) => {
+        dispatch(HandleDeleteHREmployees({ apiroute: `DELETE.${EMID}` }))
+    }
 
+    return (
+        <Dialog>
+            <DialogTrigger className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200
+                text-red-500 bg-red-50 border border-red-100 hover:bg-red-100
+                dark:text-red-400 dark:bg-[rgba(239,68,68,0.08)] dark:border-[rgba(239,68,68,0.15)] dark:hover:bg-[rgba(239,68,68,0.15)]">
+                <Trash2 className="w-3.5 h-3.5" />
+                Eliminar
+            </DialogTrigger>
+
+            <DialogContent className="max-w-[340px]
+                bg-white border border-gray-100 shadow-2xl rounded-2xl
+                dark:bg-[#13131f] dark:border-[rgba(99,102,241,0.15)]">
+                <div className="flex flex-col items-center gap-5 p-1 text-center">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center
+                        bg-red-50 dark:bg-[rgba(239,68,68,0.1)]">
+                        <Trash2 className="w-7 h-7 text-red-400" />
+                    </div>
+                    <div>
+                        <p className="text-base font-bold text-gray-900 dark:text-white mb-1">
+                            ¿Eliminar empleado?
+                        </p>
+                        <p className="text-sm text-gray-400 dark:text-[rgba(255,255,255,0.35)]">
+                            Esta acción no se puede deshacer.
+                        </p>
+                    </div>
+                    <div className="flex gap-3 w-full">
+                        <DialogClose asChild>
+                            <Button onClick={() => DeleteEmployee(EmployeeID)}
+                                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white
+                                    bg-red-500 hover:bg-red-600 border-0
+                                    dark:bg-[rgba(239,68,68,0.7)] dark:hover:bg-[rgba(239,68,68,0.9)]">
+                                <Trash2 className="w-4 h-4" />
+                                Eliminar
+                            </Button>
+                        </DialogClose>
+                        <DialogClose asChild>
+                            <Button className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold
+                                text-gray-600 bg-gray-100 hover:bg-gray-200 border-0
+                                dark:text-[rgba(255,255,255,0.6)] dark:bg-[rgba(255,255,255,0.05)] dark:hover:bg-[rgba(255,255,255,0.1)]">
+                                <X className="w-4 h-4" />
+                                Cancelar
+                            </Button>
+                        </DialogClose>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    )
+}
+
+// ── Create Department ──────────────────────────────────────────────────────
+export const CreateDepartmentDialogBox = () => {
+    const { toast } = useToast()
+    const dispatch = useDispatch()
+    const [formdata, setformdata] = useState({ name: "", description: "" })
+
+    const handleformchange = (event) => {
+        CommonStateHandler(formdata, setformdata, event)
+    }
+
+    const CreateDepartment = () => {
+        dispatch(HandlePostHRDepartments({ apiroute: "CREATE", data: formdata }))
+        setformdata({ name: "", description: "" })
+    }
+
+    const ShowToast = () => {
+        toast({
+            variant: "destructive",
+            title: "Campos requeridos",
+            description: "Todos los campos son necesarios para crear un departamento.",
+        })
+    }
+
+    return (
+        <Dialog>
+            <DialogTrigger className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all duration-200
+                bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200
+                dark:bg-[rgba(99,102,241,0.8)] dark:hover:bg-[rgba(99,102,241,1)] dark:shadow-[0_4px_16px_rgba(99,102,241,0.25)]">
+                <Building2 className="w-4 h-4" />
+                Crear Departamento
+            </DialogTrigger>
+
+            <DialogContent className="max-w-[340px] lg:max-w-[420px]
+                bg-white border border-gray-100 shadow-2xl rounded-2xl
+                dark:bg-[#13131f] dark:border-[rgba(99,102,241,0.15)]">
+                <div className="flex flex-col gap-5 p-1">
+                    <div>
+                        <SectionLabel>Nuevo Departamento</SectionLabel>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Crear departamento</h2>
+                    </div>
+
+                    <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-1.5">
+                            <label htmlFor="departmentname" className={labelCls}>Nombre del departamento</label>
+                            <input
+                                id="departmentname" name="name" type="text"
+                                value={formdata.name} onChange={handleformchange}
+                                placeholder="ej. Recursos Humanos"
+                                className={inputCls}
+                            />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                            <label htmlFor="departmentdescription" className={labelCls}>Descripción</label>
+                            <textarea
+                                id="departmentdescription" name="description"
+                                value={formdata.description} onChange={handleformchange}
+                                placeholder="Describe las funciones del departamento..."
+                                className={`${inputCls} h-24 resize-none`}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                        {(formdata.name.trim().length === 0 || formdata.description.trim().length === 0) ? (
+                            <Button onClick={ShowToast}
+                                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white
+                                    bg-indigo-600 hover:bg-indigo-700 border-0">
+                                <Check className="w-4 h-4" />
+                                Crear
+                            </Button>
+                        ) : (
+                            <DialogClose asChild>
+                                <Button onClick={CreateDepartment}
+                                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white
+                                        bg-indigo-600 hover:bg-indigo-700 border-0">
+                                    <Check className="w-4 h-4" />
+                                    Crear
+                                </Button>
+                            </DialogClose>
+                        )}
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    )
+}
+
+// ── Employees IDs (Add to Department) ─────────────────────────────────────
 export const EmployeesIDSDialogBox = ({ DepartmentID }) => {
-    console.log("this is Department ID", DepartmentID)
     const EmployeesIDState = useSelector((state) => state.EMployeesIDReducer)
     const dispatch = useDispatch()
     const [SelectedEmployeesData, Set_selectedEmployeesData] = useState({
@@ -314,17 +341,13 @@ export const EmployeesIDSDialogBox = ({ DepartmentID }) => {
     const SelectEmployees = (EMID) => {
         if (SelectedEmployeesData.employeeIDArray.includes(EMID)) {
             Set_selectedEmployeesData({ ...SelectedEmployeesData, employeeIDArray: SelectedEmployeesData.employeeIDArray.filter((item) => item !== EMID) })
-        }
-        else if (!SelectedEmployeesData.employeeIDArray.includes(EMID)) {
+        } else {
             Set_selectedEmployeesData({ ...SelectedEmployeesData }, SelectedEmployeesData.employeeIDArray.push(EMID))
         }
     }
 
     const ClearSelectedEmployeesData = () => {
-        Set_selectedEmployeesData({
-            departmentID: DepartmentID,
-            employeeIDArray: []
-        })
+        Set_selectedEmployeesData({ departmentID: DepartmentID, employeeIDArray: [] })
     }
 
     const SetEmployees = () => {
@@ -332,56 +355,91 @@ export const EmployeesIDSDialogBox = ({ DepartmentID }) => {
         ClearSelectedEmployeesData()
     }
 
-    console.log(SelectedEmployeesData)
-
     useEffect(() => {
-        Set_selectedEmployeesData(
-            {
-                departmentID: DepartmentID,
-                employeeIDArray: [],
-            }
-        )
+        Set_selectedEmployeesData({ departmentID: DepartmentID, employeeIDArray: [] })
     }, [DepartmentID])
 
     return (
-        <div className="employeeIDs-box-container">
-            <Dialog>
-                <DialogTrigger className="px-4 py-2 font-bold m-2 bg-blue-600 text-white border-2 border-blue-600 rounded-lg hover:bg-white hover:text-blue-700 min-[250px]:text-xs md:text-sm lg:text-lg" onClick={() => dispatch(fetchEmployeesIDs({ apiroute: "GETALL" }))}>Add Employees</DialogTrigger>
-                <DialogContent className="max-w-[315px] lg:max-w-[35vw] 2xl:max-w-[30vw]">
-                    {EmployeesIDState.isLoading ? <Loading height={"h-auto"} /> : <div className="employeeID-checkbox-container flex flex-col gap-4">
+        <Dialog>
+            <DialogTrigger
+                onClick={() => dispatch(fetchEmployeesIDs({ apiroute: "GETALL" }))}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200
+                    text-indigo-600 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100
+                    dark:text-indigo-300 dark:bg-[rgba(99,102,241,0.1)] dark:border-[rgba(99,102,241,0.2)] dark:hover:bg-[rgba(99,102,241,0.18)]">
+                <Users className="w-4 h-4" />
+                Agregar Empleados
+            </DialogTrigger>
+
+            <DialogContent className="max-w-[340px] lg:max-w-[420px]
+                bg-white border border-gray-100 shadow-2xl rounded-2xl
+                dark:bg-[#13131f] dark:border-[rgba(99,102,241,0.15)]">
+                {EmployeesIDState.isLoading ? <Loading height={"h-auto"} /> : (
+                    <div className="flex flex-col gap-5 p-1">
                         <div>
-                            <h1 className="font-bold text-2xl">Select Employees</h1>
+                            <SectionLabel>Asignar personal</SectionLabel>
+                            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Seleccionar empleados</h2>
                         </div>
-                        <div className="employeeID-checkbox-group">
-                            <Command className="rounded-lg border shadow-md w-full">
-                                <CommandInput placeholder="Type a Employee Name..." />
-                                <CommandList>
-                                    <CommandEmpty>No results found.</CommandEmpty>
-                                    <CommandGroup heading="All Employees">
-                                        {EmployeesIDState.data ? EmployeesIDState.data.map((item, index) => <CommandItem key={index}>
-                                            <div className="employeeID-checkbox flex justify-center items-center gap-2">
-                                                <input type="checkbox" id={`EmployeeID-${index + 1}`} className="border-2 border-gray-700 w-4 h-4" onClick={() => SelectEmployees(item._id)} checked={SelectedEmployeesData.employeeIDArray.includes(item._id)} disabled={item.department ? true : false} />
-                                                <label htmlFor={`EmployeeID-${index + 1}`} className="text-lg">{`${item.firstname} ${item.lastname}`} <span className="text-xs mx-0.5 overflow-hidden text-ellipsis">{item.department ? `(${item.department.name})` : null}</span> </label>
+
+                        <Command className="rounded-xl border border-gray-100 dark:border-[rgba(99,102,241,0.15)] dark:bg-[rgba(255,255,255,0.02)]">
+                            <CommandInput placeholder="Buscar empleado..." className="text-sm" />
+                            <CommandList className="max-h-52">
+                                <CommandEmpty className="text-sm text-gray-400 dark:text-[rgba(255,255,255,0.3)] py-4 text-center">
+                                    No se encontraron resultados.
+                                </CommandEmpty>
+                                <CommandGroup heading="Todos los empleados">
+                                    {EmployeesIDState.data ? EmployeesIDState.data.map((item, index) => (
+                                        <CommandItem key={index}>
+                                            <div className="flex items-center gap-3 w-full">
+                                                <input
+                                                    type="checkbox"
+                                                    id={`EmployeeID-${index + 1}`}
+                                                    className="w-4 h-4 accent-indigo-600"
+                                                    onClick={() => SelectEmployees(item._id)}
+                                                    checked={SelectedEmployeesData.employeeIDArray.includes(item._id)}
+                                                    disabled={!!item.department}
+                                                />
+                                                <label htmlFor={`EmployeeID-${index + 1}`} className="text-sm flex items-center gap-2 cursor-pointer">
+                                                    <span className="font-medium text-gray-800 dark:text-white">
+                                                        {`${item.firstname} ${item.lastname}`}
+                                                    </span>
+                                                    {item.department && (
+                                                        <span className="text-xs px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-400 dark:bg-[rgba(255,255,255,0.06)] dark:text-[rgba(255,255,255,0.3)]">
+                                                            {item.department.name}
+                                                        </span>
+                                                    )}
+                                                </label>
                                             </div>
-                                        </CommandItem>) : null}
-                                    </CommandGroup>
-                                </CommandList>
-                            </Command>
-                        </div>
-                        <div className="employeeID-checkbox-button-group flex justify-center items-center gap-2">
-                            <Button className="btn-sm btn-blue-700 text-md border-2 bg-blue-700 border-blue-700 px-2 py-1 rounded-lg hover:bg-white hover:text-blue-700" onClick={() => SetEmployees()}>Add</Button>
+                                        </CommandItem>
+                                    )) : null}
+                                </CommandGroup>
+                            </CommandList>
+                        </Command>
+
+                        <div className="flex gap-3">
+                            <Button onClick={SetEmployees}
+                                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white
+                                    bg-indigo-600 hover:bg-indigo-700 border-0">
+                                <Check className="w-4 h-4" />
+                                Agregar
+                            </Button>
                             <DialogClose asChild>
-                                <Button className="btn-sm btn-blue-700 text-md border-2 bg-blue-700 border-blue-700 px-2 py-1 rounded-lg hover:bg-white hover:text-blue-700" onClick={() => ClearSelectedEmployeesData()}>Cancel</Button>
+                                <Button onClick={ClearSelectedEmployeesData}
+                                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold
+                                        text-gray-600 bg-gray-100 hover:bg-gray-200 border-0
+                                        dark:text-[rgba(255,255,255,0.6)] dark:bg-[rgba(255,255,255,0.05)] dark:hover:bg-[rgba(255,255,255,0.1)]">
+                                    <X className="w-4 h-4" />
+                                    Cancelar
+                                </Button>
                             </DialogClose>
                         </div>
-                    </div>}
-
-                </DialogContent>
-            </Dialog>
-        </div>
+                    </div>
+                )}
+            </DialogContent>
+        </Dialog>
     )
 }
 
+// ── Remove Employee from Department ───────────────────────────────────────
 export const RemoveEmployeeFromDepartmentDialogBox = ({ DepartmentName, DepartmentID, EmployeeID }) => {
     const dispatch = useDispatch()
 
@@ -390,23 +448,48 @@ export const RemoveEmployeeFromDepartmentDialogBox = ({ DepartmentName, Departme
     }
 
     return (
-        <div className="remove-employee">
-            <Dialog>
-                <DialogTrigger className="btn-sm btn-blue-700 text-md border-2 border-blue-800 min-[250px]:px-2 min-[250px]:py-1 sm:px-1 sm:py-0.5 xl:px-2 xl:py-1 rounded-md hover:bg-blue-800 hover:text-white">Remove</DialogTrigger>
-                <DialogContent className="max-w-[315px] lg:max-w-[35vw] 2xl:max-w-[30vw]">
-                    <div className="flex flex-col justify-center items-center gap-4">
-                        <p className="text-lg font-bold min-[250px]:text-center">{`Are you sure you want to remove this employee from ${DepartmentName} department ?`}</p>
-                        <div className="delete-employee-button-group flex gap-2">
-                            <DialogClose asChild>
-                                <Button className="btn-sm btn-blue-700 text-md border-2 min-[250px]:px-2 min-[250px]:py-1 sm:px-1 sm:py-0.5 xl:px-2 xl:py-1 rounded-md bg-red-700 border-red-700 hover:bg-transparent hover:text-red-700" onClick={() => RemoveEmployee(EmployeeID)}>Remove</Button>
-                            </DialogClose>
-                            <DialogClose asChild>
-                                <Button className="btn-sm btn-blue-700 text-md border-2 min-[250px]:px-2 min-[250px]:py-1 sm:px-1 sm:py-0.5 xl:px-2 xl:py-1 rounded-md bg-green-700 border-green-700 hover:bg-transparent hover:text-green-700">Cancel</Button>
-                            </DialogClose>
-                        </div>
+        <Dialog>
+            <DialogTrigger className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200
+                text-red-500 bg-red-50 border border-red-100 hover:bg-red-100
+                dark:text-red-400 dark:bg-[rgba(239,68,68,0.08)] dark:border-[rgba(239,68,68,0.15)] dark:hover:bg-[rgba(239,68,68,0.15)]">
+                <X className="w-3.5 h-3.5" />
+                Remover
+            </DialogTrigger>
+
+            <DialogContent className="max-w-[340px]
+                bg-white border border-gray-100 shadow-2xl rounded-2xl
+                dark:bg-[#13131f] dark:border-[rgba(99,102,241,0.15)]">
+                <div className="flex flex-col items-center gap-5 p-1 text-center">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-red-50 dark:bg-[rgba(239,68,68,0.1)]">
+                        <Users className="w-7 h-7 text-red-400" />
                     </div>
-                </DialogContent>
-            </Dialog>
-        </div>
+                    <div>
+                        <p className="text-base font-bold text-gray-900 dark:text-white mb-1">
+                            ¿Remover del departamento?
+                        </p>
+                        <p className="text-sm text-gray-400 dark:text-[rgba(255,255,255,0.35)]">
+                            El empleado será removido de <span className="font-semibold text-gray-600 dark:text-white">{DepartmentName}</span>.
+                        </p>
+                    </div>
+                    <div className="flex gap-3 w-full">
+                        <DialogClose asChild>
+                            <Button onClick={() => RemoveEmployee(EmployeeID)}
+                                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white
+                                    bg-red-500 hover:bg-red-600 border-0">
+                                <X className="w-4 h-4" />
+                                Remover
+                            </Button>
+                        </DialogClose>
+                        <DialogClose asChild>
+                            <Button className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold
+                                text-gray-600 bg-gray-100 hover:bg-gray-200 border-0
+                                dark:text-[rgba(255,255,255,0.6)] dark:bg-[rgba(255,255,255,0.05)] dark:hover:bg-[rgba(255,255,255,0.1)]">
+                                Cancelar
+                            </Button>
+                        </DialogClose>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
     )
 }
