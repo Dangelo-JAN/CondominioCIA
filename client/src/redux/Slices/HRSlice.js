@@ -19,10 +19,25 @@ const HRSlice = createSlice({
             content: null
         }
     },
+    reducers: {
+        // ✅ Acción síncrona para resetear todo el estado al hacer logout
+        logoutHR: (state) => {
+            state.data = null
+            state.isLoading = false
+            state.isAuthenticated = false
+            state.isSignUp = false
+            state.isAuthourized = false
+            state.isVerified = false
+            state.isVerifiedEmailAvailable = false
+            state.isResetPassword = false
+            state.error = { status: false, message: null, content: null }
+        }
+    },
     extraReducers: (builder) => {
         HRAsyncReducer(builder, HandlePostHumanResources)
         HRAsyncReducer(builder, HandleGetHumanResources)
     }
 })
 
+export const { logoutHR } = HRSlice.actions  // ✅ línea faltante
 export default HRSlice.reducer
