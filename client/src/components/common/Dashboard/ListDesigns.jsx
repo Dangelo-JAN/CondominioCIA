@@ -4,7 +4,9 @@ import { RemoveEmployeeFromDepartmentDialogBox } from "./dialogboxes.jsx"
 
 export const ListWrapper = ({ children }) => {
     return (
-        <div className={`wrapper-container p-2 border-2 border-blue-700 rounded-lg w-auto`}>
+        <div className="w-full rounded-xl overflow-hidden
+            border border-indigo-100 bg-indigo-50
+            dark:border-[rgba(99,102,241,0.15)] dark:bg-[rgba(99,102,241,0.05)]">
             {children}
         </div>
     )
@@ -12,20 +14,29 @@ export const ListWrapper = ({ children }) => {
 
 export const HeadingBar = ({ table_layout, table_headings }) => {
     return (
-        <div className={`heading-container grid min-[250px]:grid-cols-2 sm:${table_layout ? table_layout : `grid-cols-5`} rounded-lg gap-4 overflow-auto`}>
-            {
-                table_headings.map((item) => <div className={`heading-content text-white bg-blue-800 font-bold min-[250px]:text-xs xl:text-xl min-[250px]:p-1 sm:p-2 rounded-lg text-center flex justify-center items-center 
-                ${(["Email", "Department", "Contact Number"].includes(item)) ? `min-[250px]:hidden sm:flex` : ""}`}>
+        <div className={`grid min-[250px]:grid-cols-2 sm:${table_layout ?? "grid-cols-5"} gap-2 px-3 py-2`}>
+            {table_headings.map((item) => (
+                <div
+                    key={item}
+                    className={`text-xs font-bold uppercase tracking-wider text-center px-2 py-1.5 rounded-lg
+                        text-indigo-600 dark:text-indigo-300
+                        ${["Email", "Department", "Contact Number"].includes(item)
+                            ? "min-[250px]:hidden sm:flex sm:justify-center sm:items-center"
+                            : "flex justify-center items-center"
+                        }`}
+                >
                     {item}
-                </div>)
-            }
+                </div>
+            ))}
         </div>
     )
 }
 
 export const ListContainer = ({ children }) => {
     return (
-        <div className={`list-item-container px-2 py-2 border-2 border-blue-700 rounded-lg w-auto`}>
+        <div className="w-full rounded-xl overflow-hidden
+            border border-gray-100 bg-white
+            dark:border-[rgba(99,102,241,0.1)] dark:bg-[rgba(255,255,255,0.02)]">
             {children}
         </div>
     )
@@ -34,48 +45,109 @@ export const ListContainer = ({ children }) => {
 export const ListItems = ({ TargetedState }) => {
     return (
         <>
-            {TargetedState.data ? TargetedState.data.map((item) => <div className={`list-item-container grid min-[250px]:grid-cols-2 sm:grid-cols-5 py-1 gap-2 justify-center items-center border-b-2 border-blue-800`}>
-                <div className="heading-content font-bold min-[250px]:text-sm sm:text-xs lg:text-sm xl:text-lg p-2 rounded-lg text-start overflow-hidden text-ellipsis">
-                    {`${item.firstname} ${item.lastname}`}
+            {TargetedState.data ? TargetedState.data.map((item, index) => (
+                <div
+                    key={item._id ?? index}
+                    className="grid min-[250px]:grid-cols-2 sm:grid-cols-5 gap-2 px-3 py-3 items-center
+                        border-b last:border-b-0
+                        border-gray-100 hover:bg-indigo-50/50 transition-colors duration-150
+                        dark:border-[rgba(99,102,241,0.08)] dark:hover:bg-[rgba(99,102,241,0.04)]"
+                >
+                    {/* Full Name */}
+                    <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold
+                            bg-indigo-100 text-indigo-600
+                            dark:bg-[rgba(99,102,241,0.15)] dark:text-indigo-300">
+                            {item.firstname?.slice(0,1).toUpperCase()}{item.lastname?.slice(0,1).toUpperCase()}
+                        </div>
+                        <p className="text-sm font-semibold truncate text-gray-800 dark:text-white">
+                            {`${item.firstname} ${item.lastname}`}
+                        </p>
+                    </div>
+
+                    {/* Email */}
+                    <div className="min-[250px]:hidden sm:block min-w-0">
+                        <p className="text-sm truncate text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
+                            {item.email}
+                        </p>
+                    </div>
+
+                    {/* Department */}
+                    <div className="min-[250px]:hidden sm:flex sm:justify-center">
+                        <span className={`text-xs font-medium px-2 py-1 rounded-full truncate max-w-[120px]
+                            ${item.department
+                                ? "bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-[rgba(16,185,129,0.1)] dark:text-emerald-400 dark:border-[rgba(16,185,129,0.2)]"
+                                : "bg-gray-100 text-gray-400 border border-gray-200 dark:bg-[rgba(255,255,255,0.05)] dark:text-[rgba(255,255,255,0.3)] dark:border-[rgba(255,255,255,0.08)]"
+                            }`}>
+                            {item.department ? item.department.name : "Sin asignar"}
+                        </span>
+                    </div>
+
+                    {/* Contact */}
+                    <div className="min-[250px]:hidden sm:block text-center">
+                        <p className="text-sm text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
+                            {item.contactnumber}
+                        </p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex justify-center items-center gap-2">
+                        <EmployeeDetailsDialogBox EmployeeID={item._id} />
+                        <DeleteEmployeeDialogBox EmployeeID={item._id} />
+                    </div>
                 </div>
-                <div className="heading-content font-bold min-[250px]:text-sm sm:text-xs xl:text-lg p-2 rounded-lg text-start overflow-hidden text-ellipsis min-[250px]:hidden sm:block">
-                    {item.email}
-                </div>
-                <div className="heading-content font-bold min-[250px]:text-sm sm:text-xs lg:text-sm xl:text-lg p-2 rounded-lg text-center overflow-hidden text-ellipsis min-[250px]:hidden sm:block">
-                    {item.department ? item.department.name : "Not Specified"}
-                </div>
-                <div className="heading-content font-bold min-[250px]:text-sm sm:text-xs lg:text-sm  xl:text-lg p-2 rounded-lg text-center overflow-hidden text-ellipsis min-[250px]:hidden sm:block">
-                    {item.contactnumber}
-                </div>
-                <div className="heading-content text-blue-800 font-bold min-[250px]:text-xs xl:text-lg p-2 rounded-lg text-center flex justify-center items-center min-[250px]:gap-1 xl:gap-2">
-                    {/* <button className="btn-sm btn-blue-700 text-md border-2 border-blue-800 px-2 py-1 rounded-md hover:bg-blue-800 hover:text-white">View</button> */}
-                    <EmployeeDetailsDialogBox EmployeeID={item._id} />
-                    <DeleteEmployeeDialogBox EmployeeID={item._id} />
-                </div>
-            </div>) : null}
+            )) : null}
         </>
     )
 }
 
-
 export const DepartmentListItems = ({ TargetedState }) => {
-    console.log("this is targeted state", TargetedState)
     return (
         <>
-            {TargetedState ? TargetedState.employees.map((item) => <div className={`list-item-container grid min-[250px]:grid-cols-2 sm:grid-cols-4 py-1 gap-2 justify-center items-center border-b-2 border-blue-800`}>
-                <div className="heading-content font-bold min-[250px]:text-sm sm:text-xs lg:text-sm xl:text-lg p-2 rounded-lg text-center overflow-hidden text-ellipsis">
-                    {`${item.firstname} ${item.lastname}`}
+            {TargetedState ? TargetedState.employees.map((item, index) => (
+                <div
+                    key={item._id ?? index}
+                    className="grid min-[250px]:grid-cols-2 sm:grid-cols-4 gap-2 px-3 py-3 items-center
+                        border-b last:border-b-0
+                        border-gray-100 hover:bg-indigo-50/50 transition-colors duration-150
+                        dark:border-[rgba(99,102,241,0.08)] dark:hover:bg-[rgba(99,102,241,0.04)]"
+                >
+                    {/* Full Name */}
+                    <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold
+                            bg-indigo-100 text-indigo-600
+                            dark:bg-[rgba(99,102,241,0.15)] dark:text-indigo-300">
+                            {item.firstname?.slice(0,1).toUpperCase()}{item.lastname?.slice(0,1).toUpperCase()}
+                        </div>
+                        <p className="text-sm font-semibold truncate text-gray-800 dark:text-white">
+                            {`${item.firstname} ${item.lastname}`}
+                        </p>
+                    </div>
+
+                    {/* Email */}
+                    <div className="min-[250px]:hidden sm:block min-w-0">
+                        <p className="text-sm truncate text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
+                            {item.email}
+                        </p>
+                    </div>
+
+                    {/* Contact */}
+                    <div className="min-[250px]:hidden sm:block text-center">
+                        <p className="text-sm text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
+                            {item.contactnumber}
+                        </p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex justify-center items-center gap-2">
+                        <RemoveEmployeeFromDepartmentDialogBox
+                            DepartmentName={TargetedState.name}
+                            DepartmentID={TargetedState._id}
+                            EmployeeID={item._id}
+                        />
+                    </div>
                 </div>
-                <div className="heading-content font-bold min-[250px]:text-sm sm:text-xs xl:text-lg p-2 rounded-lg text-center overflow-hidden text-ellipsis min-[250px]:hidden sm:block">
-                    {item.email}
-                </div>
-                <div className="heading-content font-bold min-[250px]:text-sm sm:text-xs lg:text-sm  xl:text-lg p-2 rounded-lg text-center overflow-hidden text-ellipsis min-[250px]:hidden sm:block">
-                    {item.contactnumber}
-                </div>
-                <div className="heading-content text-blue-800 font-bold min-[250px]:text-xs xl:text-lg p-2 rounded-lg text-center flex justify-center items-center min-[250px]:gap-1 xl:gap-2">
-                    <RemoveEmployeeFromDepartmentDialogBox DepartmentName={TargetedState.name} DepartmentID={TargetedState._id} EmployeeID={item._id}/>
-                </div>
-            </div>) : null}
+            )) : null}
         </>
     )
 }
