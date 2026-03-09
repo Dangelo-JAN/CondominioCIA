@@ -39,4 +39,5 @@ const HRSlice = createSlice({
     }
 })
 
+export const { logoutHR } = HRSlice.actions  // ✅ línea faltante
 export default HRSlice.reducer
