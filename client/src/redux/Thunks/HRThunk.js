@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiService } from "../apis/apiService";
 import { HREndPoints } from "../apis/APIsEndpoints";
+import { logoutHR } from "../Slices/HRSlice";
 
 export const HandleGetHumanResources = createAsyncThunk("HandleGetHumanResources", async (HRData, { rejectWithValue }) => {
     try {
@@ -15,12 +16,11 @@ export const HandleGetHumanResources = createAsyncThunk("HandleGetHumanResources
     }
 })
 
-
 export const HandlePostHumanResources = createAsyncThunk("HandlePostHumanResources", async (HRData, { rejectWithValue }) => {
     try {
         const { apiroute, data, type } = HRData
         if (type == "resetpassword") {
-            const response = await apiService.post(`${HREndPoints.RESET_PASSWORD(apiroute)}`, data, { 
+            const response = await apiService.post(`${HREndPoints.RESET_PASSWORD(apiroute)}`, data, {
                 withCredentials: true
             })
             return response.data
@@ -29,23 +29,25 @@ export const HandlePostHumanResources = createAsyncThunk("HandlePostHumanResourc
             const response = await apiService.post(`${HREndPoints[apiroute]}`, data, {
                 withCredentials: true
             })
-            return response.data 
+            return response.data
         }
     } catch (error) {
         return rejectWithValue(error.response.data);
     }
 })
-// ✅ Thunk de logout: llama al backend, limpia cookie, resetea Redux y redirige
-export const HandleHRLogout = () => async (dispatch) => {
+
+// ✅ Thunk de logout: llama al backend y limpia cookie
+export const HandleHRLogout = createAsyncThunk("HandleHRLogout", async (_, { dispatch, rejectWithValue }) => {
     try {
-        await apiService.post(HREndPoints["LOGOUT"], {}, { withCredentials: true })
+        const response = await apiService.post(HREndPoints["LOGOUT"], {}, { withCredentials: true })
+        dispatch(logoutHR())
+        return response.data
     } catch (error) {
         // Aunque falle el backend, limpiamos el estado igual
-        console.error("Logout error:", error)
-    } finally {
         dispatch(logoutHR())
+        return rejectWithValue(error?.response?.data)
     }
-}
+})
 
 export const HandlePutHumanResources = createAsyncThunk("HandlePutHumanResources", async (HRData, { rejectWithValue }) => { })
 

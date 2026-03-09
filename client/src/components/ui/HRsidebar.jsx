@@ -31,9 +31,10 @@ export function HRdashboardSidebar() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    const handleLogout = async () => {
-        await dispatch(HandleHRLogout())
-        navigate("/")
+    const handleLogout = () => {
+        dispatch(HandleHRLogout()).finally(() => {
+            navigate("/")
+        })
     }
 
     return (
