@@ -338,11 +338,18 @@ export const EmployeesIDSDialogBox = ({ DepartmentID }) => {
         employeeIDArray: [],
     })
 
+    // ✅ Fix — spread para crear nuevo array
     const SelectEmployees = (EMID) => {
         if (SelectedEmployeesData.employeeIDArray.includes(EMID)) {
-            Set_selectedEmployeesData({ ...SelectedEmployeesData, employeeIDArray: SelectedEmployeesData.employeeIDArray.filter((item) => item !== EMID) })
+            Set_selectedEmployeesData({
+                ...SelectedEmployeesData,
+                employeeIDArray: SelectedEmployeesData.employeeIDArray.filter((item) => item !== EMID)
+            })
         } else {
-            Set_selectedEmployeesData({ ...SelectedEmployeesData }, SelectedEmployeesData.employeeIDArray.push(EMID))
+            Set_selectedEmployeesData({
+                ...SelectedEmployeesData,
+                employeeIDArray: [...SelectedEmployeesData.employeeIDArray, EMID]
+            })
         }
     }
 
@@ -416,12 +423,14 @@ export const EmployeesIDSDialogBox = ({ DepartmentID }) => {
                         </Command>
 
                         <div className="flex gap-3">
-                            <Button onClick={SetEmployees}
-                                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white
-                                    bg-indigo-600 hover:bg-indigo-700 border-0">
-                                <Check className="w-4 h-4" />
-                                Agregar
-                            </Button>
+                            <DialogClose asChild>
+                                <Button onClick={SetEmployees}
+                                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white
+                                        bg-indigo-600 hover:bg-indigo-700 border-0">
+                                    <Check className="w-4 h-4" />
+                                    Agregar
+                                </Button>
+                            </DialogClose>
                             <DialogClose asChild>
                                 <Button onClick={ClearSelectedEmployeesData}
                                     className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold

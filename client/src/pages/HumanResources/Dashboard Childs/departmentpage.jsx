@@ -1,16 +1,30 @@
 import { HRDepartmentTabs } from "../../../components/common/Dashboard/departmentTabs"
-import { useDispatch, useSelector } from "react-redux"
-import { useEffect, useState } from "react"
 import { CreateDepartmentDialogBox } from "../../../components/common/Dashboard/dialogboxes"
+import { Building2 } from "lucide-react"
+
 export const HRDepartmentPage = () => {
     return (
-        <div className="department-container mt-5 min-[250px]:mx-1 sm:mx-2 w-auto flex flex-col gap-3 h-[97%]">
-            <div className="deaprtment-heading flex justify-between items-center min-[250px]:flex-col min-[250px]:gap-2 min-[400px]:flex-row">
-                <h1 className="min-[250px]:text-2xl md:text-4xl font-bold">
-                    Departments
-                </h1>
+        <div className="w-full h-full flex flex-col gap-6 px-4 py-6 overflow-y-auto bg-white dark:bg-[#0f0f1a]">
+
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex flex-col gap-1">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-indigo-500 dark:text-indigo-400">
+                        Estructura organizacional
+                    </p>
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-2xl xl:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                            Departamentos
+                        </h1>
+                    </div>
+                </div>
                 <CreateDepartmentDialogBox />
             </div>
+
+            {/* Divider */}
+            <div className="h-px w-full bg-gray-100 dark:bg-[rgba(99,102,241,0.08)]" />
+
+            {/* Tabs content */}
             <HRDepartmentTabs />
         </div>
     )
