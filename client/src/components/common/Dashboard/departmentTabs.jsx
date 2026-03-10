@@ -26,6 +26,7 @@ import { HeadingBar } from "./ListDesigns.jsx"
 import { DepartmentListItems } from "./ListDesigns.jsx"
 import { useToast } from "../../../hooks/use-toast.js"
 import { EmployeesIDSDialogBox } from "./dialogboxes.jsx"
+import { RichTextEditor } from "./RichTextEditor.jsx"
 
 
 export const HRDepartmentTabs = () => {
@@ -162,7 +163,7 @@ export const HRDepartmentTabs = () => {
                     dark:focus:border-[rgba(99,102,241,0.5)] dark:focus:bg-[rgba(99,102,241,0.06)]`
                 return (
                     <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-                        <DialogContent className="max-w-[340px] lg:max-w-[460px]
+                        <DialogContent className="max-w-[340px] lg:max-w-[620px]
                             bg-white border border-gray-100 shadow-2xl rounded-2xl
                             dark:bg-[#13131f] dark:border-[rgba(99,102,241,0.15)]">
                             <div className="flex flex-col gap-5 p-1">
@@ -197,10 +198,9 @@ export const HRDepartmentTabs = () => {
                                         <label className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
                                             Descripción
                                         </label>
-                                        <textarea
+                                        <RichTextEditor
                                             value={editFormData.description}
-                                            onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
-                                            className={`${inputCls} h-32 resize-none`}
+                                            onChange={(html) => setEditFormData({ ...editFormData, description: html })}
                                         />
                                     </div>
                                 </div>
