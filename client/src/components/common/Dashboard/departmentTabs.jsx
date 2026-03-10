@@ -369,9 +369,18 @@ export const DepartmentContent = ({ CurrentDepartmentData }) => {
                         {CurrentDepartmentData.name}
                     </h2>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-[rgba(255,255,255,0.4)] sm:text-start text-center">
-                    {CurrentDepartmentData.description}
-                </p>
+                <div
+                    className="text-sm text-gray-500 dark:text-[rgba(255,255,255,0.4)] sm:text-start text-center
+                        prose prose-sm max-w-none
+                        [&_h2]:text-gray-700 [&_h2]:font-bold [&_h2]:text-sm [&_h2]:mt-2 [&_h2]:mb-1
+                        [&_ul]:list-disc [&_ul]:pl-4 [&_ul]:my-1
+                        [&_ol]:list-decimal [&_ol]:pl-4 [&_ol]:my-1
+                        [&_li]:mb-0.5 [&_strong]:font-semibold [&_strong]:text-gray-600
+                        [&_hr]:border-gray-200 [&_hr]:my-2
+                        dark:[&_h2]:text-[rgba(255,255,255,0.7)] dark:[&_strong]:text-[rgba(255,255,255,0.6)]
+                        dark:[&_hr]:border-[rgba(255,255,255,0.08)]"
+                    dangerouslySetInnerHTML={{ __html: CurrentDepartmentData.description }}
+                />
             </div>
 
             {/* Tabs */}
@@ -445,9 +454,18 @@ export const AllDepartments = ({ DepartmentData, SetCurrentDepartment }) => {
                             Ver
                         </Button>
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-[rgba(255,255,255,0.4)] sm:text-start text-center">
-                        {department.description}
-                    </p>
+                    <div
+                        className="text-sm text-gray-500 dark:text-[rgba(255,255,255,0.4)] sm:text-start text-center
+                            prose prose-sm max-w-none
+                            [&_h2]:text-gray-700 [&_h2]:font-bold [&_h2]:text-sm [&_h2]:mt-2 [&_h2]:mb-1
+                            [&_ul]:list-disc [&_ul]:pl-4 [&_ul]:my-1
+                            [&_ol]:list-decimal [&_ol]:pl-4 [&_ol]:my-1
+                            [&_li]:mb-0.5 [&_strong]:font-semibold [&_strong]:text-gray-600
+                            [&_hr]:border-gray-200 [&_hr]:my-2
+                            dark:[&_h2]:text-[rgba(255,255,255,0.7)] dark:[&_strong]:text-[rgba(255,255,255,0.6)]
+                            dark:[&_hr]:border-[rgba(255,255,255,0.08)]"
+                        dangerouslySetInnerHTML={{ __html: department.description }}
+                    />
                 </div>
             )) : null}
         </div>
