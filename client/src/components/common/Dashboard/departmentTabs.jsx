@@ -216,7 +216,7 @@ export const HRDepartmentTabs = () => {
                                                         UpdatedDepartment: editFormData
                                                     }
                                                 }))
-                                                setdepartment(editFormData.name)
+                                                setdepartment("All Departments")
                                                 setShowEditDialog(false)
                                             }
                                         }}
