@@ -6,7 +6,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Check, ChevronsUpDown, Settings, Pencil, Trash2, Building2, Users } from "lucide-react"
+import { Check, ChevronsUpDown, Settings, Pencil, Trash2, Building2, Users, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
     Command, CommandEmpty, CommandGroup,
@@ -19,7 +19,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useSelector, useDispatch } from "react-redux"
-import { HandleGetHRDepartments } from "../../../redux/Thunks/HRDepartmentPageThunk"
+import { HandleGetHRDepartments, HandleDeleteHRDepartments } from "../../../redux/Thunks/HRDepartmentPageThunk"
+import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog"
 import { Loading } from "../loading.jsx"
 import { HeadingBar } from "./ListDesigns.jsx"
 import { DepartmentListItems } from "./ListDesigns.jsx"
@@ -32,6 +33,7 @@ export const HRDepartmentTabs = () => {
     const HRDepartmentState = useSelector((state) => state.HRDepartmentPageReducer)
     const dispatch = useDispatch()
     const [department, setdepartment] = useState("All Departments")
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
     const departments = []
     if (HRDepartmentState.data) {
@@ -115,7 +117,9 @@ export const HRDepartmentTabs = () => {
                                 <Pencil className="w-4 h-4" />
                                 Actualizar
                             </DropdownMenuItem>
-                            <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium
+                            <DropdownMenuItem
+                                onClick={() => setShowDeleteDialog(true)}
+                                className="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium
                                 text-red-500 hover:bg-red-50
                                 dark:text-red-400 dark:hover:bg-[rgba(239,68,68,0.08)]">
                                 <Trash2 className="w-4 h-4" />
@@ -137,6 +141,58 @@ export const HRDepartmentTabs = () => {
                     } />
                 }
             </div>
+
+            {/* Delete confirmation dialog */}
+            {(() => {
+                const currentDeptData = HRDepartmentState.data?.find((item) => item.name === department)
+                return (
+                    <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                        <DialogContent className="max-w-[340px]
+                            bg-white border border-gray-100 shadow-2xl rounded-2xl
+                            dark:bg-[#13131f] dark:border-[rgba(99,102,241,0.15)]">
+                            <div className="flex flex-col items-center gap-5 p-1 text-center">
+                                <div className="w-14 h-14 rounded-2xl flex items-center justify-center
+                                    bg-red-50 dark:bg-[rgba(239,68,68,0.1)]">
+                                    <AlertTriangle className="w-7 h-7 text-red-400" />
+                                </div>
+                                <div>
+                                    <p className="text-base font-bold text-gray-900 dark:text-white mb-1">
+                                        ¿Eliminar departamento?
+                                    </p>
+                                    <p className="text-sm text-gray-400 dark:text-[rgba(255,255,255,0.35)]">
+                                        Se eliminará <span className="font-semibold text-gray-600 dark:text-white">{department}</span> y sus empleados quedarán sin departamento asignado.
+                                    </p>
+                                </div>
+                                <div className="flex gap-3 w-full">
+                                    <Button
+                                        onClick={() => {
+                                            if (currentDeptData) {
+                                                dispatch(HandleDeleteHRDepartments({
+                                                    apiroute: "DELETE",
+                                                    data: { departmentID: currentDeptData._id, action: "delete-department" }
+                                                }))
+                                            }
+                                            setShowDeleteDialog(false)
+                                            setdepartment("All Departments")
+                                        }}
+                                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white
+                                            bg-red-500 hover:bg-red-600 border-0">
+                                        <Trash2 className="w-4 h-4 mr-2 inline" />
+                                        Eliminar
+                                    </Button>
+                                    <Button
+                                        onClick={() => setShowDeleteDialog(false)}
+                                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold
+                                            text-gray-600 bg-gray-100 hover:bg-gray-200 border-0
+                                            dark:text-[rgba(255,255,255,0.6)] dark:bg-[rgba(255,255,255,0.05)] dark:hover:bg-[rgba(255,255,255,0.1)]">
+                                        Cancelar
+                                    </Button>
+                                </div>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                )
+            })()}
         </div>
     )
 }
