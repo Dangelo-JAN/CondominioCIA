@@ -19,7 +19,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useSelector, useDispatch } from "react-redux"
-import { HandleGetHRDepartments, HandleDeleteHRDepartments } from "../../../redux/Thunks/HRDepartmentPageThunk"
+import { HandleGetHRDepartments, HandleDeleteHRDepartments, HandlePatchHRDepartments } from "../../../redux/Thunks/HRDepartmentPageThunk"
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog"
 import { Loading } from "../loading.jsx"
 import { HeadingBar } from "./ListDesigns.jsx"
@@ -34,6 +34,8 @@ export const HRDepartmentTabs = () => {
     const dispatch = useDispatch()
     const [department, setdepartment] = useState("All Departments")
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const [showEditDialog, setShowEditDialog] = useState(false)
+    const [editFormData, setEditFormData] = useState({ name: "", description: "" })
 
     const departments = []
     if (HRDepartmentState.data) {
@@ -111,7 +113,15 @@ export const HRDepartmentTabs = () => {
                         <DropdownMenuContent className="flex flex-col gap-1 p-2 rounded-xl
                             bg-white border border-gray-100 shadow-xl
                             dark:bg-[#13131f] dark:border-[rgba(99,102,241,0.15)]">
-                            <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    const currentDept = HRDepartmentState.data?.find((item) => item.name === department)
+                                    if (currentDept) {
+                                        setEditFormData({ name: currentDept.name, description: currentDept.description })
+                                        setShowEditDialog(true)
+                                    }
+                                }}
+                                className="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium
                                 text-indigo-600 hover:bg-indigo-50
                                 dark:text-indigo-300 dark:hover:bg-[rgba(99,102,241,0.1)]">
                                 <Pencil className="w-4 h-4" />
@@ -141,6 +151,93 @@ export const HRDepartmentTabs = () => {
                     } />
                 }
             </div>
+
+            {/* Edit dialog */}
+            {(() => {
+                const currentDeptData = HRDepartmentState.data?.find((item) => item.name === department)
+                const inputCls = `w-full rounded-xl px-3 py-2 text-sm outline-none transition-all duration-200
+                    bg-gray-50 border border-gray-200 text-gray-900
+                    focus:border-indigo-400 focus:bg-white focus:ring-2 focus:ring-indigo-100
+                    dark:bg-[rgba(255,255,255,0.04)] dark:border-[rgba(255,255,255,0.08)] dark:text-white
+                    dark:focus:border-[rgba(99,102,241,0.5)] dark:focus:bg-[rgba(99,102,241,0.06)]`
+                return (
+                    <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+                        <DialogContent className="max-w-[340px] lg:max-w-[460px]
+                            bg-white border border-gray-100 shadow-2xl rounded-2xl
+                            dark:bg-[#13131f] dark:border-[rgba(99,102,241,0.15)]">
+                            <div className="flex flex-col gap-5 p-1">
+                                <div className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-[rgba(99,102,241,0.1)]">
+                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0
+                                        bg-indigo-100 dark:bg-[rgba(99,102,241,0.15)]">
+                                        <Pencil className="w-5 h-5 text-indigo-500 dark:text-indigo-300" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-500 dark:text-indigo-400">
+                                            Editar departamento
+                                        </p>
+                                        <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                                            {department}
+                                        </h2>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
+                                            Nombre
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={editFormData.name}
+                                            onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                                            className={inputCls}
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
+                                            Descripción
+                                        </label>
+                                        <textarea
+                                            value={editFormData.description}
+                                            onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+                                            className={`${inputCls} h-32 resize-none`}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <Button
+                                        onClick={() => {
+                                            if (currentDeptData && editFormData.name.trim() && editFormData.description.trim()) {
+                                                dispatch(HandlePatchHRDepartments({
+                                                    apiroute: "UPDATE",
+                                                    data: {
+                                                        departmentID: currentDeptData._id,
+                                                        UpdatedDepartment: editFormData
+                                                    }
+                                                }))
+                                                setdepartment(editFormData.name)
+                                                setShowEditDialog(false)
+                                            }
+                                        }}
+                                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white
+                                            bg-indigo-600 hover:bg-indigo-700 border-0">
+                                        <Check className="w-4 h-4 mr-2 inline" />
+                                        Guardar cambios
+                                    </Button>
+                                    <Button
+                                        onClick={() => setShowEditDialog(false)}
+                                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold
+                                            text-gray-600 bg-gray-100 hover:bg-gray-200 border-0
+                                            dark:text-[rgba(255,255,255,0.6)] dark:bg-[rgba(255,255,255,0.05)] dark:hover:bg-[rgba(255,255,255,0.1)]">
+                                        Cancelar
+                                    </Button>
+                                </div>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                )
+            })()}
 
             {/* Delete confirmation dialog */}
             {(() => {
