@@ -119,7 +119,8 @@ export const HandleDeleteDepartment = async (req, res) => {
 
             await Department.findByIdAndDelete(departmentID)
 
-            return res.status(200).json({ success: true, message: "Department deleted successfully" })
+            // ✅ Después  
+            return res.status(200).json({ success: true, message: "Department deleted successfully", type: "DepartmentDelete" })
         }
 
         if (action === "delete-employee") {
