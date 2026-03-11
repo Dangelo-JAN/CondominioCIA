@@ -13,15 +13,17 @@ export const ListWrapper = ({ children }) => {
 }
 
 export const HeadingBar = ({ table_layout, table_headings }) => {
+    // table_layout should include the full class e.g. "sm:grid-cols-4" or "sm:grid-cols-5"
+    const gridClass = table_layout ?? "sm:grid-cols-5"
     return (
-        <div className={`grid min-[250px]:grid-cols-2 sm:${table_layout ?? "grid-cols-5"} gap-2 px-3 py-2`}>
+        <div className={`grid grid-cols-2 ${gridClass} gap-2 px-3 py-2`}>
             {table_headings.map((item) => (
                 <div
                     key={item}
                     className={`text-xs font-bold uppercase tracking-wider text-center px-2 py-1.5 rounded-lg
                         text-indigo-600 dark:text-indigo-300
                         ${["Email", "Department", "Contact Number"].includes(item)
-                            ? "min-[250px]:hidden sm:flex sm:justify-center sm:items-center"
+                            ? "hidden sm:flex sm:justify-center sm:items-center"
                             : "flex justify-center items-center"
                         }`}
                 >
@@ -66,14 +68,14 @@ export const ListItems = ({ TargetedState }) => {
                     </div>
 
                     {/* Email */}
-                    <div className="min-[250px]:hidden sm:flex sm:justify-center sm:items-center min-w-0">
+                    <div className="hidden sm:block min-w-0">
                         <p className="text-sm truncate text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
                             {item.email}
                         </p>
                     </div>
 
                     {/* Department */}
-                    <div className="min-[250px]:hidden sm:flex sm:justify-center">
+                    <div className="hidden sm:flex sm:justify-center">
                         <span className={`text-xs font-medium px-2 py-1 rounded-full truncate max-w-[120px]
                             ${item.department
                                 ? "bg-emerald-50 text-emerald-600 border border-emerald-100 dark:bg-[rgba(16,185,129,0.1)] dark:text-emerald-400 dark:border-[rgba(16,185,129,0.2)]"
@@ -84,7 +86,7 @@ export const ListItems = ({ TargetedState }) => {
                     </div>
 
                     {/* Contact */}
-                    <div className="min-[250px]:hidden sm:block text-center">
+                    <div className="hidden sm:block text-center">
                         <p className="text-sm text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
                             {item.contactnumber}
                         </p>
@@ -125,14 +127,14 @@ export const DepartmentListItems = ({ TargetedState }) => {
                     </div>
 
                     {/* Email */}
-                    <div className="min-[250px]:hidden sm:flex sm:justify-center sm:items-center min-w-0">
+                    <div className="hidden sm:block min-w-0">
                         <p className="text-sm truncate text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
                             {item.email}
                         </p>
                     </div>
 
                     {/* Contact */}
-                    <div className="min-[250px]:hidden sm:block text-center">
+                    <div className="hidden sm:block text-center">
                         <p className="text-sm text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
                             {item.contactnumber}
                         </p>
