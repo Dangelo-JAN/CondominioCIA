@@ -19,13 +19,14 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useSelector, useDispatch } from "react-redux"
-import { HandleGetHRDepartments, HandleDeleteHRDepartments } from "../../../redux/Thunks/HRDepartmentPageThunk"
+import { HandleGetHRDepartments, HandleDeleteHRDepartments, HandlePatchHRDepartments } from "../../../redux/Thunks/HRDepartmentPageThunk"
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog"
 import { Loading } from "../loading.jsx"
 import { HeadingBar } from "./ListDesigns.jsx"
 import { DepartmentListItems } from "./ListDesigns.jsx"
 import { useToast } from "../../../hooks/use-toast.js"
 import { EmployeesIDSDialogBox } from "./dialogboxes.jsx"
+import { RichTextEditor } from "./RichTextEditor.jsx"
 
 
 export const HRDepartmentTabs = () => {
@@ -34,6 +35,8 @@ export const HRDepartmentTabs = () => {
     const dispatch = useDispatch()
     const [department, setdepartment] = useState("All Departments")
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const [showEditDialog, setShowEditDialog] = useState(false)
+    const [editFormData, setEditFormData] = useState({ name: "", description: "" })
 
     const departments = []
     if (HRDepartmentState.data) {
@@ -111,7 +114,15 @@ export const HRDepartmentTabs = () => {
                         <DropdownMenuContent className="flex flex-col gap-1 p-2 rounded-xl
                             bg-white border border-gray-100 shadow-xl
                             dark:bg-[#13131f] dark:border-[rgba(99,102,241,0.15)]">
-                            <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    const currentDept = HRDepartmentState.data?.find((item) => item.name === department)
+                                    if (currentDept) {
+                                        setEditFormData({ name: currentDept.name, description: currentDept.description })
+                                        setShowEditDialog(true)
+                                    }
+                                }}
+                                className="flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-sm font-medium
                                 text-indigo-600 hover:bg-indigo-50
                                 dark:text-indigo-300 dark:hover:bg-[rgba(99,102,241,0.1)]">
                                 <Pencil className="w-4 h-4" />
@@ -141,6 +152,92 @@ export const HRDepartmentTabs = () => {
                     } />
                 }
             </div>
+
+            {/* Edit dialog */}
+            {(() => {
+                const currentDeptData = HRDepartmentState.data?.find((item) => item.name === department)
+                const inputCls = `w-full rounded-xl px-3 py-2 text-sm outline-none transition-all duration-200
+                    bg-gray-50 border border-gray-200 text-gray-900
+                    focus:border-indigo-400 focus:bg-white focus:ring-2 focus:ring-indigo-100
+                    dark:bg-[rgba(255,255,255,0.04)] dark:border-[rgba(255,255,255,0.08)] dark:text-white
+                    dark:focus:border-[rgba(99,102,241,0.5)] dark:focus:bg-[rgba(99,102,241,0.06)]`
+                return (
+                    <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+                        <DialogContent className="max-w-[340px] lg:max-w-[620px]
+                            bg-white border border-gray-100 shadow-2xl rounded-2xl
+                            dark:bg-[#13131f] dark:border-[rgba(99,102,241,0.15)]">
+                            <div className="flex flex-col gap-5 p-1">
+                                <div className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-[rgba(99,102,241,0.1)]">
+                                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0
+                                        bg-indigo-100 dark:bg-[rgba(99,102,241,0.15)]">
+                                        <Pencil className="w-5 h-5 text-indigo-500 dark:text-indigo-300" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-500 dark:text-indigo-400">
+                                            Editar departamento
+                                        </p>
+                                        <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                                            {department}
+                                        </h2>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
+                                            Nombre
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={editFormData.name}
+                                            onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                                            className={inputCls}
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
+                                            Descripción
+                                        </label>
+                                        <RichTextEditor
+                                            value={editFormData.description}
+                                            onChange={(html) => setEditFormData({ ...editFormData, description: html })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <Button
+                                        onClick={() => {
+                                            if (currentDeptData && editFormData.name.trim() && editFormData.description.trim()) {
+                                                dispatch(HandlePatchHRDepartments({
+                                                    apiroute: "UPDATE",
+                                                    data: {
+                                                        departmentID: currentDeptData._id,
+                                                        UpdatedDepartment: editFormData
+                                                    }
+                                                }))
+                                                setdepartment("All Departments")
+                                                setShowEditDialog(false)
+                                            }
+                                        }}
+                                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white
+                                            bg-indigo-600 hover:bg-indigo-700 border-0">
+                                        <Check className="w-4 h-4 mr-2 inline" />
+                                        Guardar cambios
+                                    </Button>
+                                    <Button
+                                        onClick={() => setShowEditDialog(false)}
+                                        className="flex-1 py-2.5 rounded-xl text-sm font-semibold
+                                            text-gray-600 bg-gray-100 hover:bg-gray-200 border-0
+                                            dark:text-[rgba(255,255,255,0.6)] dark:bg-[rgba(255,255,255,0.05)] dark:hover:bg-[rgba(255,255,255,0.1)]">
+                                        Cancelar
+                                    </Button>
+                                </div>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                )
+            })()}
 
             {/* Delete confirmation dialog */}
             {(() => {
@@ -272,9 +369,18 @@ export const DepartmentContent = ({ CurrentDepartmentData }) => {
                         {CurrentDepartmentData.name}
                     </h2>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-[rgba(255,255,255,0.4)] sm:text-start text-center">
-                    {CurrentDepartmentData.description}
-                </p>
+                <div
+                    className="text-sm text-gray-500 dark:text-[rgba(255,255,255,0.4)] sm:text-start text-center
+                        prose prose-sm max-w-none
+                        [&_h2]:text-gray-700 [&_h2]:font-bold [&_h2]:text-sm [&_h2]:mt-2 [&_h2]:mb-1
+                        [&_ul]:list-disc [&_ul]:pl-4 [&_ul]:my-1
+                        [&_ol]:list-decimal [&_ol]:pl-4 [&_ol]:my-1
+                        [&_li]:mb-0.5 [&_strong]:font-semibold [&_strong]:text-gray-600
+                        [&_hr]:border-gray-200 [&_hr]:my-2
+                        dark:[&_h2]:text-[rgba(255,255,255,0.7)] dark:[&_strong]:text-[rgba(255,255,255,0.6)]
+                        dark:[&_hr]:border-[rgba(255,255,255,0.08)]"
+                    dangerouslySetInnerHTML={{ __html: CurrentDepartmentData.description }}
+                />
             </div>
 
             {/* Tabs */}
@@ -348,9 +454,18 @@ export const AllDepartments = ({ DepartmentData, SetCurrentDepartment }) => {
                             Ver
                         </Button>
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-[rgba(255,255,255,0.4)] sm:text-start text-center">
-                        {department.description}
-                    </p>
+                    <div
+                        className="text-sm text-gray-500 dark:text-[rgba(255,255,255,0.4)] sm:text-start text-center
+                            prose prose-sm max-w-none
+                            [&_h2]:text-gray-700 [&_h2]:font-bold [&_h2]:text-sm [&_h2]:mt-2 [&_h2]:mb-1
+                            [&_ul]:list-disc [&_ul]:pl-4 [&_ul]:my-1
+                            [&_ol]:list-decimal [&_ol]:pl-4 [&_ol]:my-1
+                            [&_li]:mb-0.5 [&_strong]:font-semibold [&_strong]:text-gray-600
+                            [&_hr]:border-gray-200 [&_hr]:my-2
+                            dark:[&_h2]:text-[rgba(255,255,255,0.7)] dark:[&_strong]:text-[rgba(255,255,255,0.6)]
+                            dark:[&_hr]:border-[rgba(255,255,255,0.08)]"
+                        dangerouslySetInnerHTML={{ __html: department.description }}
+                    />
                 </div>
             )) : null}
         </div>
