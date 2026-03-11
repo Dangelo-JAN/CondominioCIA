@@ -1,22 +1,27 @@
 import { TrendingUp, TrendingDown, Minus } from "lucide-react"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts"
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload, label, isDark }) => {
     if (active && payload && payload.length) {
         return (
             <div className="rounded-xl p-3 text-xs"
                 style={{
-                    background: "rgba(13,13,24,0.95)",
-                    border: "1px solid rgba(99,102,241,0.25)",
-                    boxShadow: "0 8px 32px rgba(0,0,0,0.4)"
+                    background: isDark ? "rgba(13,13,24,0.95)" : "rgba(255,255,255,0.98)",
+                    border: isDark ? "1px solid rgba(99,102,241,0.25)" : "1px solid rgba(99,102,241,0.15)",
+                    boxShadow: isDark ? "0 8px 32px rgba(0,0,0,0.4)" : "0 8px 32px rgba(99,102,241,0.1)"
                 }}
             >
-                <p className="font-semibold text-white mb-2 uppercase tracking-wider text-[10px]">{label}</p>
+                <p className="font-semibold uppercase tracking-wider text-[10px] mb-2"
+                    style={{ color: isDark ? "#fff" : "#1e1b4b" }}>
+                    {label}
+                </p>
                 {payload.map((entry, i) => (
                     <div key={i} className="flex items-center gap-2 mb-1">
                         <div className="w-2 h-2 rounded-full" style={{ background: entry.color }} />
-                        <span style={{ color: "rgba(255,255,255,0.6)" }}>{entry.name}:</span>
-                        <span className="font-semibold text-white">
+                        <span style={{ color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.45)" }}>
+                            {entry.name}:
+                        </span>
+                        <span className="font-semibold" style={{ color: isDark ? "#fff" : "#1e1b4b" }}>
                             ${entry.value?.toLocaleString() ?? 0}
                         </span>
                     </div>
@@ -28,8 +33,9 @@ const CustomTooltip = ({ active, payload, label }) => {
 }
 
 export const SalaryChart = ({ balancedata }) => {
-    const chartData = []
+    const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark")
 
+    const chartData = []
     if (balancedata) {
         for (let index = 0; index < balancedata.balance.length; index++) {
             chartData.push({
@@ -54,11 +60,18 @@ export const SalaryChart = ({ balancedata }) => {
         : 0
 
     const TrendIcon = trendingUp > 0 ? TrendingUp : trendingUp < 0 ? TrendingDown : Minus
-    const trendColor = trendingUp > 0 ? "#00e676" : trendingUp < 0 ? "#ff1744" : "#6366f1"
+    const trendColor = trendingUp > 0 ? "#10b981" : trendingUp < 0 ? "#ef4444" : "#6366f1"
 
     const dateRange = chartData.length > 0
         ? `${chartData[0]["month"]} — ${chartData[chartData.length - 1]["month"]} 2024`
         : null
+
+    const tickColor    = isDark ? "rgba(255,255,255,0.3)"  : "rgba(0,0,0,0.35)"
+    const gridColor    = isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.06)"
+    const labelColor   = isDark ? "rgba(255,255,255,0.3)"  : "rgba(0,0,0,0.35)"
+    const legendColor  = isDark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.4)"
+    const emptyColor   = isDark ? "rgba(255,255,255,0.2)"  : "rgba(0,0,0,0.2)"
+    const sectionLabel = isDark ? "rgba(99,102,241,0.8)"   : "#6366f1"
 
     return (
         <div className="flex flex-col h-full p-5 gap-4">
@@ -66,23 +79,23 @@ export const SalaryChart = ({ balancedata }) => {
             <div className="flex items-start justify-between">
                 <div>
                     <p className="text-[10px] font-semibold uppercase tracking-[0.18em] mb-1"
-                        style={{ color: "rgba(99,102,241,0.8)" }}
-                    >
+                        style={{ color: sectionLabel }}>
                         Balance Salarial
                     </p>
-                    <h2 className="text-white font-bold text-lg leading-tight">
+                    <h2 className="font-bold text-lg leading-tight
+                        text-gray-900 dark:text-white">
                         Gráfico de Nóminas
                     </h2>
                     {dateRange && (
-                        <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.3)" }}>
+                        <p className="text-xs mt-1" style={{ color: labelColor }}>
                             {dateRange}
                         </p>
                     )}
                 </div>
 
-                {/* Available amount pill */}
+                {/* Available amount */}
                 <div className="flex flex-col items-end gap-1">
-                    <p className="text-[10px] uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.3)" }}>
+                    <p className="text-[10px] uppercase tracking-wider" style={{ color: labelColor }}>
                         Disponible
                     </p>
                     <p className="text-lg font-bold" style={{ color: "#6366f1" }}>
@@ -90,8 +103,8 @@ export const SalaryChart = ({ balancedata }) => {
                     </p>
                     <div className="flex items-center gap-1 px-2 py-0.5 rounded-full"
                         style={{
-                            background: `${trendColor}15`,
-                            border: `1px solid ${trendColor}30`
+                            background: `${trendColor}18`,
+                            border: `1px solid ${trendColor}35`
                         }}
                     >
                         <TrendIcon className="w-3 h-3" style={{ color: trendColor }} />
@@ -106,7 +119,7 @@ export const SalaryChart = ({ balancedata }) => {
             <div className="flex-1 min-h-[180px]">
                 {chartData.length === 0 ? (
                     <div className="flex items-center justify-center h-full">
-                        <p className="text-sm" style={{ color: "rgba(255,255,255,0.2)" }}>
+                        <p className="text-sm" style={{ color: emptyColor }}>
                             Sin datos de balance aún
                         </p>
                     </div>
@@ -115,28 +128,31 @@ export const SalaryChart = ({ balancedata }) => {
                         <AreaChart data={chartData} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
                             <defs>
                                 <linearGradient id="gradSalaries" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.35} />
+                                    <stop offset="5%"  stopColor="#8b5cf6" stopOpacity={isDark ? 0.35 : 0.2} />
                                     <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                                 </linearGradient>
                                 <linearGradient id="gradAvailable" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.35} />
+                                    <stop offset="5%"  stopColor="#6366f1" stopOpacity={isDark ? 0.35 : 0.2} />
                                     <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
                             <CartesianGrid
                                 strokeDasharray="3 3"
-                                stroke="rgba(255,255,255,0.04)"
+                                stroke={gridColor}
                                 vertical={false}
                             />
                             <XAxis
                                 dataKey="month"
                                 tickLine={false}
                                 axisLine={false}
-                                tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 11 }}
+                                tick={{ fill: tickColor, fontSize: 11 }}
                                 tickFormatter={(v) => v.slice(0, 3)}
                             />
                             <YAxis hide />
-                            <Tooltip content={<CustomTooltip />} cursor={{ stroke: "rgba(99,102,241,0.2)", strokeWidth: 1 }} />
+                            <Tooltip
+                                content={<CustomTooltip isDark={isDark} />}
+                                cursor={{ stroke: "rgba(99,102,241,0.2)", strokeWidth: 1 }}
+                            />
                             <Area
                                 dataKey="SalriesPaid"
                                 name="Nóminas pagadas"
@@ -166,7 +182,7 @@ export const SalaryChart = ({ balancedata }) => {
                 ].map(item => (
                     <div key={item.label} className="flex items-center gap-2">
                         <div className="w-6 h-0.5 rounded-full" style={{ background: item.color }} />
-                        <span className="text-[11px]" style={{ color: "rgba(255,255,255,0.35)" }}>
+                        <span className="text-[11px]" style={{ color: legendColor }}>
                             {item.label}
                         </span>
                     </div>
