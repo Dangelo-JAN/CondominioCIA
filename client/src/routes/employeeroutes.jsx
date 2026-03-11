@@ -5,7 +5,15 @@ import { ForgotPassword } from "../pages/Employees/forgotpassword.jsx"
 import { ResetEmailConfirm } from "../pages/Employees/resetemailconfirm.jsx"
 import { ResetPassword } from "../pages/Employees/resetpassword.jsx"
 import { EntryPage } from "../pages/Employees/EntryPage.jsx"
-// import { VerifyEmailPage } from "../pages/common/verifyemailpage.jsx"
+
+// Placeholder para la home del empleado — reemplazar cuando se desarrolle
+const EmployeeHomePage = () => (
+    <div className="flex flex-col h-full w-full px-4 py-6 bg-white dark:bg-[#0f0f1a]">
+        <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            Bienvenido 👋
+        </p>
+    </div>
+)
 
 export const EmployeeRoutes = [
     {
@@ -16,13 +24,19 @@ export const EmployeeRoutes = [
         path: "/auth/employee/login",
         element: <EmployeeLogin />
     },
-    // {
-    //     path: "/auth/employee/verify-email", 
-    //     element: <VerifyEmailPage />
-    // },
     {
         path: "/auth/employee/employee-dashboard",
-        element: <ProtectedRoutes> <EmployeeDashboard /> </ProtectedRoutes>
+        element: (
+            <ProtectedRoutes>
+                <EmployeeDashboard />
+            </ProtectedRoutes>
+        ),
+        children: [
+            {
+                path: "/auth/employee/employee-dashboard/home",
+                element: <EmployeeHomePage />
+            }
+        ]
     },
     {
         path: "/auth/employee/forgot-password",
@@ -34,7 +48,6 @@ export const EmployeeRoutes = [
     },
     {
         path: "/auth/employee/resetpassword/:token",
-        element: <ResetPassword /> 
+        element: <ResetPassword />
     },
 ]
-
