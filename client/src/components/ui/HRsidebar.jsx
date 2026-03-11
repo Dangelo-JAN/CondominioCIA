@@ -5,12 +5,12 @@ import {
     SidebarGroupContent,
     SidebarMenu,
     SidebarMenuItem,
+    useSidebar,
 } from "@/components/ui/sidebar"
 import { NavLink, useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
-import { Zap, LogOut, Sun, Moon } from "lucide-react"
+import { Zap, LogOut } from "lucide-react"
 import { HandleHRLogout } from "../../redux/Thunks/HRThunk.js"
-import { useTheme } from "../../hooks/useTheme.js"
 
 const navItems = [
     { label: "Dashboard",     path: "/HR/dashboard/dashboard-data", icon: "/../../src/assets/HR-Dashboard/dashboard.png" },
@@ -29,7 +29,11 @@ const navItems = [
 export function HRdashboardSidebar() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const { isDark, toggleTheme } = useTheme()
+    const { setOpenMobile, isMobile } = useSidebar()
+
+    const handleNavClick = () => {
+        if (isMobile) setOpenMobile(false)
+    }
 
     const handleLogout = () => {
         dispatch(HandleHRLogout()).finally(() => {
@@ -80,6 +84,7 @@ export function HRdashboardSidebar() {
                                         {item.path ? (
                                             <NavLink
                                                 to={item.path}
+                                                onClick={handleNavClick}
                                                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200"
                                                 style={({ isActive }) => isActive ? {
                                                     background: "linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.08))",
@@ -160,39 +165,8 @@ export function HRdashboardSidebar() {
                     </SidebarGroup>
                 </SidebarContent>
 
-                {/* Footer */}
-                <div className="px-3 py-4 border-t border-gray-100 dark:border-[rgba(99,102,241,0.12)] flex flex-col gap-1">
-
-                    {/* Theme toggle */}
-                    <button
-                        onClick={toggleTheme}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer
-                            border border-transparent
-                            hover:bg-gray-50 hover:border-gray-100
-                            dark:hover:bg-[rgba(255,255,255,0.05)] dark:hover:border-[rgba(255,255,255,0.08)]"
-                    >
-                        <div className="flex items-center justify-center w-7 h-7 rounded-lg flex-shrink-0
-                            bg-amber-50 dark:bg-[rgba(99,102,241,0.1)]
-                            transition-colors duration-300">
-                            {isDark
-                                ? <Sun className="w-4 h-4 text-amber-400" />
-                                : <Moon className="w-4 h-4 text-indigo-400" />
-                            }
-                        </div>
-                        <span className="text-sm font-medium text-gray-400 dark:text-[rgba(255,255,255,0.35)]">
-                            {isDark ? "Modo claro" : "Modo oscuro"}
-                        </span>
-
-                        {/* Toggle pill */}
-                        <div className="ml-auto flex-shrink-0 w-8 h-4 rounded-full relative transition-colors duration-300
-                            bg-gray-200 dark:bg-indigo-500">
-                            <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-all duration-300
-                                ${isDark ? "left-[18px]" : "left-[2px]"}`}
-                            />
-                        </div>
-                    </button>
-
-                    {/* Logout */}
+                {/* Footer — Logout only */}
+                <div className="px-3 py-4 border-t border-gray-100 dark:border-[rgba(99,102,241,0.12)]">
                     <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer
