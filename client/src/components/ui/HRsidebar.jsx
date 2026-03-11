@@ -5,6 +5,7 @@ import {
     SidebarGroupContent,
     SidebarMenu,
     SidebarMenuItem,
+    useSidebar,
 } from "@/components/ui/sidebar"
 import { NavLink, useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
@@ -28,6 +29,11 @@ const navItems = [
 export function HRdashboardSidebar() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const { setOpenMobile, isMobile } = useSidebar()
+
+    const handleNavClick = () => {
+        if (isMobile) setOpenMobile(false)
+    }
 
     const handleLogout = () => {
         dispatch(HandleHRLogout()).finally(() => {
@@ -78,6 +84,7 @@ export function HRdashboardSidebar() {
                                         {item.path ? (
                                             <NavLink
                                                 to={item.path}
+                                                onClick={handleNavClick}
                                                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200"
                                                 style={({ isActive }) => isActive ? {
                                                     background: "linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.08))",
@@ -89,7 +96,6 @@ export function HRdashboardSidebar() {
                                             >
                                                 {({ isActive }) => (
                                                     <>
-                                                        {/* Icon wrapper */}
                                                         <div
                                                             className="flex items-center justify-center w-7 h-7 rounded-lg flex-shrink-0 transition-colors duration-200"
                                                             style={{
@@ -109,15 +115,9 @@ export function HRdashboardSidebar() {
                                                                 }}
                                                             />
                                                         </div>
-
-                                                        {/* Label */}
                                                         <span
                                                             className="text-sm font-medium"
-                                                            style={{
-                                                                color: isActive
-                                                                    ? "#6366f1"
-                                                                    : undefined
-                                                            }}
+                                                            style={{ color: isActive ? "#6366f1" : undefined }}
                                                         >
                                                             {!isActive && (
                                                                 <span className="text-gray-500 dark:text-[rgba(255,255,255,0.45)]">
@@ -126,8 +126,6 @@ export function HRdashboardSidebar() {
                                                             )}
                                                             {isActive && item.label}
                                                         </span>
-
-                                                        {/* Active dot */}
                                                         {isActive && (
                                                             <div className="ml-auto w-1.5 h-1.5 rounded-full flex-shrink-0 bg-indigo-500" />
                                                         )}
@@ -139,8 +137,10 @@ export function HRdashboardSidebar() {
                                                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-not-allowed opacity-40"
                                                 style={{ border: "1px solid transparent" }}
                                             >
-                                                <div className="flex items-center justify-center w-7 h-7 rounded-lg flex-shrink-0"
-                                                    style={{ background: "rgba(0,0,0,0.05)" }}>
+                                                <div
+                                                    className="flex items-center justify-center w-7 h-7 rounded-lg flex-shrink-0"
+                                                    style={{ background: "rgba(0,0,0,0.05)" }}
+                                                >
                                                     <img
                                                         src={item.icon}
                                                         alt={item.label}
@@ -165,7 +165,7 @@ export function HRdashboardSidebar() {
                     </SidebarGroup>
                 </SidebarContent>
 
-                {/* Footer — Logout */}
+                {/* Footer — Logout only */}
                 <div className="px-3 py-4 border-t border-gray-100 dark:border-[rgba(99,102,241,0.12)]">
                     <button
                         onClick={handleLogout}
