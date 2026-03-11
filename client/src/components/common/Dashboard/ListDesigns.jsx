@@ -68,7 +68,8 @@ export const ListItems = ({ TargetedState }) => {
                     </div>
 
                     {/* Email */}
-                    <div className="hidden sm:block min-w-0">
+                    <div className="min-[250px]:hidden sm:flex sm:justify-center sm:items-center min-w-0"
+                         style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                         <p className="text-sm truncate text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
                             {item.email}
                         </p>
@@ -127,7 +128,8 @@ export const DepartmentListItems = ({ TargetedState }) => {
                     </div>
 
                     {/* Email */}
-                    <div className="min-[250px]:hidden sm:flex sm:justify-center sm:items-center min-w-0">
+                    <div className="min-[250px]:hidden sm:flex sm:justify-center sm:items-center min-w-0"
+                         style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                         <p className="text-sm truncate text-gray-500 dark:text-[rgba(255,255,255,0.4)]">
                             {item.email}
                         </p>
