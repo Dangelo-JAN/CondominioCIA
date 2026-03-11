@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/command"
 import { fetchEmployeesIDs } from "../../../redux/Thunks/EmployeesIDsThunk.js"
 import { UserPlus, Trash2, Eye, Building2, Users, X, Check } from "lucide-react"
+import { RichTextEditor } from "./RichTextEditor.jsx"
 
 // ── Shared input style helper ──────────────────────────────────────────────
 const inputCls = `w-full rounded-xl px-3 py-2 text-sm outline-none transition-all duration-200
@@ -274,7 +275,7 @@ export const CreateDepartmentDialogBox = () => {
                 Crear Departamento
             </DialogTrigger>
 
-            <DialogContent className="max-w-[340px] lg:max-w-[420px]
+            <DialogContent className="max-w-[340px] lg:max-w-[620px]
                 bg-white border border-gray-100 shadow-2xl rounded-2xl
                 dark:bg-[#13131f] dark:border-[rgba(99,102,241,0.15)]">
                 <div className="flex flex-col gap-5 p-1">
@@ -294,18 +295,16 @@ export const CreateDepartmentDialogBox = () => {
                             />
                         </div>
                         <div className="flex flex-col gap-1.5">
-                            <label htmlFor="departmentdescription" className={labelCls}>Descripción</label>
-                            <textarea
-                                id="departmentdescription" name="description"
-                                value={formdata.description} onChange={handleformchange}
-                                placeholder="Describe las funciones del departamento..."
-                                className={`${inputCls} h-24 resize-none`}
+                            <label className={labelCls}>Descripción</label>
+                            <RichTextEditor
+                                value={formdata.description}
+                                onChange={(html) => setformdata({ ...formdata, description: html })}
                             />
                         </div>
                     </div>
 
                     <div className="flex justify-end">
-                        {(formdata.name.trim().length === 0 || formdata.description.trim().length === 0) ? (
+                        {(formdata.name.trim().length === 0 || formdata.description.trim().length === 0 || formdata.description === "<p></p>") ? (
                             <Button onClick={ShowToast}
                                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white
                                     bg-indigo-600 hover:bg-indigo-700 border-0">
@@ -340,9 +339,15 @@ export const EmployeesIDSDialogBox = ({ DepartmentID }) => {
 
     const SelectEmployees = (EMID) => {
         if (SelectedEmployeesData.employeeIDArray.includes(EMID)) {
-            Set_selectedEmployeesData({ ...SelectedEmployeesData, employeeIDArray: SelectedEmployeesData.employeeIDArray.filter((item) => item !== EMID) })
+            Set_selectedEmployeesData({
+                ...SelectedEmployeesData,
+                employeeIDArray: SelectedEmployeesData.employeeIDArray.filter((item) => item !== EMID)
+            })
         } else {
-            Set_selectedEmployeesData({ ...SelectedEmployeesData }, SelectedEmployeesData.employeeIDArray.push(EMID))
+            Set_selectedEmployeesData({
+                ...SelectedEmployeesData,
+                employeeIDArray: [...SelectedEmployeesData.employeeIDArray, EMID]
+            })
         }
     }
 
@@ -416,12 +421,14 @@ export const EmployeesIDSDialogBox = ({ DepartmentID }) => {
                         </Command>
 
                         <div className="flex gap-3">
-                            <Button onClick={SetEmployees}
-                                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white
-                                    bg-indigo-600 hover:bg-indigo-700 border-0">
-                                <Check className="w-4 h-4" />
-                                Agregar
-                            </Button>
+                            <DialogClose asChild>
+                                <Button onClick={SetEmployees}
+                                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white
+                                        bg-indigo-600 hover:bg-indigo-700 border-0">
+                                    <Check className="w-4 h-4" />
+                                    Agregar
+                                </Button>
+                            </DialogClose>
                             <DialogClose asChild>
                                 <Button onClick={ClearSelectedEmployeesData}
                                     className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold

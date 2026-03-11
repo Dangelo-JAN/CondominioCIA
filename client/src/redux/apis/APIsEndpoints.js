@@ -37,4 +37,4 @@ export const HRDepartmentPageEndPoints = {
 
 export const EmployeesIDsEndPoints = {
     GETALL: "/api/v1/employee/all-employees-ids",
-} 
+}
