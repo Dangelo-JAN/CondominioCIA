@@ -17,32 +17,28 @@ import InterviewInsightRouter from './routes/InterviewInsights.route.js'
 import GenerateRequestRouter from './routes/GenerateRequest.route.js'
 import CorporateCalendarRouter from './routes/CorporateCalendar.route.js'
 import BalanceRouter from './routes/Balance.route.js'
+import ScheduleRouter from './routes/Schedule.route.js'
 import { ConnectDB } from './config/connectDB.js';
 import cookieParser from 'cookie-parser';
 import cors from "cors"
-
 
 dotenv.config()
 const app = express();
 app.use(bodyParser.json())
 app.use(cookieParser())
 
-
 // --- CONFIGURACIÓN DE CORS CON REGEX ---
 const allowedOrigins = [
-  process.env.CLIENT_URL, // Tu URL local o fija
-  /\.vercel\.app$/,       // CUALQUIER deploy o branch de Vercel
+  process.env.CLIENT_URL,
+  /\.vercel\.app$/,
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Permitir peticiones sin origen (como Postman o móviles)
     if (!origin) return callback(null, true);
-    
-    const isAllowed = allowedOrigins.some((pattern) => 
+    const isAllowed = allowedOrigins.some((pattern) =>
       pattern instanceof RegExp ? pattern.test(origin) : pattern === origin
     );
-
     if (isAllowed) {
       callback(null, true);
     } else {
@@ -54,37 +50,23 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
 
-app.use("/api/auth/employee", EmployeeAuthRouter) 
-
+app.use("/api/auth/employee", EmployeeAuthRouter)
 app.use("/api/auth/HR", HRAuthrouter)
-
-app.use("/api/v1/dashboard", DashboardRouter) 
-
+app.use("/api/v1/dashboard", DashboardRouter)
 app.use("/api/v1/employee", EmployeeRouter)
-
 app.use("/api/v1/HR", HRRouter)
-
 app.use("/api/v1/department", DepartmentRouter)
-
 app.use("/api/v1/salary", SalaryRouter)
-
 app.use("/api/v1/notice", NoticeRouter)
-
 app.use("/api/v1/leave", LeaveRouter)
-
 app.use("/api/v1/attendance", AttendanceRouter)
-
 app.use("/api/v1/recruitment", RecruitmentRouter)
-
 app.use("/api/v1/applicant", ApplicantRouter)
-
 app.use("/api/v1/interview-insights", InterviewInsightRouter)
-
 app.use("/api/v1/generate-request", GenerateRequestRouter)
-
 app.use("/api/v1/corporate-calendar", CorporateCalendarRouter)
-
 app.use("/api/v1/balance", BalanceRouter)
+app.use("/api/v1/schedule", ScheduleRouter)
 
 app.listen(process.env.PORT, async () => {
   await ConnectDB()
