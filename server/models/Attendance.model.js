@@ -1,6 +1,5 @@
 import mongoose from 'mongoose'
-import { Schema } from "mongoose";
-
+import { Schema } from "mongoose"
 
 const AttendanceSchema = new Schema({
     employee: {
@@ -23,6 +22,21 @@ const AttendanceSchema = new Schema({
                 type: String,
                 required: true,
                 enum: ['Present', 'Absent', 'Not Specified']
+            },
+            // ✅ NUEVO — hora de entrada (null = no ha marcado)
+            checkin: {
+                type: Date,
+                default: null
+            },
+            // ✅ NUEVO — hora de salida (null = no ha salido)
+            checkout: {
+                type: Date,
+                default: null
+            },
+            // ✅ NUEVO — duración en minutos (calculada al hacer checkout)
+            duration: {
+                type: Number,
+                default: null
             }
         }
     ],
@@ -30,6 +44,6 @@ const AttendanceSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Organization"
     }
-}, { timestamps: true });
+}, { timestamps: true })
 
 export const Attendance = mongoose.model("Attendance", AttendanceSchema)
