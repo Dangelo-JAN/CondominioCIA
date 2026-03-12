@@ -106,7 +106,7 @@ export const HandleUpdateAttendance = async (req, res) => {
 // ✅ NUEVO — Marcar hora de entrada
 export const HandleCheckIn = async (req, res) => {
     try {
-        const employeeID = req.EMID
+        const employeeID = req.EMid
         const now = new Date()
         const currentdate = now.toISOString().split("T")[0]
 
@@ -165,7 +165,7 @@ export const HandleCheckIn = async (req, res) => {
 // ✅ NUEVO — Marcar hora de salida
 export const HandleCheckOut = async (req, res) => {
     try {
-        const employeeID = req.EMID
+        const employeeID = req.EMid
         const now = new Date()
         const currentdate = now.toISOString().split("T")[0]
 
@@ -219,7 +219,7 @@ export const HandleCheckOut = async (req, res) => {
 // ✅ NUEVO — Obtener asistencia del empleado autenticado
 export const HandleGetMyAttendance = async (req, res) => {
     try {
-        const employeeID = req.EMID
+        const employeeID = req.EMid
 
         const employee = await Employee.findOne({ _id: employeeID, organizationID: req.ORGID })
 
