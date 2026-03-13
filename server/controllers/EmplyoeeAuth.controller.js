@@ -6,11 +6,9 @@ import { GenerateJwtTokenAndSetCookiesEmployee } from "../utils/generatejwttoken
 import crypto from "crypto"
 import { Organization } from "../models/Organization.model.js"
 
-
 export const HandleEmplyoeeSignup = async (req, res) => {
     const { firstname, lastname, email, password, contactnumber } = req.body
     try {
-
         if (!firstname || !lastname || !email || !password || !contactnumber) {
             throw new Error("All Fields are required")
         }
@@ -22,21 +20,11 @@ export const HandleEmplyoeeSignup = async (req, res) => {
         }
 
         try {
-            // const checkEmployee = await Employee.findOne({ email: email })
-
-            // if (checkEmployee) {
-            //     return res.status(400).json({ success: false, message: `Employee already exists, please go to the login page or create new employee` })
-            // }
-
             const hashedPassword = await bcrypt.hash(password, 10)
             const verificationcode = GenerateVerificationToken(6)
 
             const newEmployee = await Employee.create({
-                firstname: firstname,
-                lastname: lastname,
-                email: email,
-                password: hashedPassword,
-                contactnumber: contactnumber,
+                firstname, lastname, email, password: hashedPassword, contactnumber,
                 role: "Employee",
                 verificationtoken: verificationcode,
                 verificationtokenexpires: Date.now() + 5 * 60 * 1000,
@@ -46,14 +34,9 @@ export const HandleEmplyoeeSignup = async (req, res) => {
             organization.employees.push(newEmployee._id)
             await organization.save()
 
-            // GenerateJwtTokenAndSetCookiesEmployee(res, newEmployee._id, newEmployee.role, organization._id)
-            // const VerificationEmailStatus = await SendVerificationEmail(email, verificationcode)
-            // SendVerificationEmailStatus: VerificationEmailStatus
-
             return res.status(201).json({ success: true, message: "Employee Registered Successfully", newEmployee: newEmployee.email, type: "EmployeeCreate" })
-
         } catch (error) {
-            res.status(400).json({ success: false, message: "Oops! Something went wrong", error: error });
+            res.status(400).json({ success: false, message: "Oops! Something went wrong", error: error })
         }
 
     } catch (error) {
@@ -64,23 +47,24 @@ export const HandleEmplyoeeSignup = async (req, res) => {
 
 export const HandleEmplyoeeVerifyEmail = async (req, res) => {
     const { verificationcode } = req.body
-
     try {
-        const ValidateEmployee = await Employee.findOne({ verificationtoken: verificationcode, verificationtokenexpires: { $gt: Date.now() }, organizationID: req.ORGID })
+        const ValidateEmployee = await Employee.findOne({
+            verificationtoken: verificationcode,
+            verificationtokenexpires: { $gt: Date.now() },
+            organizationID: req.ORGID
+        })
 
         if (!ValidateEmployee) {
             return res.status(404).json({ success: false, message: "Invalid or Expired Verifiation Code" })
         }
 
-        ValidateEmployee.isverified = true;
-        ValidateEmployee.verificationtoken = undefined;
-        ValidateEmployee.verificationtokenexpires = undefined;
+        ValidateEmployee.isverified = true
+        ValidateEmployee.verificationtoken = undefined
+        ValidateEmployee.verificationtokenexpires = undefined
         await ValidateEmployee.save()
 
         const SendWelcomeEmailStatus = await SendWelcomeEmail(ValidateEmployee.email, ValidateEmployee.firstname, ValidateEmployee.lastname)
-
-        return res.status(200).json({ success: true, message: "Employee Email verified successfully", validatedEmployee: ValidateEmployee, SendWelcomeEmailStatus: SendWelcomeEmailStatus })
-
+        return res.status(200).json({ success: true, message: "Employee Email verified successfully", validatedEmployee: ValidateEmployee, SendWelcomeEmailStatus })
     } catch (error) {
         res.status(500).json({ success: false, message: "Internal Server Error", error: error })
     }
@@ -88,7 +72,6 @@ export const HandleEmplyoeeVerifyEmail = async (req, res) => {
 
 export const HandleResetEmplyoeeVerifyEmail = async (req, res) => {
     const { email } = req.body
-
     try {
         const employee = await Employee.findOne({ email: email })
 
@@ -106,13 +89,11 @@ export const HandleResetEmplyoeeVerifyEmail = async (req, res) => {
         await employee.save()
 
         const SendVerificationEmailStatus = await SendVerificationEmail(email, verificationcode)
-        return res.status(200).json({ success: true, message: "Verification email sent successfully", SendVerificationEmailStatus: SendVerificationEmailStatus })
-
+        return res.status(200).json({ success: true, message: "Verification email sent successfully", SendVerificationEmailStatus })
     } catch (error) {
         res.status(500).json({ success: false, message: "internal error", error: error })
     }
 }
-
 
 export const HandleEmplyoeeLogin = async (req, res) => {
     const { email, password } = req.body
@@ -129,16 +110,14 @@ export const HandleEmplyoeeLogin = async (req, res) => {
             return res.status(404).json({ success: false, message: "Invalid Credentials, Please Enter Correct One" })
         }
 
-        GenerateJwtTokenAndSetCookiesEmployee(res, employee._id, employee.role, employee.organizationID)
+        const token = GenerateJwtTokenAndSetCookiesEmployee(res, employee._id, employee.role, employee.organizationID)
         employee.lastlogin = new Date()
-
         await employee.save()
-        return res.status(200).json({ success: true, message: "Emplyoee Login Successfull" })
 
+        return res.status(200).json({ success: true, message: "Emplyoee Login Successfull", token })
     } catch (error) {
         res.status(500).json({ success: false, message: "Internal Server Error", error: error })
     }
-
 }
 
 export const HandleEmployeeCheck = async (req, res) => {
@@ -155,10 +134,8 @@ export const HandleEmployeeCheck = async (req, res) => {
 
 export const HandleEmplyoeeLogout = async (req, res) => {
     try {
-        res.clearCookie("EMtoken")
         return res.status(200).json({ success: true, message: "Logged out successfully" })
     } catch (error) {
-        console.error(error)
         return res.status(500).json({ success: false, message: "Internal server Error" })
     }
 }
@@ -173,16 +150,15 @@ export const HandleEmplyoeeForgotPassword = async (req, res) => {
         }
 
         const resetToken = crypto.randomBytes(25).toString('hex')
-        const resetTokenExpires = Date.now() + 1000 * 60 * 60 // 1 hour
+        const resetTokenExpires = Date.now() + 1000 * 60 * 60
 
-        employee.resetpasswordtoken = resetToken;
-        employee.resetpasswordexpires = resetTokenExpires;
+        employee.resetpasswordtoken = resetToken
+        employee.resetpasswordexpires = resetTokenExpires
         await employee.save()
 
         const URL = `${process.env.CLIENT_URL}/auth/employee/resetpassword/${resetToken}`
         const SendForgotPasswordEmailStatus = await SendForgotPasswordEmail(email, URL)
-        return res.status(200).json({ success: true, message: "Reset Password Email Sent Successfully", SendForgotPasswordEmailStatus: SendForgotPasswordEmailStatus })
-
+        return res.status(200).json({ success: true, message: "Reset Password Email Sent Successfully", SendForgotPasswordEmailStatus })
     } catch (error) {
         res.status(500).json({ success: false, message: "internal server error", error: error })
     }
@@ -192,14 +168,12 @@ export const HandleEmplyoeeSetPassword = async (req, res) => {
     const { token } = req.params
     const { password } = req.body
     try {
-        if (req.cookies.token) {
-            res.clearCookie("EMtoken")
-        }
         const employee = await Employee.findOne({ resetpasswordtoken: token, resetpasswordexpires: { $gt: Date.now() } })
 
         if (!employee) {
             return res.status(404).json({ success: false, message: "Invalid or Expired Reset Password Token", resetpassword: false })
         }
+
         const hashedPassword = await bcrypt.hash(password, 10)
         employee.password = hashedPassword
         employee.resetpasswordtoken = undefined
@@ -207,7 +181,7 @@ export const HandleEmplyoeeSetPassword = async (req, res) => {
         await employee.save()
 
         const SendResetPasswordConfimationStatus = await SendResetPasswordConfimation(employee.email)
-        return res.status(200).json({ success: true, message: "Password Reset Successful", SendResetPasswordConfimationStatus: SendResetPasswordConfimationStatus, resetpassword: true })
+        return res.status(200).json({ success: true, message: "Password Reset Successful", SendResetPasswordConfimationStatus, resetpassword: true })
     } catch (error) {
         res.status(500).json({ success: false, message: "internal server error", error: error })
     }
@@ -230,7 +204,6 @@ export const HandleEmployeeCheckVerifyEmail = async (req, res) => {
         }
 
         return res.status(200).json({ success: false, message: "Invalid or Expired Verification Code", type: "Employeecodeavailable" })
-
     } catch (error) {
         return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
     }
