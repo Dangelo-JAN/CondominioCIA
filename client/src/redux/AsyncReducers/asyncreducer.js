@@ -70,7 +70,7 @@ export const HRAsyncReducer = (builder, thunk) => {
                 state.isSignUp = true
                 state.isLoading = false;
                 state.isAuthenticated = true
-                state.isAuthourized = true  // ✅ línea agregada   
+                state.isAuthourized = true
                 if (action.payload.alreadyverified) {
                     state.isVerified = true
                 }
@@ -107,9 +107,7 @@ export const HRAsyncReducer = (builder, thunk) => {
                 state.error.content = action.payload
             }
             if (action.payload.type == "HRcodeavailable") {
-                // state.isSignUp = true
                 state.isLoading = false;
-                // state.isAuthenticated = true
                 state.isAuthourized = true
                 state.isVerified = false
                 state.isVerifiedEmailAvailable = false
@@ -132,7 +130,6 @@ export const HRAsyncReducer = (builder, thunk) => {
             }
         });
 }
-
 
 export const HRDashboardAsyncReducer = (builder, thunk) => {
     builder.addCase(thunk.pending, (state) => {
@@ -212,13 +209,13 @@ export const HRDepartmentPageAsyncReducer = (builder, thunk) => {
             state.success.message = null
             state.success.content = null
         }
-        // ✅ Después — agrega "DepartmentDEUpdate"
-        else if (action.payload.type === "CreateDepartment" || 
-            action.payload.type === "DepartmentDelete" || 
-            action.payload.type === "DepartmentEMUpdate" || 
+        else if (
+            action.payload.type === "CreateDepartment" ||
+            action.payload.type === "DepartmentDelete" ||
+            action.payload.type === "DepartmentEMUpdate" ||
             action.payload.type === "DepartmentDEUpdate" ||
-            action.payload.type === "RemoveEmployeeDE")
-            {
+            action.payload.type === "RemoveEmployeeDE"
+        ) {
             state.isLoading = false;
             state.error.status = false;
             state.error.message = null
@@ -245,7 +242,6 @@ export const HRDepartmentPageAsyncReducer = (builder, thunk) => {
     })
 }
 
-
 export const EmployeesIDsAsyncReducer = (builder, thunk) => {
     builder.addCase(thunk.pending, (state) => {
         state.isLoading = true;
@@ -262,6 +258,52 @@ export const EmployeesIDsAsyncReducer = (builder, thunk) => {
         state.isLoading = false;
         state.error.status = true;
         state.error.message = action.payload.message
+        state.error.content = action.payload
+    })
+}
+
+// ── Employee Dashboard ────────────────────────────────────────────────────
+export const EmployeeDashboardAsyncReducer = (builder, thunk) => {
+    builder.addCase(thunk.pending, (state) => {
+        state.isLoading = true;
+        state.error.content = null;
+    })
+    builder.addCase(thunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error.status = false;
+        state.error.message = null
+        state.error.content = null
+
+        if (action.payload.type === "MyAttendance") {
+            state.attendance = action.payload.data
+            state.fetchData = false
+        }
+        else if (action.payload.type === "CheckIn" || action.payload.type === "CheckOut") {
+            state.attendance = action.payload.data
+            state.fetchData = false
+        }
+        else if (action.payload.type === "MySchedules") {
+            state.schedules = action.payload.data
+        }
+        else if (action.payload.type === "CompleteTask") {
+            state.schedules = state.schedules.map(s =>
+                s._id === action.payload.data._id ? action.payload.data : s
+            )
+        }
+        else if (action.payload.type === "UploadPhoto") {
+            state.photos = [action.payload.data, ...state.photos]
+        }
+        else if (action.payload.type === "MyPhotos") {
+            state.photos = action.payload.data
+        }
+        else if (action.payload.type === "DeletePhoto") {
+            state.photos = state.photos.filter(p => p._id !== action.payload.photoID)
+        }
+    })
+    builder.addCase(thunk.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error.status = true;
+        state.error.message = action.payload?.message
         state.error.content = action.payload
     })
 }
