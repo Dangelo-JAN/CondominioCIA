@@ -7,6 +7,7 @@ const HR_NAV_ITEMS = [
     { label: "Dashboard",     path: "/HR/dashboard/dashboard-data", icon: "/../../src/assets/HR-Dashboard/dashboard.png" },
     { label: "Empleados",     path: "/HR/dashboard/employees",       icon: "/../../src/assets/HR-Dashboard/employee-2.png" },
     { label: "Departamentos", path: "/HR/dashboard/departments",     icon: "/../../src/assets/HR-Dashboard/department.png" },
+    { label: "Horarios",      path: "/HR/dashboard/schedules",       icon: "/../../src/assets/HR-Dashboard/attendance.png" },
     { label: "Nóminas",       path: null,                            icon: "/../../src/assets/HR-Dashboard/salary.png" },
     { label: "Avisos",        path: null,                            icon: "/../../src/assets/HR-Dashboard/notice.png" },
     { label: "Ausencias",     path: null,                            icon: "/../../src/assets/HR-Dashboard/leave.png" },

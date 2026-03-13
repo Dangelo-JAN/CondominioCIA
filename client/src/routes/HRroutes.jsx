@@ -2,8 +2,6 @@ import { HRSignupPage } from "../pages/HumanResources/HRSignup"
 import { HRLogin } from "../pages/HumanResources/HRlogin"
 import { HRDashbaord } from "../pages/HumanResources/HRdashbaord"
 import { VerifyEmailPage } from "../pages/HumanResources/verifyemailpage.jsx"
-// import { ResetEmailConfirm } from "../pages/Employees/resetemailconfirm.jsx"
-// import { ResetEmailVerification } from "../pages/HumanResources/resendemailverificaiton.jsx"
 import { HRForgotPasswordPage } from "../pages/HumanResources/forgotpassword.jsx"
 import { ResetMailConfirmPage } from "../pages/HumanResources/resetmailconfirm.jsx"
 import { ResetHRPasswordPage } from "../pages/HumanResources/resetpassword.jsx"
@@ -12,6 +10,8 @@ import { HRDashboardPage } from "../pages/HumanResources/Dashboard Childs/dashbo
 import { HRProtectedRoutes } from "./HRprotectedroutes.jsx"
 import { HREmployeesPage } from "../pages/HumanResources/Dashboard Childs/employeespage.jsx"
 import { HRDepartmentPage } from "../pages/HumanResources/Dashboard Childs/departmentpage.jsx"
+import { HRSchedulePage } from "../pages/HumanResources/Dashboard Childs/HRSchedulePage.jsx"
+
 export const HRRoutes = [
     {
         path: "/auth/HR/signup",
@@ -40,6 +40,10 @@ export const HRRoutes = [
             {
                 path: "/HR/dashboard/departments",
                 element: <HRDepartmentPage />
+            },
+            {
+                path: "/HR/dashboard/schedules",
+                element: <HRSchedulePage />
             }
         ]
     },
