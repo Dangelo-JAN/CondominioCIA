@@ -1,0 +1,66 @@
+import { createAsyncThunk } from "@reduxjs/toolkit"
+import { apiService } from "../apis/apiService"
+
+const EmployeeEndPoints = {
+    MY_ATTENDANCE:  "/api/v1/attendance/my-attendance",
+    CHECKIN:        "/api/v1/attendance/checkin",
+    CHECKOUT:       "/api/v1/attendance/checkout",
+    MY_SCHEDULES:   "/api/v1/schedule/my-schedules",
+    COMPLETE_TASK:  "/api/v1/schedule/complete-task",
+    UPLOAD_PHOTO:   "/api/v1/workphoto/upload",
+    MY_PHOTOS:      "/api/v1/workphoto/my-photos",
+    DELETE_PHOTO:   (photoID) => `/api/v1/workphoto/delete/${photoID}`,
+}
+
+export const HandleEmployeeDashboard = createAsyncThunk(
+    "employeeDashboard/action",
+    async (payload, { rejectWithValue }) => {
+        try {
+            const { type, data } = payload
+
+            if (type === "MyAttendance") {
+                const res = await apiService.get(EmployeeEndPoints.MY_ATTENDANCE, { withCredentials: true })
+                return { ...res.data, type: "MyAttendance" }
+            }
+
+            if (type === "CheckIn") {
+                const res = await apiService.patch(EmployeeEndPoints.CHECKIN, {}, { withCredentials: true })
+                return { ...res.data, type: "CheckIn" }
+            }
+
+            if (type === "CheckOut") {
+                const res = await apiService.patch(EmployeeEndPoints.CHECKOUT, {}, { withCredentials: true })
+                return { ...res.data, type: "CheckOut" }
+            }
+
+            if (type === "MySchedules") {
+                const res = await apiService.get(EmployeeEndPoints.MY_SCHEDULES, { withCredentials: true })
+                return { ...res.data, type: "MySchedules" }
+            }
+
+            if (type === "CompleteTask") {
+                const res = await apiService.patch(EmployeeEndPoints.COMPLETE_TASK, data, { withCredentials: true })
+                return { ...res.data, type: "CompleteTask" }
+            }
+
+            if (type === "UploadPhoto") {
+                const res = await apiService.post(EmployeeEndPoints.UPLOAD_PHOTO, data, { withCredentials: true })
+                return { ...res.data, type: "UploadPhoto" }
+            }
+
+            if (type === "MyPhotos") {
+                const res = await apiService.get(EmployeeEndPoints.MY_PHOTOS, { withCredentials: true })
+                return { ...res.data, type: "MyPhotos" }
+            }
+
+            if (type === "DeletePhoto") {
+                const { photoID } = data
+                const res = await apiService.delete(EmployeeEndPoints.DELETE_PHOTO(photoID), { withCredentials: true })
+                return { ...res.data, type: "DeletePhoto", photoID }
+            }
+
+        } catch (error) {
+            return rejectWithValue(error.response?.data || { message: "Error desconocido" })
+        }
+    }
+)

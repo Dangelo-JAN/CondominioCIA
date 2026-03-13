@@ -92,13 +92,153 @@ export const HandleUpdateAttendance = async (req, res) => {
                 logstatus: status
             }
             attendance.attendancelog.push(newLog)
-        }
-        else {
+        } else {
             FindDate.logstatus = status
         }
 
         await attendance.save()
         return res.status(200).json({ success: true, message: "Attendance status updated successfully", data: attendance })
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
+    }
+}
+
+// ✅ NUEVO — Marcar hora de entrada
+export const HandleCheckIn = async (req, res) => {
+    try {
+        const employeeID = req.EMid
+        const now = new Date()
+        const currentdate = now.toISOString().split("T")[0]
+
+        const employee = await Employee.findOne({ _id: employeeID, organizationID: req.ORGID })
+
+        if (!employee) {
+            return res.status(404).json({ success: false, message: "Employee not found" })
+        }
+
+        if (!employee.attendance) {
+            return res.status(400).json({ success: false, message: "Attendance not initialized for this employee" })
+        }
+
+        const attendance = await Attendance.findOne({ _id: employee.attendance, organizationID: req.ORGID })
+
+        if (!attendance) {
+            return res.status(404).json({ success: false, message: "Attendance record not found" })
+        }
+
+        // Buscar el log de hoy
+        let todayLog = attendance.attendancelog.find(
+            (item) => item.logdate.toISOString().split("T")[0] === currentdate
+        )
+
+        if (!todayLog) {
+            // Crear log de hoy si no existe
+            attendance.attendancelog.push({
+                logdate: now,
+                logstatus: "Present",
+                checkin: now,
+                checkout: null,
+                duration: null
+            })
+        } else {
+            if (todayLog.checkin) {
+                return res.status(400).json({ success: false, message: "Ya marcaste tu entrada hoy" })
+            }
+            todayLog.checkin = now
+            todayLog.logstatus = "Present"
+        }
+
+        attendance.status = "Present"
+        await attendance.save()
+
+        return res.status(200).json({
+            success: true,
+            message: "Hora de entrada registrada exitosamente",
+            data: attendance
+        })
+
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
+    }
+}
+
+// ✅ NUEVO — Marcar hora de salida
+export const HandleCheckOut = async (req, res) => {
+    try {
+        const employeeID = req.EMid
+        const now = new Date()
+        const currentdate = now.toISOString().split("T")[0]
+
+        const employee = await Employee.findOne({ _id: employeeID, organizationID: req.ORGID })
+
+        if (!employee) {
+            return res.status(404).json({ success: false, message: "Employee not found" })
+        }
+
+        if (!employee.attendance) {
+            return res.status(400).json({ success: false, message: "Attendance not initialized for this employee" })
+        }
+
+        const attendance = await Attendance.findOne({ _id: employee.attendance, organizationID: req.ORGID })
+
+        if (!attendance) {
+            return res.status(404).json({ success: false, message: "Attendance record not found" })
+        }
+
+        const todayLog = attendance.attendancelog.find(
+            (item) => item.logdate.toISOString().split("T")[0] === currentdate
+        )
+
+        if (!todayLog || !todayLog.checkin) {
+            return res.status(400).json({ success: false, message: "Debes marcar tu entrada antes de marcar la salida" })
+        }
+
+        if (todayLog.checkout) {
+            return res.status(400).json({ success: false, message: "Ya marcaste tu salida hoy" })
+        }
+
+        // Calcular duración en minutos
+        const durationMinutes = Math.round((now - todayLog.checkin) / 60000)
+
+        todayLog.checkout = now
+        todayLog.duration = durationMinutes
+
+        await attendance.save()
+
+        return res.status(200).json({
+            success: true,
+            message: "Hora de salida registrada exitosamente",
+            data: attendance
+        })
+
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
+    }
+}
+
+// ✅ NUEVO — Obtener asistencia del empleado autenticado
+export const HandleGetMyAttendance = async (req, res) => {
+    try {
+        const employeeID = req.EMid
+
+        const employee = await Employee.findOne({ _id: employeeID, organizationID: req.ORGID })
+
+        if (!employee || !employee.attendance) {
+            return res.status(404).json({ success: false, message: "Attendance record not found" })
+        }
+
+        const attendance = await Attendance.findById(employee.attendance)
+
+        if (!attendance) {
+            return res.status(404).json({ success: false, message: "Attendance record not found" })
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Attendance retrieved successfully",
+            data: attendance
+        })
+
     } catch (error) {
         return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
     }
