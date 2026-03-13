@@ -26,7 +26,9 @@ export const HandleHRSchedule = createAsyncThunk(
             }
 
             if (type === "Create") {
-                const res = await apiService.post(ScheduleEndPoints.CREATE, data, { withCredentials: true })
+                const { employee, ...rest } = data
+                const payload = { ...rest, employeeID: employee }
+                const res = await apiService.post(ScheduleEndPoints.CREATE, payload, { withCredentials: true })
                 return { ...res.data, type: "Create" }
             }
 
