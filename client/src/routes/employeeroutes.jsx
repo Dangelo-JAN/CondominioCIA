@@ -6,6 +6,7 @@ import { ResetEmailConfirm } from "../pages/Employees/resetemailconfirm.jsx"
 import { ResetPassword } from "../pages/Employees/resetpassword.jsx"
 import { EntryPage } from "../pages/Employees/EntryPage.jsx"
 import { EmployeeHomePage } from "../pages/Employees/Dashboard Childs/EmployeeHomePage.jsx"
+import { EmployeeSchedulePage } from "../pages/Employees/Dashboard Childs/EmployeeSchedulePage.jsx"
 
 export const EmployeeRoutes = [
     {
@@ -27,6 +28,10 @@ export const EmployeeRoutes = [
             {
                 path: "/auth/employee/employee-dashboard/home",
                 element: <EmployeeHomePage />
+            },
+            {
+                path: "/auth/employee/employee-dashboard/schedule",
+                element: <EmployeeSchedulePage />
             }
         ]
     },
