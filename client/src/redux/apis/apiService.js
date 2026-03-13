@@ -7,30 +7,24 @@ export const apiService = axios.create({
     },
 })
 
-// Interceptor: agrega el token correcto en cada request automáticamente
+// Rutas públicas que NO necesitan token
+const PUBLIC_ROUTES = [
+    "/api/auth/employee/login",
+    "/api/auth/employee/signup",
+    "/api/auth/employee/forgot-password",
+    "/api/auth/HR/login",
+    "/api/auth/HR/signup",
+    "/api/auth/HR/forgot-password",
+    "reset-password",
+]
+
 apiService.interceptors.request.use((config) => {
-    // Detecta si la ruta es de HR o de Employee por la URL
     const url = config.url || ""
-    const isHR = url.includes("/api/auth/HR") || url.includes("/api/v1/") && !url.includes("/api/auth/employee")
 
-    // Rutas de autenticación que NO necesitan token
-    const isAuthRoute =
-        url.includes("/api/auth/employee/login") ||
-        url.includes("/api/auth/employee/signup") ||
-        url.includes("/api/auth/HR/login") ||
-        url.includes("/api/auth/HR/signup") ||
-        url.includes("/api/auth/HR/check") ||
-        url.includes("/api/auth/employee/check") ||
-        url.includes("forgot-password") ||
-        url.includes("resetpassword") ||
-        url.includes("verify-email")
+    const isPublic = PUBLIC_ROUTES.some(route => url.includes(route))
 
-    if (!isAuthRoute) {
-        // Intenta HR primero, luego Employee
-        const hrToken  = localStorage.getItem("HRtoken")
-        const emToken  = localStorage.getItem("EMtoken")
-        const token    = hrToken || emToken
-
+    if (!isPublic) {
+        const token = localStorage.getItem("HRtoken") || localStorage.getItem("EMtoken")
         if (token) {
             config.headers.Authorization = `Bearer ${token}`
         }
