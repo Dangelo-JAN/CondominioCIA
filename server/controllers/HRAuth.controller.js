@@ -19,7 +19,6 @@ export const HandleHRSignup = async (req, res) => {
         }
 
         const organization = await Organization.findOne({ name: name, OrganizationURL: OrganizationURL, OrganizationMail: OrganizationMail })
-
         const HR = await HumanResources.findOne({ email: email })
 
         if (HR) {
@@ -27,25 +26,14 @@ export const HandleHRSignup = async (req, res) => {
         }
 
         if (!organization && !HR) {
-
-            const newOrganization = await Organization.create({
-                name,
-                description,
-                OrganizationURL,
-                OrganizationMail
-            })
+            const newOrganization = await Organization.create({ name, description, OrganizationURL, OrganizationMail })
 
             const hashedpassword = await bcrypt.hash(password, 10)
             const verificationcode = GenerateVerificationToken(6)
 
             const newHR = await HumanResources.create({
-                firstname,
-                lastname,
-                email,
-                password: hashedpassword,
-                contactnumber,
-                role: "HR-Admin",
-                organizationID: newOrganization._id,
+                firstname, lastname, email, password: hashedpassword, contactnumber,
+                role: "HR-Admin", organizationID: newOrganization._id,
                 verificationtoken: verificationcode,
                 verificationtokenexpires: Date.now() + 5 * 60 * 1000
             })
@@ -53,24 +41,21 @@ export const HandleHRSignup = async (req, res) => {
             newOrganization.HRs.push(newHR._id)
             await newOrganization.save()
 
-            GenerateJwtTokenAndSetCookiesHR(res, newHR._id, newHR.role, newOrganization._id)
+            const token = GenerateJwtTokenAndSetCookiesHR(res, newHR._id, newHR.role, newOrganization._id)
             const VerificationEmailStatus = await SendVerificationEmail(email, verificationcode)
-            return res.status(201).json({ success: true, message: "Organization Created Successfully & HR Registered Successfully", VerificationEmailStatus: VerificationEmailStatus, type: "signup", HRid: newHR._id })
+            return res.status(201).json({
+                success: true, message: "Organization Created Successfully & HR Registered Successfully",
+                VerificationEmailStatus, type: "signup", HRid: newHR._id, token
+            })
         }
 
         if (organization && !HR) {
-
             const hashedpassword = await bcrypt.hash(password, 10)
             const verificationcode = GenerateVerificationToken(6)
 
             const newHR = await HumanResources.create({
-                firstname,
-                lastname,
-                email,
-                password: hashedpassword,
-                contactnumber,
-                role: "HR-Admin",
-                organizationID: organization._id,
+                firstname, lastname, email, password: hashedpassword, contactnumber,
+                role: "HR-Admin", organizationID: organization._id,
                 verificationtoken: verificationcode,
                 verificationtokenexpires: Date.now() + 5 * 60 * 1000
             })
@@ -78,9 +63,12 @@ export const HandleHRSignup = async (req, res) => {
             organization.HRs.push(newHR._id)
             await organization.save()
 
-            GenerateJwtTokenAndSetCookiesHR(res, newHR._id, newHR.role, organization._id)
+            const token = GenerateJwtTokenAndSetCookiesHR(res, newHR._id, newHR.role, organization._id)
             const VerificationEmailStatus = await SendVerificationEmail(email, verificationcode)
-            return res.status(201).json({ success: true, message: "HR Registered Successfully", type: "signup", VerificationEmailStatus: VerificationEmailStatus, HRid: newHR._id })
+            return res.status(201).json({
+                success: true, message: "HR Registered Successfully",
+                type: "signup", VerificationEmailStatus, HRid: newHR._id, token
+            })
         }
 
     } catch (error) {
@@ -97,18 +85,17 @@ export const HandleHRVerifyEmail = async (req, res) => {
             return res.status(401).json({ success: false, message: "Invalid or Expired Verifiation Code", type: "HRverifyemail" })
         }
 
-        HR.isverified = true;
-        HR.verificationtoken = undefined;
-        HR.verificationtokenexpires = undefined;
+        HR.isverified = true
+        HR.verificationtoken = undefined
+        HR.verificationtokenexpires = undefined
         await HR.save()
 
         const SendWelcomeEmailStatus = await SendWelcomeEmail(HR.email, HR.firstname, HR.lastname, HR.role)
-        return res.status(200).json({ success: true, message: "Email Verified successfully", SendWelcomeEmailStatus: SendWelcomeEmailStatus, type: "HRverifyemail" })
+        return res.status(200).json({ success: true, message: "Email Verified successfully", SendWelcomeEmailStatus, type: "HRverifyemail" })
     } catch (error) {
         return res.status(500).json({ success: false, message: error.message, type: "HRverifyemail" })
     }
 }
-
 
 export const HandleHRLogin = async (req, res) => {
     const { email, password } = req.body
@@ -125,19 +112,18 @@ export const HandleHRLogin = async (req, res) => {
             return res.status(400).json({ success: false, message: "Invaild Credentials, Please Add Correct One", type: "HRLogin" })
         }
 
-        GenerateJwtTokenAndSetCookiesHR(res, HR._id, HR.role, HR.organizationID)
+        const token = GenerateJwtTokenAndSetCookiesHR(res, HR._id, HR.role, HR.organizationID)
         HR.lastlogin = new Date()
         await HR.save()
-        return res.status(200).json({ success: true, message: "HR Login Successfull", type: "HRLogin" })
-    }
-    catch (error) {
+
+        return res.status(200).json({ success: true, message: "HR Login Successfull", type: "HRLogin", token })
+    } catch (error) {
         return res.status(500).json({ success: false, message: "Internal Server Error", error: error, type: "HRLogin" })
     }
 }
 
 export const HandleHRLogout = async (req, res) => {
     try {
-        res.clearCookie("HRtoken")
         return res.status(200).json({ success: true, message: "HR Logged Out Successfully" })
     } catch (error) {
         return res.status(500).json({ success: false, message: "Internal server Error", error: error })
@@ -166,17 +152,16 @@ export const HandleHRForgotPassword = async (req, res) => {
         }
 
         const resetToken = crypto.randomBytes(25).toString('hex')
-        const resetTokenExpires = Date.now() + 1000 * 60 * 60 // 1 hour 
+        const resetTokenExpires = Date.now() + 1000 * 60 * 60
 
-        HR.resetpasswordtoken = resetToken;
-        HR.resetpasswordexpires = resetTokenExpires;
+        HR.resetpasswordtoken = resetToken
+        HR.resetpasswordexpires = resetTokenExpires
         await HR.save()
 
         const URL = `${process.env.CLIENT_URL}/auth/HR/resetpassword/${resetToken}`
         const SendResetPasswordEmailStatus = await SendForgotPasswordEmail(email, URL)
-        return res.status(200).json({ success: true, message: "Reset Password Email Sent Successfully", SendResetPasswordEmailStatus: SendResetPasswordEmailStatus, type: "HRforgotpassword" })
-    }
-    catch (error) {
+        return res.status(200).json({ success: true, message: "Reset Password Email Sent Successfully", SendResetPasswordEmailStatus, type: "HRforgotpassword" })
+    } catch (error) {
         return res.status(500).json({ success: false, message: "Internal Server Error", error: error, type: "HRforgotpassword" })
     }
 }
@@ -184,12 +169,7 @@ export const HandleHRForgotPassword = async (req, res) => {
 export const HandleHRResetPassword = async (req, res) => {
     const { token } = req.params
     const { password } = req.body
-
     try {
-        if (req.cookies.HRtoken) {
-            res.clearCookie("HRtoken")
-        }
-
         const HR = await HumanResources.findOne({ resetpasswordtoken: token, resetpasswordexpires: { $gt: Date.now() } })
 
         if (!HR) {
@@ -198,13 +178,12 @@ export const HandleHRResetPassword = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10)
         HR.password = hashedPassword
-        HR.resetpasswordtoken = undefined;
-        HR.resetpasswordexpires = undefined;
+        HR.resetpasswordtoken = undefined
+        HR.resetpasswordexpires = undefined
         await HR.save()
 
         const SendPasswordResetEmailStatus = await SendResetPasswordConfimation(HR.email)
-        return res.status(200).json({ success: true, message: "Password Reset Successfully", SendPasswordResetEmailStatus: SendPasswordResetEmailStatus, resetpassword: true })
-
+        return res.status(200).json({ success: true, message: "Password Reset Successfully", SendPasswordResetEmailStatus, resetpassword: true })
     } catch (error) {
         return res.status(500).json({ success: false, message: "Internal Server Error", error: error, resetpassword: false })
     }
@@ -226,14 +205,11 @@ export const HandleHRResetverifyEmail = async (req, res) => {
         const verificationcode = GenerateVerificationToken(6)
         HR.verificationtoken = verificationcode
         HR.verificationtokenexpires = Date.now() + 5 * 60 * 1000
-
         await HR.save()
 
         const SendVerificationEmailStatus = await SendVerificationEmail(email, verificationcode)
-        return res.status(200).json({ success: true, message: "Verification Email Sent Successfully", SendVerificationEmailStatus: SendVerificationEmailStatus, type: "HRResendVerifyEmail" })
-
-    }
-    catch (error) {
+        return res.status(200).json({ success: true, message: "Verification Email Sent Successfully", SendVerificationEmailStatus, type: "HRResendVerifyEmail" })
+    } catch (error) {
         return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
     }
 }
@@ -251,8 +227,7 @@ export const HandleHRcheckVerifyEmail = async (req, res) => {
         }
 
         return res.status(404).json({ success: false, message: "Invalid or Expired Verification Code", type: "HRcodeavailable" })
-    }
-    catch (error) {
+    } catch (error) {
         return res.status(500).json({ success: false, message: "Internal Server Error", error: error, type: "HRcodeavailable" })
     }
-} 
+}
