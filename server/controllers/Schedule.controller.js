@@ -174,6 +174,8 @@ export const HandleGetMySchedules = async (req, res) => {
         })
 
     } catch (error) {
+        console.log("ERROR DETALLADO:", error.message)
+        console.log("ERROR STACK:", error.stack)
         return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
     }
 }
