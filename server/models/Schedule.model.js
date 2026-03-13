@@ -62,7 +62,7 @@ const ScheduleSchema = new Schema({
     },
     createdby: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "HR",
+        ref: "HumanResources",
         required: true
     },
     organizationID: {
