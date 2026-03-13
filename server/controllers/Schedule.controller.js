@@ -156,6 +156,9 @@ export const HandleDeleteSchedule = async (req, res) => {
 // ── Employee: Obtener mis horarios activos ────────────────────────────────
 export const HandleGetMySchedules = async (req, res) => {
     try {
+        console.log("EMid:", req.EMid)
+        console.log("ORGID:", req.ORGID)
+        
         const schedules = await Schedule.find({
             employee: req.EMid,
             organizationID: req.ORGID,
