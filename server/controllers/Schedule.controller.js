@@ -1,5 +1,6 @@
 import { Schedule } from "../models/Schedule.model.js"
 import { Employee } from "../models/Employee.model.js"
+import { HumanResources } from "../models/HR.model.js"
 
 // ── HR: Crear horario y asignarlo a un empleado ───────────────────────────
 export const HandleCreateSchedule = async (req, res) => {
@@ -156,9 +157,6 @@ export const HandleDeleteSchedule = async (req, res) => {
 // ── Employee: Obtener mis horarios activos ────────────────────────────────
 export const HandleGetMySchedules = async (req, res) => {
     try {
-        console.log("EMid:", req.EMid)
-        console.log("ORGID:", req.ORGID)
-        
         const schedules = await Schedule.find({
             employee: req.EMid,
             organizationID: req.ORGID,
@@ -174,8 +172,6 @@ export const HandleGetMySchedules = async (req, res) => {
         })
 
     } catch (error) {
-        console.log("ERROR DETALLADO:", error.message)
-        console.log("ERROR STACK:", error.stack)
         return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
     }
 }
