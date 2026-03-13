@@ -262,6 +262,52 @@ export const EmployeesIDsAsyncReducer = (builder, thunk) => {
     })
 }
 
+// ── HR Schedule ───────────────────────────────────────────────────────────
+export const HRScheduleAsyncReducer = (builder, thunk) => {
+    builder.addCase(thunk.pending, (state) => {
+        state.isLoading = true;
+        state.error.content = null;
+    })
+    builder.addCase(thunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error.status = false;
+        state.error.message = null;
+        state.error.content = null;
+
+        if (action.payload.type === "GetAll") {
+            state.data = action.payload.data;
+            state.fetchData = false;
+        }
+        else if (action.payload.type === "GetEmployee") {
+            state.employeeSchedules = action.payload.data;
+        }
+        else if (action.payload.type === "Create") {
+            state.data = [action.payload.data, ...(state.data || [])];
+            state.fetchData = false;
+            state.success.status = true;
+            state.success.message = action.payload.message;
+        }
+        else if (action.payload.type === "Update") {
+            state.data = (state.data || []).map(s =>
+                s._id === action.payload.data._id ? action.payload.data : s
+            );
+            state.success.status = true;
+            state.success.message = action.payload.message;
+        }
+        else if (action.payload.type === "Delete") {
+            state.data = (state.data || []).filter(s => s._id !== action.payload.scheduleID);
+            state.success.status = true;
+            state.success.message = action.payload.message;
+        }
+    })
+    builder.addCase(thunk.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error.status = true;
+        state.error.message = action.payload?.message;
+        state.error.content = action.payload;
+    })
+}
+
 // ── Employee Dashboard ────────────────────────────────────────────────────
 export const EmployeeDashboardAsyncReducer = (builder, thunk) => {
     builder.addCase(thunk.pending, (state) => {
