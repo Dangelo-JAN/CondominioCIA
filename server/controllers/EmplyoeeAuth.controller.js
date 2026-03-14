@@ -5,6 +5,7 @@ import { SendVerificationEmail, SendWelcomeEmail, SendForgotPasswordEmail, SendR
 import { GenerateJwtTokenAndSetCookiesEmployee } from "../utils/generatejwttokenandsetcookies.js"
 import crypto from "crypto"
 import { Organization } from "../models/Organization.model.js"
+import { Attendance } from "../models/Attendance.model.js"
 
 export const HandleEmplyoeeSignup = async (req, res) => {
     const { firstname, lastname, email, password, contactnumber } = req.body
@@ -30,6 +31,15 @@ export const HandleEmplyoeeSignup = async (req, res) => {
                 verificationtokenexpires: Date.now() + 5 * 60 * 1000,
                 organizationID: organization._id
             })
+
+            // Auto-inicializar asistencia al crear el empleado
+            const newAttendance = await Attendance.create({
+                employee: newEmployee._id,
+                status: "Not Specified",
+                organizationID: organization._id
+            })
+            newEmployee.attendance = newAttendance._id
+            await newEmployee.save()
 
             organization.employees.push(newEmployee._id)
             await organization.save()
