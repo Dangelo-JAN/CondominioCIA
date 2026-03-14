@@ -1,11 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import { apiService } from '../apis/apiService'
+import { employeeApiService } from '../apis/EmployeeApiService'
 import { APIsEndPoints } from '../apis/APIsEndpoints.js'
 
 export const HandleGetEmployees = createAsyncThunk("handleGetEmployees", async (EmployeeData, { rejectWithValue }) => {
     try {
         const { apiroute } = EmployeeData
-        const response = await apiService.get(`${APIsEndPoints[apiroute]}`, { withCredentials: true })
+        const response = await employeeApiService.get(`${APIsEndPoints[apiroute]}`)
         return response.data
     } catch (error) {
         return rejectWithValue(error.response.data)
@@ -17,18 +17,16 @@ export const HandlePostEmployees = createAsyncThunk("HandlePostEmployees", async
         const { apiroute, data, type } = EmployeeData
 
         if (type === "resetpassword") {
-            const response = await apiService.post(`${APIsEndPoints.RESET_PASSWORD(apiroute)}`, data, { withCredentials: true })
+            const response = await employeeApiService.post(`${APIsEndPoints.RESET_PASSWORD(apiroute)}`, data)
             return response.data
         }
 
-        const response = await apiService.post(`${APIsEndPoints[apiroute]}`, data, { withCredentials: true })
+        const response = await employeeApiService.post(`${APIsEndPoints[apiroute]}`, data)
 
-        // Guardar token al hacer login
         if (apiroute === "LOGIN" && response.data?.token) {
             localStorage.setItem("EMtoken", response.data.token)
         }
 
-        // Limpiar token al hacer logout
         if (apiroute === "LOGOUT") {
             localStorage.removeItem("EMtoken")
         }
@@ -42,7 +40,7 @@ export const HandlePostEmployees = createAsyncThunk("HandlePostEmployees", async
 export const HandlePutEmployees = createAsyncThunk("HandlePutEmployees", async (EmployeeData, { rejectWithValue }) => {
     try {
         const { apiroute, data } = EmployeeData
-        const response = await apiService.put(`${APIsEndPoints[apiroute]}`, data, { withCredentials: true })
+        const response = await employeeApiService.put(`${APIsEndPoints[apiroute]}`, data)
         return response.data
     } catch (error) {
         return rejectWithValue(error.response.data)
@@ -52,7 +50,7 @@ export const HandlePutEmployees = createAsyncThunk("HandlePutEmployees", async (
 export const HandlePatchEmployees = createAsyncThunk("HandlePatchEmployees", async (EmployeeData, { rejectWithValue }) => {
     try {
         const { apiroute, data } = EmployeeData
-        const response = await apiService.patch(`${APIsEndPoints[apiroute]}`, data, { withCredentials: true })
+        const response = await employeeApiService.patch(`${APIsEndPoints[apiroute]}`, data)
         return response.data
     } catch (error) {
         return rejectWithValue(error.response.data)
@@ -62,7 +60,7 @@ export const HandlePatchEmployees = createAsyncThunk("HandlePatchEmployees", asy
 export const HandleDeleteEmployees = createAsyncThunk("HandleDeleteEmployees", async (EmployeeData, { rejectWithValue }) => {
     try {
         const { apiroute } = EmployeeData
-        const response = await apiService.delete(`${APIsEndPoints[apiroute]}`, { withCredentials: true })
+        const response = await employeeApiService.delete(`${APIsEndPoints[apiroute]}`)
         return response.data
     } catch (error) {
         return rejectWithValue(error.response.data)

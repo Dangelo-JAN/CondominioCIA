@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
-import { apiService } from "../apis/apiService"
+import { employeeApiService } from "../apis/EmployeeApiService"
 
 const EmployeeEndPoints = {
     MY_ATTENDANCE:  "/api/v1/attendance/my-attendance",
@@ -19,43 +19,43 @@ export const HandleEmployeeDashboard = createAsyncThunk(
             const { type, data } = payload
 
             if (type === "MyAttendance") {
-                const res = await apiService.get(EmployeeEndPoints.MY_ATTENDANCE, { withCredentials: true })
+                const res = await employeeApiService.get(EmployeeEndPoints.MY_ATTENDANCE)
                 return { ...res.data, type: "MyAttendance" }
             }
 
             if (type === "CheckIn") {
-                const res = await apiService.patch(EmployeeEndPoints.CHECKIN, {}, { withCredentials: true })
+                const res = await employeeApiService.patch(EmployeeEndPoints.CHECKIN, {})
                 return { ...res.data, type: "CheckIn" }
             }
 
             if (type === "CheckOut") {
-                const res = await apiService.patch(EmployeeEndPoints.CHECKOUT, {}, { withCredentials: true })
+                const res = await employeeApiService.patch(EmployeeEndPoints.CHECKOUT, {})
                 return { ...res.data, type: "CheckOut" }
             }
 
             if (type === "MySchedules") {
-                const res = await apiService.get(EmployeeEndPoints.MY_SCHEDULES, { withCredentials: true })
+                const res = await employeeApiService.get(EmployeeEndPoints.MY_SCHEDULES)
                 return { ...res.data, type: "MySchedules" }
             }
 
             if (type === "CompleteTask") {
-                const res = await apiService.patch(EmployeeEndPoints.COMPLETE_TASK, data, { withCredentials: true })
+                const res = await employeeApiService.patch(EmployeeEndPoints.COMPLETE_TASK, data)
                 return { ...res.data, type: "CompleteTask" }
             }
 
             if (type === "UploadPhoto") {
-                const res = await apiService.post(EmployeeEndPoints.UPLOAD_PHOTO, data, { withCredentials: true })
+                const res = await employeeApiService.post(EmployeeEndPoints.UPLOAD_PHOTO, data)
                 return { ...res.data, type: "UploadPhoto" }
             }
 
             if (type === "MyPhotos") {
-                const res = await apiService.get(EmployeeEndPoints.MY_PHOTOS, { withCredentials: true })
+                const res = await employeeApiService.get(EmployeeEndPoints.MY_PHOTOS)
                 return { ...res.data, type: "MyPhotos" }
             }
 
             if (type === "DeletePhoto") {
                 const { photoID } = data
-                const res = await apiService.delete(EmployeeEndPoints.DELETE_PHOTO(photoID), { withCredentials: true })
+                const res = await employeeApiService.delete(EmployeeEndPoints.DELETE_PHOTO(photoID))
                 return { ...res.data, type: "DeletePhoto", photoID }
             }
 
