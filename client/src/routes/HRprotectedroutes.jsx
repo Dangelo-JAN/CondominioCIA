@@ -1,6 +1,6 @@
 import { HandleGetHumanResources } from "../redux/Thunks/HRThunk.js"
 import { useDispatch, useSelector } from "react-redux"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Loading } from "../components/common/loading.jsx"
 
@@ -8,34 +8,40 @@ export const HRProtectedRoutes = ({ children }) => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const HRState = useSelector((state) => state.HRReducer)
+    const [isChecking, setIsChecking] = useState(true)
+    const [authResult, setAuthResult] = useState(null)
 
-    // Solo al montar — sin condición compuesta que bloquee los dispatches
     useEffect(() => {
         const checkAuth = async () => {
-            // Secuencial: primero login, luego verificación
-            await dispatch(HandleGetHumanResources({ apiroute: "CHECKLOGIN" }))
-            await dispatch(HandleGetHumanResources({ apiroute: "CHECK_VERIFY_EMAIL" }))
+            setIsChecking(true)
+
+            const loginRes  = await dispatch(HandleGetHumanResources({ apiroute: "CHECKLOGIN" }))
+            const verifyRes = await dispatch(HandleGetHumanResources({ apiroute: "CHECK_VERIFY_EMAIL" }))
+            console.log("VERIFY RES:", JSON.stringify(verifyRes.payload))
+            
+            const isAuthenticated = loginRes.payload?.success === true
+            const isVerified      = verifyRes.payload?.alreadyverified === true
+
+            setAuthResult({ isAuthenticated, isVerified })
+            setIsChecking(false)
         }
         checkAuth()
     }, [])
 
-    // Navegación reactiva — separada y limpia
     useEffect(() => {
-        if (HRState.isLoading) return
+        if (isChecking || authResult === null) return
 
-        if (HRState.isAuthenticated && HRState.isAuthourized && !HRState.isVerified) {
-            navigate("/auth/HR/reset-email-validation")
+        if (!authResult.isAuthenticated) {
+            navigate("/auth/HR/signup")
             return
         }
 
-        if (!HRState.isAuthenticated && HRState.error.content) {
-            navigate("/auth/HR/signup")
+        if (authResult.isAuthenticated && !authResult.isVerified) {
+            navigate("/auth/HR/reset-email-validation")
         }
-    }, [HRState.isLoading, HRState.isAuthenticated, HRState.isAuthourized, HRState.isVerified, HRState.error.content])
+    }, [isChecking, authResult])
 
-    if (HRState.isLoading) return <Loading />
+    if (isChecking) return <Loading />
 
-    return (HRState.isAuthenticated && HRState.isAuthourized && HRState.isVerified)
-        ? children
-        : null
+    return (authResult?.isAuthenticated && authResult?.isVerified) ? children : null
 }
