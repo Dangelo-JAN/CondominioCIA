@@ -17,7 +17,8 @@ export const HRProtectedRoutes = ({ children }) => {
 
             const loginRes  = await dispatch(HandleGetHumanResources({ apiroute: "CHECKLOGIN" }))
             const verifyRes = await dispatch(HandleGetHumanResources({ apiroute: "CHECK_VERIFY_EMAIL" }))
-
+            console.log("VERIFY RES:", JSON.stringify(verifyRes.payload))
+            
             const isAuthenticated = loginRes.payload?.success === true
             const isVerified      = verifyRes.payload?.alreadyverified === true
 
