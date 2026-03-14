@@ -9,33 +9,38 @@ export const HRProtectedRoutes = ({ children }) => {
     const dispatch = useDispatch()
     const HRState = useSelector((state) => state.HRReducer)
     const [isChecking, setIsChecking] = useState(true)
+    const [authResult, setAuthResult] = useState(null)
 
     useEffect(() => {
         const checkAuth = async () => {
             setIsChecking(true)
-            await dispatch(HandleGetHumanResources({ apiroute: "CHECKLOGIN" }))
-            await dispatch(HandleGetHumanResources({ apiroute: "CHECK_VERIFY_EMAIL" }))
+
+            const loginRes  = await dispatch(HandleGetHumanResources({ apiroute: "CHECKLOGIN" }))
+            const verifyRes = await dispatch(HandleGetHumanResources({ apiroute: "CHECK_VERIFY_EMAIL" }))
+
+            const isAuthenticated = loginRes.payload?.success === true
+            const isVerified      = verifyRes.payload?.alreadyverified === true
+
+            setAuthResult({ isAuthenticated, isVerified })
             setIsChecking(false)
         }
         checkAuth()
     }, [])
 
     useEffect(() => {
-        if (isChecking || HRState.isLoading) return
+        if (isChecking || authResult === null) return
 
-        if (HRState.isAuthenticated && HRState.isAuthourized && !HRState.isVerified) {
-            navigate("/auth/HR/reset-email-validation")
+        if (!authResult.isAuthenticated) {
+            navigate("/auth/HR/signup")
             return
         }
 
-        if (!HRState.isAuthenticated && HRState.error.content) {
-            navigate("/auth/HR/signup")
+        if (authResult.isAuthenticated && !authResult.isVerified) {
+            navigate("/auth/HR/reset-email-validation")
         }
-    }, [isChecking, HRState.isLoading, HRState.isAuthenticated, HRState.isAuthourized, HRState.isVerified, HRState.error.content])
+    }, [isChecking, authResult])
 
-    if (isChecking || HRState.isLoading) return <Loading />
+    if (isChecking) return <Loading />
 
-    return (HRState.isAuthenticated && HRState.isAuthourized && HRState.isVerified)
-        ? children
-        : null
+    return (authResult?.isAuthenticated && authResult?.isVerified) ? children : null
 }
