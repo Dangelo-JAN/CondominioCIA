@@ -34,12 +34,18 @@ export const HRLogin = () => {
     }, [HRState.error])
 
     // ✅ Alinear con HRSignup.jsx
+
     useEffect(() => {
-        if (!HRState.isAuthenticated && !HRState.isVerified) {
+        // Solo verificar si ya hay token — evita llamadas sin credenciales
+        const token = localStorage.getItem("HRtoken")
+
+        if (token) {
             dispatch(HandleGetHumanResources({ apiroute: "CHECKLOGIN" }))
             dispatch(HandleGetHumanResources({ apiroute: "CHECK_VERIFY_EMAIL" }))
         }
+    }, [])
 
+    useEffect(() => {
         if (HRState.isAuthenticated && HRState.isVerified) {
             loadingbar.current?.complete()
             navigate("/HR/dashboard/dashboard-data")
