@@ -116,11 +116,20 @@ export const HandleCheckIn = async (req, res) => {
             return res.status(404).json({ success: false, message: "Employee not found" })
         }
 
-        if (!employee.attendance) {
-            return res.status(400).json({ success: false, message: "Attendance not initialized for this employee" })
-        }
+        let attendance
 
-        const attendance = await Attendance.findOne({ _id: employee.attendance, organizationID: req.ORGID })
+        // Auto-inicializar asistencia si no existe
+        if (!employee.attendance) {
+            attendance = await Attendance.create({
+                employee: employeeID,
+                status: "Present",
+                organizationID: req.ORGID
+            })
+            employee.attendance = attendance._id
+            await employee.save()
+        } else {
+            attendance = await Attendance.findOne({ _id: employee.attendance, organizationID: req.ORGID })
+        }
 
         if (!attendance) {
             return res.status(404).json({ success: false, message: "Attendance record not found" })
@@ -132,7 +141,6 @@ export const HandleCheckIn = async (req, res) => {
         )
 
         if (!todayLog) {
-            // Crear log de hoy si no existe
             attendance.attendancelog.push({
                 logdate: now,
                 logstatus: "Present",
@@ -223,14 +231,27 @@ export const HandleGetMyAttendance = async (req, res) => {
 
         const employee = await Employee.findOne({ _id: employeeID, organizationID: req.ORGID })
 
-        if (!employee || !employee.attendance) {
-            return res.status(404).json({ success: false, message: "Attendance record not found" })
+        if (!employee) {
+            return res.status(404).json({ success: false, message: "Employee not found" })
+        }
+
+        // Si no tiene asistencia inicializada retornar objeto vacío — el frontend lo maneja
+        if (!employee.attendance) {
+            return res.status(200).json({
+                success: true,
+                message: "No attendance record found",
+                data: { attendancelog: [] }
+            })
         }
 
         const attendance = await Attendance.findById(employee.attendance)
 
         if (!attendance) {
-            return res.status(404).json({ success: false, message: "Attendance record not found" })
+            return res.status(200).json({
+                success: true,
+                message: "No attendance record found",
+                data: { attendancelog: [] }
+            })
         }
 
         return res.status(200).json({
