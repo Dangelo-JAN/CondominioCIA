@@ -29,7 +29,7 @@ const WorkPhotoSchema = new Schema({
     // HR puede marcar la foto como vista
     reviewedby: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "HR",
+        ref: "HumanResources",
         default: null
     },
     reviewedat: {

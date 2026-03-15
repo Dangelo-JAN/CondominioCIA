@@ -262,6 +262,38 @@ export const EmployeesIDsAsyncReducer = (builder, thunk) => {
     })
 }
 
+// ── HR Work Photos ────────────────────────────────────────────────────────
+export const HRWorkPhotoAsyncReducer = (builder, thunk) => {
+    builder.addCase(thunk.pending, (state) => {
+        state.isLoading = true
+        state.error.content = null
+    })
+    builder.addCase(thunk.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.error.status = false
+        state.error.message = null
+        state.error.content = null
+
+        if (action.payload.type === "GetAll" || action.payload.type === "GetEmployee") {
+            state.photos = action.payload.data
+        }
+        else if (action.payload.type === "Review") {
+            state.photos = state.photos.map(p =>
+                p._id === action.payload.data._id ? action.payload.data : p
+            )
+        }
+        else if (action.payload.type === "Delete") {
+            state.photos = state.photos.filter(p => p._id !== action.payload.photoID)
+        }
+    })
+    builder.addCase(thunk.rejected, (state, action) => {
+        state.isLoading = false
+        state.error.status = true
+        state.error.message = action.payload?.message
+        state.error.content = action.payload
+    })
+}
+
 // ── HR Schedule ───────────────────────────────────────────────────────────
 export const HRScheduleAsyncReducer = (builder, thunk) => {
     builder.addCase(thunk.pending, (state) => {
