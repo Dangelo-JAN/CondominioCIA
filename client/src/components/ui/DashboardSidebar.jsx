@@ -10,15 +10,6 @@ import {
 import { NavLink } from "react-router-dom"
 import { Zap, LogOut } from "lucide-react"
 
-/**
- * DashboardSidebar — componente genérico de sidebar
- *
- * Props:
- * - navItems: [{ label, path, icon }]  path=null → ítem deshabilitado (Soon)
- * - onLogout: () => void
- * - appName: string  (default "EMS")
- * - appSubtitle: string  (default "Panel")
- */
 export function DashboardSidebar({ navItems = [], onLogout, appName = "EMS", appSubtitle = "Panel" }) {
     const { setOpenMobile, isMobile } = useSidebar()
 
@@ -27,14 +18,34 @@ export function DashboardSidebar({ navItems = [], onLogout, appName = "EMS", app
     }
 
     return (
-        <Sidebar>
-            <div className="flex h-full flex-col
-                bg-white border-r border-gray-100
-                dark:bg-[#0d0d18] dark:border-[rgba(99,102,241,0.12)]"
+        <Sidebar
+            className="border-none"
+            style={{ background: "transparent" }}
+        >
+            <div
+                className="flex h-full flex-col border-r"
+                style={{
+                    background: "var(--sidebar-bg, #ffffff)",
+                    borderColor: "var(--sidebar-border, #f3f4f6)"
+                }}
             >
+                {/* Inject CSS variables based on dark class */}
+                <style>{`
+                    :root {
+                        --sidebar-bg: #ffffff;
+                        --sidebar-border: #f3f4f6;
+                    }
+                    .dark {
+                        --sidebar-bg: #0d0d18;
+                        --sidebar-border: rgba(99,102,241,0.12);
+                    }
+                `}</style>
+
                 {/* Logo */}
-                <div className="flex items-center gap-3 px-5 py-5 border-b
-                    border-gray-100 dark:border-[rgba(99,102,241,0.12)]">
+                <div
+                    className="flex items-center gap-3 px-5 py-5 border-b"
+                    style={{ borderColor: "var(--sidebar-border)" }}
+                >
                     <div
                         className="flex items-center justify-center w-9 h-9 rounded-xl flex-shrink-0"
                         style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
@@ -42,8 +53,7 @@ export function DashboardSidebar({ navItems = [], onLogout, appName = "EMS", app
                         <Zap className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                        <p className="font-bold text-base tracking-tight leading-none
-                            text-gray-900 dark:text-white">
+                        <p className="font-bold text-base tracking-tight leading-none text-gray-900 dark:text-white">
                             {appName}<span className="text-indigo-500">.</span>
                         </p>
                         <p className="text-xs mt-0.5 text-gray-400 dark:text-[rgba(255,255,255,0.3)]">
@@ -84,11 +94,7 @@ export function DashboardSidebar({ navItems = [], onLogout, appName = "EMS", app
                                                     <>
                                                         <div
                                                             className="flex items-center justify-center w-7 h-7 rounded-lg flex-shrink-0 transition-colors duration-200"
-                                                            style={{
-                                                                background: isActive
-                                                                    ? "rgba(99,102,241,0.2)"
-                                                                    : "rgba(0,0,0,0.05)"
-                                                            }}
+                                                            style={{ background: isActive ? "rgba(99,102,241,0.2)" : "rgba(0,0,0,0.05)" }}
                                                         >
                                                             <img
                                                                 src={item.icon}
@@ -152,7 +158,10 @@ export function DashboardSidebar({ navItems = [], onLogout, appName = "EMS", app
                 </SidebarContent>
 
                 {/* Footer — Logout */}
-                <div className="px-3 py-4 border-t border-gray-100 dark:border-[rgba(99,102,241,0.12)]">
+                <div
+                    className="px-3 py-4 border-t"
+                    style={{ borderColor: "var(--sidebar-border)" }}
+                >
                     <button
                         onClick={onLogout}
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer
