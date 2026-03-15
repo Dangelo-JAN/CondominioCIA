@@ -10,7 +10,7 @@ export const DashboardLayout = ({ sidebar }) => {
         <SidebarProvider>
             <div className="flex h-screen w-full overflow-hidden bg-white dark:bg-[#0f0f1a]">
 
-                {/* Sidebar — recibido por props */}
+                {/* Sidebar */}
                 {sidebar}
 
                 {/* Main content */}
@@ -21,7 +21,6 @@ export const DashboardLayout = ({ sidebar }) => {
                         border-gray-100 dark:border-[rgba(99,102,241,0.12)]
                         bg-white dark:bg-[#0d0d18]">
 
-                        {/* Left — trigger + logo */}
                         <div className="flex items-center gap-3">
                             <SidebarTrigger className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors duration-200
                                 text-gray-500 hover:text-gray-900 hover:bg-gray-100
@@ -33,10 +32,8 @@ export const DashboardLayout = ({ sidebar }) => {
                             </p>
                         </div>
 
-                        {/* Spacer */}
                         <div className="flex-1" />
 
-                        {/* Right — theme toggle */}
                         <div className="mr-4">
                             <button
                                 onClick={toggleTheme}
@@ -52,15 +49,19 @@ export const DashboardLayout = ({ sidebar }) => {
                                         : <Moon className="w-3.5 h-3.5 text-indigo-400" />
                                     }
                                 </div>
-                                <span className="hidden sm:block text-xs font-medium text-gray-400 dark:text-[rgba(255,255,255,0.35)]">
+                                <span className="hidden sm:block text-xs font-medium
+                                    text-gray-400 dark:text-[rgba(255,255,255,0.35)]">
                                     {isDark ? "Modo claro" : "Modo oscuro"}
                                 </span>
 
-                                {/* Toggle pill */}
-                                <div className="flex-shrink-0 w-8 h-4 rounded-full relative transition-colors duration-300
-                                    bg-gray-200 dark:bg-indigo-500">
-                                    <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-all duration-300
-                                        ${isDark ? "left-[18px]" : "left-[2px]"}`}
+                                {/* Toggle pill — inline styles para evitar purge de Tailwind en producción */}
+                                <div
+                                    className="flex-shrink-0 w-8 h-4 rounded-full relative transition-colors duration-300"
+                                    style={{ background: isDark ? "#6366f1" : "#e5e7eb" }}
+                                >
+                                    <div
+                                        className="absolute top-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-all duration-300"
+                                        style={{ left: isDark ? "18px" : "2px" }}
                                     />
                                 </div>
                             </button>
