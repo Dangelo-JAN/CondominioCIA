@@ -118,6 +118,8 @@ export const HandleGetAllWorkPhotos = async (req, res) => {
         })
 
     } catch (error) {
+        console.log("WORKPHOTO ERROR:", error.message)
+        console.log("WORKPHOTO STACK:", error.stack)
         return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
     }
 }
