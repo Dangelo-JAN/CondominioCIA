@@ -3,12 +3,6 @@ import { Outlet } from "react-router-dom"
 import { PanelLeft, Sun, Moon } from "lucide-react"
 import { useTheme } from "../../hooks/useTheme.js"
 
-/**
- * DashboardLayout — layout genérico para cualquier dashboard
- *
- * Props:
- * - sidebar: ReactNode  el sidebar ya configurado (HRSidebar, EmployeeSidebar, etc.)
- */
 export const DashboardLayout = ({ sidebar }) => {
     const { isDark, toggleTheme } = useTheme()
 
