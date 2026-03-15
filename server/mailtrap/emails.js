@@ -1,5 +1,5 @@
 import { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE } from "./emailtemplates.js"
-import { Emailclient, sender } from "./mailtrap.config.js"
+import { Emailclient, sender } from "./nodemailer.config.js"
 
 export const SendVerificationEmail = async (email, verificationcode) => {
     const receiver = [{ email }]
