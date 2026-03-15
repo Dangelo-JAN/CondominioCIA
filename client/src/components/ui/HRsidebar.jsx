@@ -4,18 +4,18 @@ import { HandleHRLogout } from "../../redux/Thunks/HRThunk.js"
 import { DashboardSidebar } from "./DashboardSidebar.jsx"
 
 const HR_NAV_ITEMS = [
-    { label: "Dashboard",     path: "/HR/dashboard/dashboard-data", icon: "/../../src/assets/HR-Dashboard/dashboard.png" },
-    { label: "Empleados",     path: "/HR/dashboard/employees",       icon: "/../../src/assets/HR-Dashboard/employee-2.png" },
-    { label: "Departamentos", path: "/HR/dashboard/departments",     icon: "/../../src/assets/HR-Dashboard/department.png" },
-    { label: "Horarios",      path: "/HR/dashboard/schedules",       icon: "/../../src/assets/HR-Dashboard/attendance.png" },
-    { label: "Nóminas",       path: null,                            icon: "/../../src/assets/HR-Dashboard/salary.png" },
-    { label: "Avisos",        path: null,                            icon: "/../../src/assets/HR-Dashboard/notice.png" },
-    { label: "Ausencias",     path: null,                            icon: "/../../src/assets/HR-Dashboard/leave.png" },
-    { label: "Asistencia",    path: null,                            icon: "/../../src/assets/HR-Dashboard/attendance.png" },
-    { label: "Reclutamiento", path: null,                            icon: "/../../src/assets/HR-Dashboard/recruitment.png" },
-    { label: "Entrevistas",   path: null,                            icon: "/../../src/assets/HR-Dashboard/interview-insights.png" },
-    { label: "Solicitudes",   path: null,                            icon: "/../../src/assets/HR-Dashboard/request.png" },
-    { label: "Perfiles HR",   path: null,                            icon: "/../../src/assets/HR-Dashboard/HR-profiles.png" },
+    { label: "Dashboard",     path: "/HR/dashboard/dashboard-data", icon: "/assets/HR-Dashboard/dashboard.png" },
+    { label: "Empleados",     path: "/HR/dashboard/employees",       icon: "/assets/HR-Dashboard/employee-2.png" },
+    { label: "Departamentos", path: "/HR/dashboard/departments",     icon: "/assets/HR-Dashboard/department.png" },
+    { label: "Horarios",      path: "/HR/dashboard/schedules",       icon: "/assets/HR-Dashboard/attendance.png" },
+    { label: "Nóminas",       path: null,                            icon: "/assets/HR-Dashboard/salary.png" },
+    { label: "Avisos",        path: null,                            icon: "/assets/HR-Dashboard/notice.png" },
+    { label: "Ausencias",     path: null,                            icon: "/assets/HR-Dashboard/leave.png" },
+    { label: "Asistencia",    path: null,                            icon: "/assets/HR-Dashboard/attendance.png" },
+    { label: "Reclutamiento", path: null,                            icon: "/assets/HR-Dashboard/recruitment.png" },
+    { label: "Entrevistas",   path: null,                            icon: "/assets/HR-Dashboard/interview-insights.png" },
+    { label: "Solicitudes",   path: null,                            icon: "/assets/HR-Dashboard/request.png" },
+    { label: "Perfiles HR",   path: null,                            icon: "/assets/HR-Dashboard/HR-profiles.png" },
 ]
 
 export function HRdashboardSidebar() {
