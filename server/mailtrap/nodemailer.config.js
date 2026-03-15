@@ -3,16 +3,14 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 export const transporter = nodemailer.createTransport({
-    host: 'smtp.resend.com',
-    port: 465,
-    secure: true,
+    service: 'gmail',
     auth: {
-        user: 'resend',
-        pass: process.env.RESEND_API_KEY,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
     },
 })
 
 export const sender = {
-    email: 'onboarding@resend.dev',
+    email: process.env.EMAIL_USER,
     name: 'EMS',
 }
