@@ -5,13 +5,13 @@ import {
     PASSWORD_RESET_REQUEST_TEMPLATE,
     PASSWORD_RESET_SUCCESS_TEMPLATE
 } from "./emailtemplates.js"
-import { transporter, sender } from "./nodemailer.config.js"
+import { sgMail, sender } from "./sendgrid.config.js"
 
 // ── Helper interno ────────────────────────────────────────────────────────
 const sendMail = async ({ to, subject, html }) => {
     try {
-        await transporter.sendMail({
-            from: `"${sender.name}" <${sender.email}>`,
+        await sgMail.send({
+            from: { email: sender.email, name: sender.name },
             to,
             subject,
             html,
@@ -19,6 +19,9 @@ const sendMail = async ({ to, subject, html }) => {
         return true
     } catch (error) {
         console.error("Error enviando email:", error.message)
+        if (error.response) {
+            console.error("SendGrid error body:", error.response.body)
+        }
         return false
     }
 }
@@ -56,8 +59,7 @@ export const SendForgotPasswordEmail = async (email, resetURL) => {
     return sendMail({
         to: email,
         subject: "Restablecer contraseña — EMS",
-        html: PASSWORD_RESET_REQUEST_TEMPLATE
-            .replace(/{resetURL}/g, resetURL),
+        html: PASSWORD_RESET_REQUEST_TEMPLATE.replace(/{resetURL}/g, resetURL),
     })
 }
 
