@@ -19,6 +19,7 @@ import CorporateCalendarRouter from './routes/CorporateCalendar.route.js'
 import BalanceRouter from './routes/Balance.route.js'
 import ScheduleRouter from './routes/Schedule.route.js'
 import WorkPhotoRouter from './routes/WorkPhoto.route.js'
+import HRProfilesRouter from './routes/HRProfiles.route.js'
 import { ConnectDB } from './config/connectDB.js';
 import cookieParser from 'cookie-parser';
 import cors from "cors"
@@ -70,6 +71,7 @@ app.use("/api/v1/corporate-calendar", CorporateCalendarRouter)
 app.use("/api/v1/balance", BalanceRouter)
 app.use("/api/v1/schedule", ScheduleRouter)
 app.use("/api/v1/workphoto", WorkPhotoRouter)
+app.use("/api/v1/hr-profiles", HRProfilesRouter)
 
 app.listen(process.env.PORT, async () => {
   await ConnectDB()
