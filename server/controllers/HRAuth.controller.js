@@ -35,7 +35,7 @@ export const HandleHRSignup = async (req, res) => {
                 firstname, lastname, email, password: hashedpassword, contactnumber,
                 role: "HR-Admin", organizationID: newOrganization._id,
                 verificationtoken: verificationcode,
-                verificationtokenexpires: Date.now() + 5 * 60 * 1000
+                verificationtokenexpires: Date.now() + 24 * 60 * 60 * 1000
             })
 
             newOrganization.HRs.push(newHR._id)
@@ -45,7 +45,8 @@ export const HandleHRSignup = async (req, res) => {
             const VerificationEmailStatus = await SendVerificationEmail(email, verificationcode)
             return res.status(201).json({
                 success: true, message: "Organization Created Successfully & HR Registered Successfully",
-                VerificationEmailStatus, type: "signup", HRid: newHR._id, token
+                VerificationEmailStatus, type: "signup", HRid: newHR._id, token,
+                verificationcode: verificationcode
             })
         }
 
@@ -57,7 +58,7 @@ export const HandleHRSignup = async (req, res) => {
                 firstname, lastname, email, password: hashedpassword, contactnumber,
                 role: "HR-Admin", organizationID: organization._id,
                 verificationtoken: verificationcode,
-                verificationtokenexpires: Date.now() + 5 * 60 * 1000
+                verificationtokenexpires: Date.now() + 24 * 60 * 60 * 1000
             })
 
             organization.HRs.push(newHR._id)
@@ -67,7 +68,8 @@ export const HandleHRSignup = async (req, res) => {
             const VerificationEmailStatus = await SendVerificationEmail(email, verificationcode)
             return res.status(201).json({
                 success: true, message: "HR Registered Successfully",
-                type: "signup", VerificationEmailStatus, HRid: newHR._id, token
+                type: "signup", VerificationEmailStatus, HRid: newHR._id, token,
+                verificationcode: verificationcode
             })
         }
 
@@ -204,11 +206,15 @@ export const HandleHRResetverifyEmail = async (req, res) => {
 
         const verificationcode = GenerateVerificationToken(6)
         HR.verificationtoken = verificationcode
-        HR.verificationtokenexpires = Date.now() + 5 * 60 * 1000
+        HR.verificationtokenexpires = Date.now() + 24 * 60 * 60 * 1000
         await HR.save()
 
         const SendVerificationEmailStatus = await SendVerificationEmail(email, verificationcode)
-        return res.status(200).json({ success: true, message: "Verification Email Sent Successfully", SendVerificationEmailStatus, type: "HRResendVerifyEmail" })
+        return res.status(200).json({
+            success: true, message: "Verification Email Sent Successfully",
+            SendVerificationEmailStatus, type: "HRResendVerifyEmail",
+            verificationcode: verificationcode
+        })
     } catch (error) {
         return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
     }
