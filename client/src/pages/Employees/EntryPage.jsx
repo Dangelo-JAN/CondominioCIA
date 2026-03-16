@@ -1,7 +1,35 @@
 import { Link } from "react-router-dom"
-import { ArrowRight, ShieldCheck, Users, Zap } from "lucide-react"
+import { ArrowRight, ShieldCheck, Users, Zap, Download } from "lucide-react"
+import { useState, useEffect } from "react"
 
 export const EntryPage = () => {
+    const [installPrompt, setInstallPrompt] = useState(null)
+    const [isInstalled, setIsInstalled] = useState(false)
+
+    useEffect(() => {
+        // Detectar si ya está instalada
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            setIsInstalled(true)
+        }
+
+        // Capturar el evento de instalación
+        const handler = (e) => {
+            e.preventDefault()
+            setInstallPrompt(e)
+        }
+        window.addEventListener('beforeinstallprompt', handler)
+        return () => window.removeEventListener('beforeinstallprompt', handler)
+    }, [])
+
+    const handleInstall = async () => {
+        if (!installPrompt) return
+        installPrompt.prompt()
+        const { outcome } = await installPrompt.userChoice
+        if (outcome === 'accepted') {
+            setInstallPrompt(null)
+            setIsInstalled(true)
+        }
+    }
     return (
         <div className="min-h-screen bg-white flex flex-col">
             {/* Navbar */}
@@ -28,6 +56,19 @@ export const EntryPage = () => {
                         Probar Demo
                     </button>
                 </Link>
+
+                {/* Botón instalar PWA — solo aparece si el browser lo soporta y no está instalada */}
+                {installPrompt && !isInstalled && (
+                    <button
+                        onClick={handleInstall}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold
+                            text-white transition-all duration-200 hover:opacity-90"
+                        style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                    >
+                        <Download className="w-4 h-4" />
+                        Instalar app
+                    </button>
+                )}
             </nav>
 
             {/* Hero */}
@@ -68,6 +109,33 @@ export const EntryPage = () => {
                             </button>
                         </Link>
                     </div>
+
+                    {/* Banner instalar PWA — visible en móvil en el hero */}
+                    {installPrompt && !isInstalled && (
+                        <div className="flex items-center gap-3 px-4 py-3 rounded-2xl border w-full sm:w-auto"
+                            style={{
+                                background: "linear-gradient(135deg, rgba(99,102,241,0.06), rgba(139,92,246,0.06))",
+                                borderColor: "rgba(99,102,241,0.2)"
+                            }}>
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                                style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}>
+                                <Zap className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold text-gray-900">Instala EMS en tu móvil</p>
+                                <p className="text-xs text-gray-500">Accede rápido desde tu pantalla de inicio</p>
+                            </div>
+                            <button
+                                onClick={handleInstall}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold
+                                    text-white flex-shrink-0 transition-all hover:opacity-90"
+                                style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                            >
+                                <Download className="w-3.5 h-3.5" />
+                                Instalar
+                            </button>
+                        </div>
+                    )}
 
                     {/* Stats */}
                     <div className="pt-8 flex flex-wrap justify-center lg:justify-start gap-8 border-t border-gray-100">
