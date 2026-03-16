@@ -58,6 +58,49 @@ const FOOTER = `
     </div>
 `
 
+// ── Invitación HR ─────────────────────────────────────────────────────────
+export const INVITATION_HR_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invitación a EMS</title>
+</head>
+<body style="${BASE_STYLE}">
+  <div style="${CARD_STYLE}">
+    ${HEADER("Te han invitado a EMS")}
+    <p style="margin: 0 0 12px; color: #4b5563; font-size: 15px;">Hola, <strong>{name}</strong>,</p>
+    <p style="margin: 0 0 24px; color: #4b5563; font-size: 15px;">
+        Has sido invitado a unirte al equipo de gestión de EMS como <strong>{role}</strong>.
+    </p>
+    <div style="text-align: center; margin: 32px 0;">
+        <a href="{inviteURL}" style="
+            display: inline-block;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 14px 32px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 15px rgba(99,102,241,0.3);
+        ">Aceptar invitación</a>
+    </div>
+    <p style="margin: 0 0 8px; color: #6b7280; font-size: 14px;">
+        ⏱ Este enlace expirará en <strong>48 horas</strong>.
+    </p>
+    <p style="margin: 0; color: #9ca3af; font-size: 13px;">
+        Si no esperabas esta invitación, puedes ignorar este correo.<br>
+        <span style="color: #6366f1; word-break: break-all;">{inviteURL}</span>
+    </p>
+    ${FOOTER}
+  </div>
+</body>
+</html>
+`
+
 // ── Verificación de email ─────────────────────────────────────────────────
 export const VERIFICATION_EMAIL_TEMPLATE = `
 <!DOCTYPE html>

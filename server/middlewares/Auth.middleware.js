@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import { HumanResources } from '../models/HR.model.js'
 
 export const VerifyEmployeeToken = (req, res, next) => {
     const authHeader = req.headers.authorization
@@ -21,7 +22,7 @@ export const VerifyEmployeeToken = (req, res, next) => {
     }
 }
 
-export const VerifyhHRToken = (req, res, next) => {
+export const VerifyhHRToken = async (req, res, next) => {
     const authHeader = req.headers.authorization
     const token = authHeader && authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null
 
@@ -33,6 +34,13 @@ export const VerifyhHRToken = (req, res, next) => {
         if (!decoded) {
             return res.status(403).json({ success: false, message: "Unauthenticated HR", gologin: true })
         }
+
+        // Verificar que el HR sigue activo
+        const hr = await HumanResources.findOne({ _id: decoded.HRid, organizationID: decoded.ORGID })
+        if (!hr || !hr.isactive) {
+            return res.status(403).json({ success: false, message: "Cuenta HR inactiva o no encontrada", gologin: true })
+        }
+
         req.HRid  = decoded.HRid
         req.ORGID = decoded.ORGID
         req.Role  = decoded.HRrole

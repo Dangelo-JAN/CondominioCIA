@@ -1,8 +1,68 @@
+import { HumanResources } from "../models/HR.model.js"
+
+// ── Verificar rol (compatibilidad con código existente) ───────────────────
 export const RoleAuthorization = (...AuthRoles) => {
     return (req, res, next) => {
         if (!AuthRoles.includes(req.Role)) {
-            return res.status(403).json({ success : false, message: "You are not athourized to access this route" });
+            return res.status(403).json({
+                success: false,
+                message: "No tienes autorización para acceder a esta ruta"
+            })
         }
-        next();
-    } 
+        next()
+    }
+}
+
+// ── Verificar permiso granular ────────────────────────────────────────────
+// Uso: PermissionCheck("employees", "create")
+// Uso: PermissionCheck("schedules", "delete")
+export const PermissionCheck = (module, action) => {
+    return async (req, res, next) => {
+        try {
+            // HR-Admin siempre tiene acceso total
+            if (req.Role === "HR-Admin") return next()
+
+            const hr = await HumanResources.findOne({
+                _id: req.HRid,
+                organizationID: req.ORGID,
+                isactive: true
+            })
+
+            if (!hr) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Perfil HR no encontrado o inactivo"
+                })
+            }
+
+            const modulePerms = hr.permissions?.[module]
+
+            if (!modulePerms || !modulePerms[action]) {
+                return res.status(403).json({
+                    success: false,
+                    message: `No tienes permiso para ${action} en ${module}`,
+                    permission_denied: true
+                })
+            }
+
+            next()
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: "Error verificando permisos",
+                error
+            })
+        }
+    }
+}
+
+// ── Verificar que es HR-Admin (para rutas exclusivas de Admin) ────────────
+export const AdminOnly = (req, res, next) => {
+    if (req.Role !== "HR-Admin") {
+        return res.status(403).json({
+            success: false,
+            message: "Esta acción es exclusiva del HR-Admin"
+        })
+    }
+    next()
 }
