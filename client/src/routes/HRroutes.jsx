@@ -13,8 +13,13 @@ import { HRDepartmentPage } from "../pages/HumanResources/Dashboard Childs/depar
 import { HRSchedulePage } from "../pages/HumanResources/Dashboard Childs/HRSchedulePage.jsx"
 import { HRWorkPhotosPage } from "../pages/HumanResources/Dashboard Childs/HRWorkPhotosPage.jsx"
 import { HRProfilesPage } from "../pages/HumanResources/Dashboard Childs/HRProfilesPage.jsx"
+import { AcceptInvitationPage } from "../pages/HumanResources/AcceptInvitationPage.jsx"
 
 export const HRRoutes = [
+    {
+        path: "/auth/HR/accept-invitation/:token",
+        element: <AcceptInvitationPage />
+    },
     {
         path: "/auth/HR/signup",
         element: <HRSignupPage />
