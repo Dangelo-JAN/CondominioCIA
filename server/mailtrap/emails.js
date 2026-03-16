@@ -1,96 +1,73 @@
-import { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE } from "./emailtemplates.js"
-import { Emailclient, sender } from "./mailtrap.config.js"
+import {
+    VERIFICATION_EMAIL_TEMPLATE,
+    WELCOME_HR_TEMPLATE,
+    WELCOME_EMPLOYEE_TEMPLATE,
+    PASSWORD_RESET_REQUEST_TEMPLATE,
+    PASSWORD_RESET_SUCCESS_TEMPLATE
+} from "./emailtemplates.js"
+import { sgMail, sender } from "./sendgrid.config.js"
 
+// ── Helper interno ────────────────────────────────────────────────────────
+const sendMail = async ({ to, subject, html }) => {
+    try {
+        await sgMail.send({
+            from: { email: sender.email, name: sender.name },
+            to,
+            subject,
+            html,
+        })
+        return true
+    } catch (error) {
+        console.error("Error enviando email:", error.message)
+        if (error.response) {
+            console.error("SendGrid error body:", error.response.body)
+        }
+        return false
+    }
+}
+
+// ── Verificación de email ─────────────────────────────────────────────────
 export const SendVerificationEmail = async (email, verificationcode) => {
-    const receiver = [{ email }]
-    try {
-        const response = await Emailclient.send({
-            from: sender,
-            to: receiver,
-            subject: "Verify your email",
-            html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationcode),
-            category: "Email verification"
-        })
-        // console.log("Verification email sent successfully", response)
-        return response.success
-    } catch (error) {
-        console.log(error.message)
-        return false
-    }
+    return sendMail({
+        to: email,
+        subject: "Verifica tu correo electrónico — EMS",
+        html: VERIFICATION_EMAIL_TEMPLATE.replace("{verificationCode}", verificationcode),
+    })
 }
 
+// ── Bienvenida ────────────────────────────────────────────────────────────
 export const SendWelcomeEmail = async (email, firstname, lastname, role) => {
-    const receiver = [{ email }]
-    if (role == "HR-Admin") {
-        try {
-            const response = await Emailclient.send({
-                from: sender,
-                to: receiver,
-                template_uuid: "4749eba4-dc99-4658-923e-54ccd0c0b99c",
-                template_variables: {
-                    "company_info_name": "Your Company Name - [EMS]",
-                    "name": `${firstname}${lastname} - HR`
-                }
-            })
-            // console.log("Welcome email sent successfully", response)
-            return response.success
-        } catch (error) {
-            console.log(error.message)
-            return false
-        }
-    }
-    else {
-        try {
-            const response = await Emailclient.send({
-                from: sender,
-                to: receiver,
-                template_uuid: "cf9f23f4-ebfb-4baa-a69e-bcb76487ac24",
-                template_variables: {
-                    "company_info_name": "Company Name - (EMS)",
-                    "name": `${firstname} ${lastname}`,
-                }
-            })
-            // console.log("Welcome email sent successfully", response)
-            return response.success
-        } catch (error) {
-            console.log(error.message)
-            return false
-        }
+    const name = `${firstname} ${lastname}`
+
+    if (role === "HR-Admin") {
+        return sendMail({
+            to: email,
+            subject: "¡Bienvenido a EMS! Tu cuenta está lista",
+            html: WELCOME_HR_TEMPLATE.replace("{name}", name),
+        })
+    } else {
+        return sendMail({
+            to: email,
+            subject: "¡Bienvenido al equipo! Tu cuenta está lista",
+            html: WELCOME_EMPLOYEE_TEMPLATE.replace("{name}", name),
+        })
     }
 }
 
+// ── Recuperar contraseña ──────────────────────────────────────────────────
 export const SendForgotPasswordEmail = async (email, resetURL) => {
-    const receiver = [{ email }]
-    try {
-        const response = await Emailclient.send({
-            from: sender,
-            to: receiver,
-            subject: "Reset Your Password",
-            html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
-            category: "Password Reset Email"
-        })
-        // console.log("Forgot Password email sent successfully", response)
-        return response.success
-    } catch (error) {
-        console.log(error.message)
-        return false
-    }
+    return sendMail({
+        to: email,
+        subject: "Restablecer contraseña — EMS",
+        html: PASSWORD_RESET_REQUEST_TEMPLATE.replace(/{resetURL}/g, resetURL),
+    })
 }
 
+// ── Confirmación de contraseña restablecida ───────────────────────────────
 export const SendResetPasswordConfimation = async (email) => {
-    const receiver = [{ email }]
-    try {
-        const response = await Emailclient.send({
-            from: sender,
-            to: receiver,
-            subject: "Password Reset Successfully",
-            html: PASSWORD_RESET_SUCCESS_TEMPLATE,
-            category: "Password Reset Confirmation"
-        })
-        // console.log("Reset Password confirmation email sent successfully", response)
-        return response.success
-    } catch (error) {
-        console.log(error.message)
-        return false
-    }
+    return sendMail({
+        to: email,
+        subject: "Contraseña restablecida exitosamente — EMS",
+        html: PASSWORD_RESET_SUCCESS_TEMPLATE,
+    })
 }
