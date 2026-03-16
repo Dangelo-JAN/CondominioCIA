@@ -7,39 +7,58 @@ export const KeyDetailsBox = ({ image, dataname, data }) => {
     }
 
     const colorMap = {
-        employees:   { accent: "#6366f1", lightBg: "#eef2ff", lightBorder: "#c7d2fe", darkBg: "rgba(99,102,241,0.08)",  darkBorder: "rgba(99,102,241,0.2)",  glow: "rgba(99,102,241,0.12)",  iconBg: "#e0e7ff" },
-        departments: { accent: "#8b5cf6", lightBg: "#f5f3ff", lightBorder: "#ddd6fe", darkBg: "rgba(139,92,246,0.08)", darkBorder: "rgba(139,92,246,0.2)", glow: "rgba(139,92,246,0.12)", iconBg: "#ede9fe" },
-        leaves:      { accent: "#06b6d4", lightBg: "#ecfeff", lightBorder: "#a5f3fc", darkBg: "rgba(6,182,212,0.08)",  darkBorder: "rgba(6,182,212,0.2)",  glow: "rgba(6,182,212,0.12)",  iconBg: "#cffafe" },
-        requestes:   { accent: "#f59e0b", lightBg: "#fffbeb", lightBorder: "#fde68a", darkBg: "rgba(245,158,11,0.08)", darkBorder: "rgba(245,158,11,0.2)", glow: "rgba(245,158,11,0.12)", iconBg: "#fef3c7" }
+        employees:   {
+            accent: "#6366f1",
+            lightBg: "#e0e7ff", lightBorder: "#a5b4fc",
+            darkBg: "rgba(99,102,241,0.18)", darkBorder: "rgba(99,102,241,0.4)",
+            glow: "rgba(99,102,241,0.15)", iconBg: "#c7d2fe", darkIconBg: "rgba(99,102,241,0.25)"
+        },
+        departments: {
+            accent: "#8b5cf6",
+            lightBg: "#ede9fe", lightBorder: "#c4b5fd",
+            darkBg: "rgba(139,92,246,0.18)", darkBorder: "rgba(139,92,246,0.4)",
+            glow: "rgba(139,92,246,0.15)", iconBg: "#ddd6fe", darkIconBg: "rgba(139,92,246,0.25)"
+        },
+        leaves:      {
+            accent: "#0891b2",
+            lightBg: "#cffafe", lightBorder: "#67e8f9",
+            darkBg: "rgba(8,145,178,0.18)", darkBorder: "rgba(8,145,178,0.4)",
+            glow: "rgba(8,145,178,0.15)", iconBg: "#a5f3fc", darkIconBg: "rgba(8,145,178,0.25)"
+        },
+        requestes:   {
+            accent: "#d97706",
+            lightBg: "#fef3c7", lightBorder: "#fcd34d",
+            darkBg: "rgba(217,119,6,0.18)", darkBorder: "rgba(217,119,6,0.4)",
+            glow: "rgba(217,119,6,0.15)", iconBg: "#fde68a", darkIconBg: "rgba(217,119,6,0.25)"
+        }
     }
 
     const colors = colorMap[dataname] || colorMap.employees
     const label = labelMap[dataname] || dataname
 
-    // Detect dark mode
     const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark")
 
     const cardBg = isDark
-        ? `linear-gradient(135deg, ${colors.darkBg} 0%, rgba(255,255,255,0.01) 100%)`
-        : `linear-gradient(135deg, ${colors.lightBg} 0%, #ffffff 100%)`
+        ? `linear-gradient(135deg, ${colors.darkBg} 0%, rgba(255,255,255,0.02) 100%)`
+        : `linear-gradient(135deg, ${colors.lightBg} 0%, #ffffff 60%)`
 
     const cardBorder = isDark ? colors.darkBorder : colors.lightBorder
-    const iconBg     = isDark ? colors.darkBg      : colors.iconBg
+    const iconBg     = isDark ? colors.darkIconBg  : colors.iconBg
     const iconBorder = isDark ? colors.darkBorder   : colors.lightBorder
 
     return (
         <div
-            className="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden kdb-card"
-            data-theme-card={dataname}
+            className="group relative rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden"
             style={{
                 background: cardBg,
                 border: `1px solid ${cardBorder}`,
-                boxShadow: `0 4px 20px ${colors.glow}`
+                boxShadow: isDark
+                    ? `0 4px 24px ${colors.glow}, inset 0 1px 0 rgba(255,255,255,0.05)`
+                    : `0 2px 12px ${colors.glow}, 0 1px 3px rgba(0,0,0,0.06)`
             }}
         >
-            {/* Glow blob on hover */}
             <div
-                className="absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"
+                className="absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"
                 style={{ background: colors.accent }}
             />
 
@@ -49,8 +68,8 @@ export const KeyDetailsBox = ({ image, dataname, data }) => {
                         style={{ color: colors.accent }}>
                         {data !== undefined && data !== "" ? data : "—"}
                     </p>
-                    <p className="text-xs font-semibold uppercase tracking-widest
-                        text-gray-400 dark:text-[rgba(255,255,255,0.4)]">
+                    <p className="text-xs font-semibold uppercase tracking-widest"
+                        style={{ color: isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.45)" }}>
                         {label}
                     </p>
                 </div>
@@ -66,13 +85,12 @@ export const KeyDetailsBox = ({ image, dataname, data }) => {
                         style={{
                             filter: isDark
                                 ? "brightness(0) saturate(100%) invert(1)"
-                                : `brightness(0) saturate(100%) invert(30%) sepia(80%) saturate(500%) hue-rotate(220deg)`
+                                : `brightness(0) saturate(100%) invert(25%) sepia(80%) saturate(600%) hue-rotate(220deg)`
                         }}
                     />
                 </div>
             </div>
 
-            {/* Bottom accent line */}
             <div
                 className="absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full transition-all duration-500 rounded-full"
                 style={{ background: `linear-gradient(90deg, ${colors.accent}, transparent)` }}

@@ -68,12 +68,16 @@ export const HRDashboardPage = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1">
-                <div className="rounded-2xl overflow-hidden bg-gray-50 border border-gray-100
-                    dark:bg-[rgba(255,255,255,0.02)] dark:border-[rgba(255,255,255,0.06)]">
+                <div className="rounded-2xl overflow-hidden
+                    bg-gray-50 border border-gray-200
+                    dark:bg-[rgba(255,255,255,0.04)] dark:border-[rgba(255,255,255,0.1)]"
+                    style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
                     <SalaryChart balancedata={DashboardState.data} />
                 </div>
-                <div className="rounded-2xl overflow-hidden bg-gray-50 border border-gray-100
-                    dark:bg-[rgba(255,255,255,0.02)] dark:border-[rgba(255,255,255,0.06)]">
+                <div className="rounded-2xl overflow-hidden
+                    bg-gray-50 border border-gray-200
+                    dark:bg-[rgba(255,255,255,0.04)] dark:border-[rgba(255,255,255,0.1)]"
+                    style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
                     <DataTable noticedata={DashboardState.data} />
                 </div>
             </div>
