@@ -1,4 +1,5 @@
 import {
+    INVITATION_HR_TEMPLATE,
     VERIFICATION_EMAIL_TEMPLATE,
     WELCOME_HR_TEMPLATE,
     WELCOME_EMPLOYEE_TEMPLATE,
@@ -24,6 +25,19 @@ const sendMail = async ({ to, subject, html }) => {
         }
         return false
     }
+}
+
+// ── Invitación HR ─────────────────────────────────────────────────────────
+export const SendInvitationEmail = async (email, firstname, inviteURL, role) => {
+    const roleLabel = role === "HR-Manager" ? "HR Manager" : "HR Viewer"
+    return sendMail({
+        to: email,
+        subject: "Te han invitado a unirte a EMS",
+        html: INVITATION_HR_TEMPLATE
+            .replace("{name}", firstname)
+            .replace("{role}", roleLabel)
+            .replace(/{inviteURL}/g, inviteURL),
+    })
 }
 
 // ── Verificación de email ─────────────────────────────────────────────────
