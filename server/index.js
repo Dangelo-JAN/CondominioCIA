@@ -1,5 +1,4 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import dotenv from 'dotenv'
 import EmployeeAuthRouter from './routes/EmployeeAuth.route.js'
 import HRAuthrouter from './routes/HRAuth.route.js'
@@ -20,14 +19,15 @@ import BalanceRouter from './routes/Balance.route.js'
 import ScheduleRouter from './routes/Schedule.route.js'
 import WorkPhotoRouter from './routes/WorkPhoto.route.js'
 import HRProfilesRouter from './routes/HRProfiles.route.js'
+import ContactSalesRouter from './routes/ContactSales.route.js'
 import { ConnectDB } from './config/connectDB.js';
 import cookieParser from 'cookie-parser';
 import cors from "cors"
 
 dotenv.config()
 const app = express();
-app.use(bodyParser.json({ limit: "10mb" }))
-app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }))
+app.use(express.json({ limit: "10mb" }))
+app.use(express.urlencoded({ extended: true, limit: "10mb" }))
 app.use(cookieParser())
 
 // --- CONFIGURACIÓN DE CORS CON REGEX ---
@@ -72,8 +72,16 @@ app.use("/api/v1/balance", BalanceRouter)
 app.use("/api/v1/schedule", ScheduleRouter)
 app.use("/api/v1/workphoto", WorkPhotoRouter)
 app.use("/api/v1/hr-profiles", HRProfilesRouter)
+app.use("/api/v1/contact", ContactSalesRouter)
 
-app.listen(process.env.PORT, async () => {
+// ✅ Health check (MUY recomendado)
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok" })
+})
+
+const PORT = process.env.PORT || 10000
+
+app.listen(PORT, async () => {
   await ConnectDB()
-  console.log(`Server running on http://localhost:${process.env.PORT}`)
+  console.log(`Server running on http://localhost:${PORT}`)
 })
