@@ -195,7 +195,7 @@ Create a .env file in the client directory and configure the following :
 
 ```
 
-VITE_EMPLOYEE_API= your employee api (backend)
+VITE_BACKEND_API= your employee api (backend)
 
 ```
 

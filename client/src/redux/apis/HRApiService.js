@@ -8,7 +8,7 @@ const HR_PUBLIC = [
 ]
 
 export const hrApiService = axios.create({
-    baseURL: import.meta.env.VITE_EMPLOYEE_API,
+    baseURL: import.meta.env.VITE_BACKEND_API,
     headers: { 'Content-Type': 'application/json' },
 })
 

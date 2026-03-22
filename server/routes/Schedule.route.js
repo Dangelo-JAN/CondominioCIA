@@ -9,16 +9,16 @@ import {
     HandleCompleteTask
 } from '../controllers/Schedule.controller.js'
 import { VerifyEmployeeToken, VerifyhHRToken } from '../middlewares/Auth.middleware.js'
-import { RoleAuthorization } from '../middlewares/RoleAuth.middleware.js'
+import { PermissionCheck } from '../middlewares/RoleAuth.middleware.js'
 
 const router = express.Router()
 
 // ── Rutas HR ──────────────────────────────────────────────────────────────
-router.post("/create", VerifyhHRToken, RoleAuthorization("HR-Admin"), HandleCreateSchedule)
-router.get("/all", VerifyhHRToken, RoleAuthorization("HR-Admin"), HandleGetAllSchedules)
-router.get("/employee/:employeeID", VerifyhHRToken, RoleAuthorization("HR-Admin"), HandleGetEmployeeSchedules)
-router.patch("/update", VerifyhHRToken, RoleAuthorization("HR-Admin"), HandleUpdateSchedule)
-router.delete("/delete/:scheduleID", VerifyhHRToken, RoleAuthorization("HR-Admin"), HandleDeleteSchedule)
+router.post("/create", VerifyhHRToken, PermissionCheck("schedules", "create"), HandleCreateSchedule)
+router.get("/all", VerifyhHRToken, PermissionCheck("schedules", "read"), HandleGetAllSchedules)
+router.get("/employee/:employeeID", VerifyhHRToken, PermissionCheck("schedules", "read"), HandleGetEmployeeSchedules)
+router.patch("/update", VerifyhHRToken, PermissionCheck("schedules", "update"), HandleUpdateSchedule)
+router.delete("/delete/:scheduleID", VerifyhHRToken, PermissionCheck("schedules", "delete"), HandleDeleteSchedule)
 
 // ── Rutas Employee ────────────────────────────────────────────────────────
 router.get("/my-schedules", VerifyEmployeeToken, HandleGetMySchedules)
