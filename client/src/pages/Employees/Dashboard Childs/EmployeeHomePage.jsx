@@ -4,6 +4,7 @@ import { HandleEmployeeDashboard } from "../../../redux/Thunks/EmployeeDashboard
 import { Loading } from "../../../components/common/loading.jsx"
 import { LogIn, LogOut, Clock, CheckCircle2, Circle, CalendarDays, AlertCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useIsDark } from "../../../hooks/useIsDark.js"
 
 const DAYS_ES = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
 
@@ -19,11 +20,36 @@ const formatDuration = (minutes) => {
     return h > 0 ? `${h}h ${m}m` : `${m}m`
 }
 
+// ── Tokens de contraste actualizados ─────────────────────────────────────
+// Claro:  card bg = #f0f2ff  |  border = #c7d2fe  |  shadow = indigo glow
+// Oscuro: card bg = rgba(255,255,255,0.05)  |  border = rgba(255,255,255,0.12)
+// Sub-card claro:  bg = #ffffff  |  border = #e0e7ff
+// Sub-card oscuro: bg = rgba(255,255,255,0.06)  |  border = rgba(255,255,255,0.1)
+
+const CARD = {
+    light: {
+        bg: "#f0f2ff",
+        border: "#a5b4fc",
+        shadow: "0 2px 16px rgba(99,102,241,0.12), 0 1px 4px rgba(0,0,0,0.06)",
+    },
+    dark: {
+        bg: "rgba(255,255,255,0.05)",
+        border: "rgba(255,255,255,0.12)",
+        shadow: "0 4px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.06)",
+    },
+}
+
+const SUBCARD = {
+    light: { bg: "#ffffff", border: "#c7d2fe" },
+    dark: { bg: "rgba(255,255,255,0.07)", border: "rgba(255,255,255,0.12)" },
+}
+
 export const EmployeeHomePage = () => {
     const dispatch = useDispatch()
     const { toast } = useToast()
     const { attendance, schedules, isLoading } = useSelector(s => s.employeedashboardreducer)
     const [actionLoading, setActionLoading] = useState(false)
+    const isDark = useIsDark()
 
     const today = new Date()
     const todayStr = today.toISOString().split("T")[0]
@@ -34,17 +60,18 @@ export const EmployeeHomePage = () => {
         dispatch(HandleEmployeeDashboard({ type: "MySchedules" }))
     }, [])
 
-    // Log de asistencia de hoy
     const todayLog = attendance?.attendancelog?.find(
         l => new Date(l.logdate).toISOString().split("T")[0] === todayStr
     )
 
-    const hasCheckedIn  = !!todayLog?.checkin
+    const hasCheckedIn = !!todayLog?.checkin
     const hasCheckedOut = !!todayLog?.checkout
 
-    // Tareas de hoy del horario activo
     const activeSchedule = schedules?.find(s => s.isactive)
     const todayTasks = activeSchedule?.schedule?.find(d => d.day === todayDay)?.tasks || []
+
+    const card = isDark ? CARD.dark : CARD.light
+    const subcard = isDark ? SUBCARD.dark : SUBCARD.light
 
     const handleCheckIn = async () => {
         setActionLoading(true)
@@ -78,18 +105,20 @@ export const EmployeeHomePage = () => {
     if (isLoading && !attendance) return <Loading />
 
     return (
-        <div className="flex flex-col w-full px-4 py-6 gap-6 overflow-y-auto
-            bg-white dark:bg-[#0f0f1a] min-h-full">
+        <div className="flex flex-col w-full px-4 py-6 gap-6 overflow-y-auto min-h-full
+            bg-white dark:bg-[#0f0f1a]">
 
             {/* Header */}
             <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-indigo-500 dark:text-indigo-400 mb-1">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] mb-1
+                    text-indigo-500 dark:text-indigo-400">
                     Mi Panel
                 </p>
-                <h1 className="text-2xl xl:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                <h1 className="text-2xl xl:text-3xl font-bold tracking-tight
+                    text-gray-900 dark:text-white">
                     Bienvenido 👋
                 </h1>
-                <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+                <p className="text-sm mt-1 text-gray-400 dark:text-gray-500">
                     {today.toLocaleDateString("es-ES", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
                 </p>
             </div>
@@ -98,43 +127,61 @@ export const EmployeeHomePage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
                 {/* ── Card checkin/checkout ──────────────────────────────── */}
-                <div className="rounded-2xl p-5 flex flex-col gap-4
-                    bg-gray-50 border border-gray-100
-                    dark:bg-[rgba(255,255,255,0.02)] dark:border-[rgba(255,255,255,0.06)]">
+                <div className="rounded-2xl p-5 flex flex-col gap-4"
+                    style={{
+                        background: card.bg,
+                        border: `1px solid ${card.border}`,
+                        boxShadow: card.shadow,
+                    }}>
 
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-indigo-500 dark:text-indigo-400">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.18em]
+                                text-indigo-500 dark:text-indigo-400">
                                 Jornada de hoy
                             </p>
-                            <h2 className="text-base font-bold mt-0.5 text-gray-900 dark:text-white">
+                            <h2 className="text-base font-bold mt-0.5
+                                text-gray-900 dark:text-white">
                                 Control de asistencia
                             </h2>
                         </div>
-                        <div className={`w-2.5 h-2.5 rounded-full ${hasCheckedIn && !hasCheckedOut ? "bg-emerald-400 animate-pulse" : "bg-gray-200 dark:bg-gray-700"}`} />
+                        <div className={`w-2.5 h-2.5 rounded-full transition-colors ${hasCheckedIn && !hasCheckedOut
+                                ? "bg-emerald-400 animate-pulse"
+                                : "bg-gray-300 dark:bg-[rgba(255,255,255,0.15)]"
+                            }`} />
                     </div>
 
                     {/* Horas */}
                     <div className="grid grid-cols-2 gap-3">
-                        {/* Entrada */}
-                        <div className="rounded-xl p-4 flex flex-col gap-1
-                            bg-white border border-gray-100
-                            dark:bg-[rgba(255,255,255,0.03)] dark:border-[rgba(255,255,255,0.06)]">
-                            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                        <div className="rounded-xl p-4 flex flex-col gap-1"
+                            style={{
+                                background: subcard.bg,
+                                border: `1px solid ${subcard.border}`,
+                            }}>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider
+                                text-gray-400 dark:text-gray-500">
                                 Entrada
                             </p>
-                            <p className={`text-2xl font-bold tracking-tight ${hasCheckedIn ? "text-emerald-500" : "text-gray-300 dark:text-gray-700"}`}>
+                            <p className={`text-2xl font-bold tracking-tight ${hasCheckedIn
+                                    ? "text-emerald-500"
+                                    : "text-gray-300 dark:text-[rgba(255,255,255,0.15)]"
+                                }`}>
                                 {hasCheckedIn ? formatTime(todayLog.checkin) : "--:--"}
                             </p>
                         </div>
-                        {/* Salida */}
-                        <div className="rounded-xl p-4 flex flex-col gap-1
-                            bg-white border border-gray-100
-                            dark:bg-[rgba(255,255,255,0.03)] dark:border-[rgba(255,255,255,0.06)]">
-                            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+                        <div className="rounded-xl p-4 flex flex-col gap-1"
+                            style={{
+                                background: subcard.bg,
+                                border: `1px solid ${subcard.border}`,
+                            }}>
+                            <p className="text-[10px] font-semibold uppercase tracking-wider
+                                text-gray-400 dark:text-gray-500">
                                 Salida
                             </p>
-                            <p className={`text-2xl font-bold tracking-tight ${hasCheckedOut ? "text-red-400" : "text-gray-300 dark:text-gray-700"}`}>
+                            <p className={`text-2xl font-bold tracking-tight ${hasCheckedOut
+                                    ? "text-red-400"
+                                    : "text-gray-300 dark:text-[rgba(255,255,255,0.15)]"
+                                }`}>
                                 {hasCheckedOut ? formatTime(todayLog.checkout) : "--:--"}
                             </p>
                         </div>
@@ -142,9 +189,11 @@ export const EmployeeHomePage = () => {
 
                     {/* Duración */}
                     {hasCheckedOut && todayLog?.duration && (
-                        <div className="flex items-center gap-2 px-3 py-2 rounded-xl
-                            bg-indigo-50 border border-indigo-100
-                            dark:bg-[rgba(99,102,241,0.08)] dark:border-[rgba(99,102,241,0.15)]">
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-xl"
+                            style={{
+                                background: isDark ? "rgba(99,102,241,0.12)" : "#eef2ff",
+                                border: `1px solid ${isDark ? "rgba(99,102,241,0.25)" : "#c7d2fe"}`,
+                            }}>
                             <Clock className="w-4 h-4 text-indigo-500" />
                             <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
                                 Jornada: {formatDuration(todayLog.duration)}
@@ -180,23 +229,31 @@ export const EmployeeHomePage = () => {
                 </div>
 
                 {/* ── Tareas de hoy ─────────────────────────────────────── */}
-                <div className="rounded-2xl p-5 flex flex-col gap-4
-                    bg-gray-50 border border-gray-100
-                    dark:bg-[rgba(255,255,255,0.02)] dark:border-[rgba(255,255,255,0.06)]">
+                <div className="rounded-2xl p-5 flex flex-col gap-4"
+                    style={{
+                        background: card.bg,
+                        border: `1px solid ${card.border}`,
+                        boxShadow: card.shadow,
+                    }}>
 
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-indigo-500 dark:text-indigo-400">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.18em]
+                                text-indigo-500 dark:text-indigo-400">
                                 {todayDay}
                             </p>
-                            <h2 className="text-base font-bold mt-0.5 text-gray-900 dark:text-white">
+                            <h2 className="text-base font-bold mt-0.5
+                                text-gray-900 dark:text-white">
                                 Tareas del día
                             </h2>
                         </div>
                         {todayTasks.length > 0 && (
-                            <span className="text-xs font-semibold px-2.5 py-1 rounded-full
-                                bg-indigo-50 text-indigo-600 border border-indigo-100
-                                dark:bg-[rgba(99,102,241,0.12)] dark:text-indigo-400 dark:border-[rgba(99,102,241,0.2)]">
+                            <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                                style={{
+                                    background: isDark ? "rgba(99,102,241,0.15)" : "#eef2ff",
+                                    color: isDark ? "#a5b4fc" : "#4f46e5",
+                                    border: `1px solid ${isDark ? "rgba(99,102,241,0.3)" : "#c7d2fe"}`,
+                                }}>
                                 {todayTasks.filter(t => t.completed).length}/{todayTasks.length}
                             </span>
                         )}
@@ -205,7 +262,8 @@ export const EmployeeHomePage = () => {
                     <div className="flex flex-col gap-2 overflow-y-auto max-h-[280px]">
                         {todayTasks.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-8 gap-2">
-                                <CalendarDays className="w-8 h-8 text-gray-200 dark:text-gray-700" />
+                                <CalendarDays className="w-8 h-8"
+                                    style={{ color: isDark ? "rgba(255,255,255,0.15)" : "#d1d5db" }} />
                                 <p className="text-sm text-gray-400 dark:text-gray-600">
                                     Sin tareas asignadas para hoy
                                 </p>
@@ -219,23 +277,33 @@ export const EmployeeHomePage = () => {
                                         activeSchedule.schedule.find(d => d.day === todayDay)._id,
                                         task._id
                                     )}
-                                    className="flex items-start gap-3 p-3 rounded-xl text-left transition-all duration-150 w-full
-                                        hover:bg-white dark:hover:bg-[rgba(255,255,255,0.04)]
-                                        border border-transparent hover:border-gray-100 dark:hover:border-[rgba(255,255,255,0.06)]"
+                                    className="flex items-start gap-3 p-3 rounded-xl text-left w-full
+                                        transition-all duration-150"
+                                    style={{
+                                        border: `1px solid transparent`,
+                                    }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.05)" : "#ffffff"
+                                        e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.1)" : "#e0e7ff"
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.background = "transparent"
+                                        e.currentTarget.style.borderColor = "transparent"
+                                    }}
                                 >
                                     {task.completed
                                         ? <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0 text-emerald-500" />
-                                        : <Circle className="w-4 h-4 mt-0.5 flex-shrink-0 text-gray-300 dark:text-gray-600" />
+                                        : <Circle className="w-4 h-4 mt-0.5 flex-shrink-0"
+                                            style={{ color: isDark ? "rgba(255,255,255,0.2)" : "#d1d5db" }} />
                                     }
                                     <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                                        <p className={`text-sm font-medium truncate ${
-                                            task.completed
-                                                ? "line-through text-gray-400 dark:text-gray-600"
-                                                : "text-gray-800 dark:text-[rgba(255,255,255,0.8)]"
-                                        }`}>
+                                        <p className={`text-sm font-medium truncate ${task.completed
+                                                ? "line-through text-gray-400 dark:text-[rgba(255,255,255,0.3)]"
+                                                : "text-gray-800 dark:text-[rgba(255,255,255,0.85)]"
+                                            }`}>
                                             {task.title}
                                         </p>
-                                        <p className="text-[11px] text-gray-400 dark:text-gray-600">
+                                        <p className="text-[11px] text-gray-400 dark:text-[rgba(255,255,255,0.35)]">
                                             {task.starttime} — {task.endtime}
                                         </p>
                                     </div>
@@ -246,11 +314,13 @@ export const EmployeeHomePage = () => {
                 </div>
             </div>
 
-            {/* ── Sin horario activo ─────────────────────────────────────── */}
+            {/* Sin horario activo */}
             {!activeSchedule && !isLoading && (
-                <div className="flex items-center gap-3 px-4 py-3 rounded-xl
-                    bg-amber-50 border border-amber-100
-                    dark:bg-[rgba(245,158,11,0.08)] dark:border-[rgba(245,158,11,0.15)]">
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                    style={{
+                        background: isDark ? "rgba(245,158,11,0.1)" : "#fffbeb",
+                        border: `1px solid ${isDark ? "rgba(245,158,11,0.25)" : "#fde68a"}`,
+                    }}>
                     <AlertCircle className="w-4 h-4 flex-shrink-0 text-amber-500" />
                     <p className="text-sm text-amber-700 dark:text-amber-400">
                         No tienes un horario activo asignado. Contacta a tu supervisor.
