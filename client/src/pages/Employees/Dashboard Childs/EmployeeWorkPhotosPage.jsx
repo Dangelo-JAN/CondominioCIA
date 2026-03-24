@@ -7,6 +7,7 @@ import {
     Camera, Upload, Trash2, X, ImageIcon,
     CalendarDays, AlertCircle, Eye, CheckCircle2
 } from "lucide-react"
+import { useIsDark } from "../../../hooks/useIsDark.js"
 
 const formatDate = (dateStr) => {
     if (!dateStr) return ""
@@ -66,13 +67,19 @@ const PhotoModal = ({ photo, onClose }) => {
 }
 
 // ── Card de foto ──────────────────────────────────────────────────────────
-const PhotoCard = ({ photo, onDelete, onPreview }) => (
-    <div className="group relative rounded-2xl overflow-hidden border
-        border-gray-100 dark:border-[rgba(255,255,255,0.06)]
-        bg-white dark:bg-[rgba(255,255,255,0.02)]">
+const PhotoCard = ({ photo, onDelete, onPreview }) => {
+    const isDark = useIsDark()
+
+    return (
+    <div className="group relative rounded-2xl overflow-hidden transition-all duration-300"
+        style={{
+            background: isDark ? "linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(255,255,255,0.02) 100%)" : "linear-gradient(135deg, #e0e7ff 0%, #ffffff 60%)",
+            border: isDark ? "1px solid rgba(99,102,241,0.40)" : "1px solid #a5b4fc"
+        }}>
 
         {/* Imagen */}
-        <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-[rgba(255,255,255,0.03)]">
+        <div className="relative aspect-video overflow-hidden transition-colors duration-300"
+            style={{ background: isDark ? "rgba(255,255,255,0.05)" : "#f3f4f6" }}>
             <img
                 src={photo.photourl}
                 alt={photo.description || "Foto de trabajo"}
@@ -110,21 +117,24 @@ const PhotoCard = ({ photo, onDelete, onPreview }) => (
 
         {/* Info */}
         <div className="px-3 py-2.5 flex items-center justify-between gap-2">
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-400 truncate flex-1">
+            <p className="text-xs font-medium truncate flex-1 transition-colors duration-300"
+                style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#6b7280" }}>
                 {photo.description || "Sin descripción"}
             </p>
             <div className="flex items-center gap-1 flex-shrink-0">
-                <CalendarDays className="w-3 h-3 text-gray-300 dark:text-gray-600" />
-                <span className="text-[11px] text-gray-400 dark:text-gray-600">
+                <CalendarDays className="w-3 h-3 transition-colors duration-300" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#9ca3af" }} />
+                <span className="text-[11px] transition-colors duration-300" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#9ca3af" }}>
                     {formatDate(photo.workdate)}
                 </span>
             </div>
         </div>
     </div>
-)
+    )
+}
 
 // ── Componente principal ──────────────────────────────────────────────────
 export const EmployeeWorkPhotosPage = () => {
+    const isDark = useIsDark()
     const dispatch = useDispatch()
     const { toast } = useToast()
     const { photos, isLoading } = useSelector(s => s.employeedashboardreducer)
@@ -247,13 +257,15 @@ export const EmployeeWorkPhotosPage = () => {
 
             {/* Panel de subida */}
             {showUploadPanel && (
-                <div className="rounded-2xl p-5 flex flex-col sm:flex-row gap-4
-                    bg-gray-50 border border-gray-100
-                    dark:bg-[rgba(255,255,255,0.02)] dark:border-[rgba(99,102,241,0.2)]">
+                <div className="rounded-2xl p-5 flex flex-col sm:flex-row gap-4 transition-colors duration-300"
+                    style={{
+                        background: isDark ? "linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(255,255,255,0.02) 100%)" : "linear-gradient(135deg, #e0e7ff 0%, #ffffff 60%)",
+                        border: isDark ? "1px solid rgba(99,102,241,0.40)" : "1px solid #a5b4fc"
+                    }}>
 
                     {/* Preview */}
-                    <div className="w-full sm:w-48 h-40 rounded-xl overflow-hidden flex-shrink-0
-                        bg-gray-100 dark:bg-[rgba(255,255,255,0.04)]">
+                    <div className="w-full sm:w-48 h-40 rounded-xl overflow-hidden flex-shrink-0 transition-colors duration-300"
+                        style={{ background: isDark ? "rgba(255,255,255,0.05)" : "#f3f4f6" }}>
                         {form.previewUrl ? (
                             <img src={form.previewUrl} alt="Preview" className="w-full h-full object-cover" />
                         ) : (
@@ -333,8 +345,8 @@ export const EmployeeWorkPhotosPage = () => {
             {/* Galería */}
             {!photos || photos.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 gap-3">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center
-                        bg-gray-100 dark:bg-[rgba(255,255,255,0.04)]">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-colors duration-300"
+                        style={{ background: isDark ? "rgba(255,255,255,0.05)" : "#f3f4f6" }}>
                         <ImageIcon className="w-7 h-7 text-gray-300 dark:text-gray-600" />
                     </div>
                     <p className="text-base font-semibold text-gray-400 dark:text-gray-500">
