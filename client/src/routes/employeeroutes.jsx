@@ -8,6 +8,7 @@ import { EntryPage } from "../pages/Employees/EntryPage.jsx"
 import { EmployeeHomePage } from "../pages/Employees/Dashboard Childs/EmployeeHomePage.jsx"
 import { EmployeeSchedulePage } from "../pages/Employees/Dashboard Childs/EmployeeSchedulePage.jsx"
 import { EmployeeWorkPhotosPage } from "../pages/Employees/Dashboard Childs/EmployeeWorkPhotosPage.jsx"
+import { EmployeeProfilePage } from "../pages/Employees/Dashboard Childs/EmployeeProfilePage.jsx"
 
 export const EmployeeRoutes = [
     {
@@ -37,6 +38,10 @@ export const EmployeeRoutes = [
             {
                 path: "/auth/employee/employee-dashboard/photos",
                 element: <EmployeeWorkPhotosPage />
+            },
+            {
+                path: "/auth/employee/employee-dashboard/profile",
+                element: <EmployeeProfilePage />
             }
         ]
     },
