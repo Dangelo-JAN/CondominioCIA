@@ -1,3 +1,5 @@
+import { useIsDark } from "../../../hooks/useIsDark.js"
+
 export const KeyDetailsBox = ({ image, dataname, data }) => {
     const labelMap = {
         employees: "Empleados",
@@ -7,7 +9,7 @@ export const KeyDetailsBox = ({ image, dataname, data }) => {
     }
 
     const colorMap = {
-        employees:   {
+        employees: {
             accent: "#6366f1",
             lightBg: "#e0e7ff", lightBorder: "#a5b4fc",
             darkBg: "rgba(99,102,241,0.18)", darkBorder: "rgba(99,102,241,0.4)",
@@ -19,13 +21,13 @@ export const KeyDetailsBox = ({ image, dataname, data }) => {
             darkBg: "rgba(139,92,246,0.18)", darkBorder: "rgba(139,92,246,0.4)",
             glow: "rgba(139,92,246,0.15)", iconBg: "#ddd6fe", darkIconBg: "rgba(139,92,246,0.25)"
         },
-        leaves:      {
+        leaves: {
             accent: "#0891b2",
             lightBg: "#cffafe", lightBorder: "#67e8f9",
             darkBg: "rgba(8,145,178,0.18)", darkBorder: "rgba(8,145,178,0.4)",
             glow: "rgba(8,145,178,0.15)", iconBg: "#a5f3fc", darkIconBg: "rgba(8,145,178,0.25)"
         },
-        requestes:   {
+        requestes: {
             accent: "#d97706",
             lightBg: "#fef3c7", lightBorder: "#fcd34d",
             darkBg: "rgba(217,119,6,0.18)", darkBorder: "rgba(217,119,6,0.4)",
@@ -36,15 +38,15 @@ export const KeyDetailsBox = ({ image, dataname, data }) => {
     const colors = colorMap[dataname] || colorMap.employees
     const label = labelMap[dataname] || dataname
 
-    const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark")
+    const isDark = useIsDark()
 
     const cardBg = isDark
         ? `linear-gradient(135deg, ${colors.darkBg} 0%, rgba(255,255,255,0.02) 100%)`
         : `linear-gradient(135deg, ${colors.lightBg} 0%, #ffffff 60%)`
 
     const cardBorder = isDark ? colors.darkBorder : colors.lightBorder
-    const iconBg     = isDark ? colors.darkIconBg  : colors.iconBg
-    const iconBorder = isDark ? colors.darkBorder   : colors.lightBorder
+    const iconBg = isDark ? colors.darkIconBg : colors.iconBg
+    const iconBorder = isDark ? colors.darkBorder : colors.lightBorder
 
     return (
         <div

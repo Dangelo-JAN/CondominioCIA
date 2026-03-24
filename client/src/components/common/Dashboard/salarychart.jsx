@@ -1,5 +1,6 @@
 import { TrendingUp, TrendingDown, Minus } from "lucide-react"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts"
+import { useIsDark } from "../../../hooks/useIsDark.js"
 
 const CustomTooltip = ({ active, payload, label, isDark }) => {
     if (active && payload && payload.length) {
@@ -33,7 +34,7 @@ const CustomTooltip = ({ active, payload, label, isDark }) => {
 }
 
 export const SalaryChart = ({ balancedata }) => {
-    const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark")
+    const isDark = useIsDark()
 
     const chartData = []
     if (balancedata) {
@@ -56,18 +57,18 @@ export const SalaryChart = ({ balancedata }) => {
     const availableAmount = chartData.length > 0
         ? chartData[chartData.length - 1]["AvailableAmount"] : 0
 
-    const TrendIcon  = trendingUp > 0 ? TrendingUp : trendingUp < 0 ? TrendingDown : Minus
-    const trendColor = trendingUp > 0 ? "#10b981"  : trendingUp < 0 ? "#ef4444"   : "#6366f1"
+    const TrendIcon = trendingUp > 0 ? TrendingUp : trendingUp < 0 ? TrendingDown : Minus
+    const trendColor = trendingUp > 0 ? "#10b981" : trendingUp < 0 ? "#ef4444" : "#6366f1"
 
     const dateRange = chartData.length > 0
         ? `${chartData[0]["month"]} — ${chartData[chartData.length - 1]["month"]} 2024` : null
 
-    const tickColor   = isDark ? "rgba(255,255,255,0.4)"  : "rgba(0,0,0,0.45)"
-    const gridColor   = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)"
-    const labelColor  = isDark ? "rgba(255,255,255,0.4)"  : "rgba(0,0,0,0.45)"
+    const tickColor = isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)"
+    const gridColor = isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.08)"
+    const labelColor = isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.45)"
     const legendColor = isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.5)"
-    const emptyColor  = isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.3)"
-    const sectionLabel = isDark ? "rgba(99,102,241,0.9)"  : "#6366f1"
+    const emptyColor = isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.3)"
+    const sectionLabel = isDark ? "rgba(99,102,241,0.9)" : "#6366f1"
 
     return (
         <div className="flex flex-col h-full p-5 gap-4">
@@ -112,11 +113,11 @@ export const SalaryChart = ({ balancedata }) => {
                         <AreaChart data={chartData} margin={{ left: 0, right: 0, top: 8, bottom: 0 }}>
                             <defs>
                                 <linearGradient id="gradSalaries" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%"  stopColor="#8b5cf6" stopOpacity={isDark ? 0.4 : 0.25} />
+                                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={isDark ? 0.4 : 0.25} />
                                     <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                                 </linearGradient>
                                 <linearGradient id="gradAvailable" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%"  stopColor="#6366f1" stopOpacity={isDark ? 0.4 : 0.25} />
+                                    <stop offset="5%" stopColor="#6366f1" stopOpacity={isDark ? 0.4 : 0.25} />
                                     <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
