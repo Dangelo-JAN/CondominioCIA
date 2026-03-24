@@ -8,8 +8,10 @@ import { ListItems } from "../../../components/common/Dashboard/ListDesigns"
 import { ListContainer } from "../../../components/common/Dashboard/ListDesigns"
 import { AddEmployeesDialogBox } from "../../../components/common/Dashboard/dialogboxes.jsx"
 import { Users } from "lucide-react"
+import { useIsDark } from "../../../hooks/useIsDark.js"
 
 export const HREmployeesPage = () => {
+    const isDark = useIsDark()
     const dispatch = useDispatch()
     const HREmployeesState = useSelector((state) => state.HREmployeesPageReducer)
     const table_headings = ["Full Name", "Email", "Department", "Contact Number", "Modify Employee"]
@@ -43,9 +45,12 @@ export const HREmployeesPage = () => {
                         <h1 className="text-2xl xl:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
                             Empleados
                         </h1>
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold
-                            bg-indigo-50 text-indigo-600 border border-indigo-100
-                            dark:bg-[rgba(99,102,241,0.12)] dark:text-indigo-300 dark:border-[rgba(99,102,241,0.2)]">
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold transition-colors duration-300"
+                            style={{
+                                background: isDark ? "rgba(99,102,241,0.12)" : "rgba(99,102,241,0.10)",
+                                color: isDark ? "#a5b4fc" : "#4f46e5",
+                                border: isDark ? "1px solid rgba(99,102,241,0.30)" : "1px solid rgba(99,102,241,0.25)"
+                            }}>
                             {employeeCount} total
                         </span>
                     </div>
@@ -54,7 +59,7 @@ export const HREmployeesPage = () => {
             </div>
 
             {/* Divider */}
-            <div className="h-px w-full bg-gray-100 dark:bg-[rgba(99,102,241,0.08)]" />
+            <div className="h-px w-full transition-colors duration-300" style={{ background: isDark ? "rgba(99,102,241,0.08)" : "#f3f4f6" }} />
 
             {/* Table */}
             <div className="flex flex-col gap-3 flex-1 overflow-auto">
@@ -64,10 +69,12 @@ export const HREmployeesPage = () => {
                 <ListContainer>
                     {employeeCount === 0 ? (
                         <div className="flex flex-col items-center justify-center py-16 gap-3">
-                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-indigo-50 dark:bg-[rgba(99,102,241,0.1)]">
-                                <Users className="w-6 h-6 text-indigo-300 dark:text-indigo-500" />
+                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300"
+                                style={{ background: isDark ? "rgba(99,102,241,0.1)" : "#e0e7ff" }}>
+                                <Users className="w-6 h-6 transition-colors duration-300" style={{ color: isDark ? "#6366f1" : "#a5b4fc" }} />
                             </div>
-                            <p className="text-sm font-medium text-gray-400 dark:text-[rgba(255,255,255,0.3)]">
+                            <p className="text-sm font-medium transition-colors duration-300"
+                                style={{ color: isDark ? "rgba(255,255,255,0.35)" : "#9ca3af" }}>
                                 No hay empleados registrados aún
                             </p>
                         </div>
