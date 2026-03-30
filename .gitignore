@@ -1,2 +1,4 @@
 .agent/*
 .git-hooks/*
+.opencode/*
+opencode.json
