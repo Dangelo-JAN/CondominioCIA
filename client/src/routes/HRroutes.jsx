@@ -14,6 +14,7 @@ import { HRSchedulePage } from "../pages/HumanResources/Dashboard Childs/HRSched
 import { HRWorkPhotosPage } from "../pages/HumanResources/Dashboard Childs/HRWorkPhotosPage.jsx"
 import { HRProfilesPage } from "../pages/HumanResources/Dashboard Childs/HRProfilesPage.jsx"
 import { AcceptInvitationPage } from "../pages/HumanResources/AcceptInvitationPage.jsx"
+import { HRLeavesPage } from "../pages/HumanResources/Dashboard Childs/leavespage.jsx"
 
 export const HRRoutes = [
     {
@@ -51,6 +52,10 @@ export const HRRoutes = [
             {
                 path: "/HR/dashboard/schedules",
                 element: <HRSchedulePage />
+            },
+            {
+                path: "/HR/dashboard/leaves",
+                element: <HRLeavesPage />
             },
             {
                 path: "/HR/dashboard/work-photos",
