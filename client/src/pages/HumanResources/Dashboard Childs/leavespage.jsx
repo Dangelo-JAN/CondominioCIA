@@ -18,7 +18,7 @@ export const HRLeavesPage = () => {
     const [statusFilter, setStatusFilter] = useState("all")
     const [dateRange, setDateRange] = useState({ start: "", end: "" })
     
-    const table_headings = ["Empleado", "Fechas", "Razón", "Estado", "Acciones"]
+    const table_headings = ["Empleado", "Fechas", "Razón", "Estado"]
     
     useEffect(() => {
         dispatch(HandleGetHRLeaves())
@@ -215,7 +215,7 @@ export const HRLeavesPage = () => {
             {/* Table */}
             <div className="flex flex-col gap-3 flex-1 overflow-auto">
                 <ListWrapper>
-                    <HeadingBar table_layout={"grid-cols-5"} table_headings={table_headings} />
+                    <HeadingBar table_layout={"grid-cols-4"} table_headings={table_headings} />
                 </ListWrapper>
                 <ListContainer>
                     {leavesCount === 0 ? (
@@ -234,7 +234,7 @@ export const HRLeavesPage = () => {
                         filteredLeaves.map((leave, index) => (
                             <div
                                 key={leave._id ?? index}
-                                className="grid grid-cols-2 sm:grid-cols-5 gap-2 px-3 py-3 items-center
+                                className="grid grid-cols-2 sm:grid-cols-4 gap-2 px-3 py-3 items-center
                                     border-b last:border-b-0
                                     border-gray-100 hover:bg-cyan-50/50 transition-colors duration-150
                                     dark:border-[rgba(6,182,212,0.08)] dark:hover:bg-[rgba(6,182,212,0.04)]"
@@ -270,16 +270,6 @@ export const HRLeavesPage = () => {
                                 {/* Status */}
                                 <div className="flex justify-center">
                                     {getStatusBadge(leave.status)}
-                                </div>
-
-                                {/* Actions */}
-                                <div className="flex justify-center items-center gap-2">
-                                    {leave.status === "Pending" && (
-                                        <LeaveActionsDialogBox 
-                                            LeaveID={leave._id}
-                                            EmployeeName={`${leave.employee?.firstname} ${leave.employee?.lastname}`}
-                                        />
-                                    )}
                                 </div>
                             </div>
                         ))
