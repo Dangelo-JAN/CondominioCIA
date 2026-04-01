@@ -40,3 +40,8 @@ export const HRDepartmentPageEndPoints = {
 export const EmployeesIDsEndPoints = {
     GETALL: "/api/v1/employee/all-employees-ids",
 }
+
+export const HRLeavesEndPoints = {
+    GETALL: "/api/v1/leave/all",
+    UPDATE_STATUS: "/api/v1/leave/HR-update-leave"
+}
