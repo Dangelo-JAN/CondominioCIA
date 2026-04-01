@@ -385,3 +385,36 @@ export const EmployeeDashboardAsyncReducer = (builder, thunk) => {
         state.error.content = action.payload
     })
 }
+
+// ── HR Leaves ────────────────────────────────────────────────────────────
+export const HRLeavesAsyncReducer = (builder, thunk) => {
+    builder.addCase(thunk.pending, (state) => {
+        state.isLoading = true;
+        state.error.content = null;
+    })
+    builder.addCase(thunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error.status = false;
+        state.error.message = null;
+        state.error.content = null;
+
+        if (action.payload.type === "GetAllLeaves") {
+            state.data = action.payload.data;
+            state.fetchData = false;
+        }
+        else if (action.payload.type === "UpdateLeaveStatus") {
+            state.data = (state.data || []).map(leave =>
+                leave._id === action.payload.data._id ? action.payload.data : leave
+            );
+            state.success.status = true;
+            state.success.message = action.payload.message;
+        }
+    })
+    builder.addCase(thunk.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error.status = true;
+        state.error.message = action.payload?.message;
+        state.success.status = false;
+        state.error.content = action.payload;
+    })
+}

@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import { CommonStateHandler } from "../../../utils/commonhandler.js"
 import { useDispatch, useSelector } from "react-redux"
+import { useIsDark } from "../../../hooks/useIsDark.js"
 import { FormSubmitToast } from "./Toasts.jsx"
 import { Loading } from "../loading.jsx"
 import { HandleDeleteHREmployees } from "../../../redux/Thunks/HREmployeesThunk.js"
 import { HandlePostHRDepartments, HandlePatchHRDepartments, HandleDeleteHRDepartments } from "../../../redux/Thunks/HRDepartmentPageThunk.js"
+import { HandleUpdateHRLeaveStatus } from "../../../redux/Thunks/HRLeavesThunk.js"
 import { useToast } from "../../../hooks/use-toast.js"
 import {
     Command,
@@ -22,7 +24,7 @@ import {
     CommandList,
 } from "@/components/ui/command"
 import { fetchEmployeesIDs } from "../../../redux/Thunks/EmployeesIDsThunk.js"
-import { UserPlus, Trash2, Eye, Building2, Users, X, Check } from "lucide-react"
+import { UserPlus, Trash2, Eye, Building2, Users, X, Check, CheckCircle, XCircle, Calendar } from "lucide-react"
 import { RichTextEditor } from "./RichTextEditor.jsx"
 
 // ── Shared input style helper ──────────────────────────────────────────────
@@ -495,6 +497,100 @@ export const RemoveEmployeeFromDepartmentDialogBox = ({ DepartmentName, Departme
                             </Button>
                         </DialogClose>
                     </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    )
+}
+
+// ── Leave Actions (Approve/Reject) ────────────────────────────────────────────
+export const LeaveActionsDialogBox = ({ LeaveID, EmployeeName }) => {
+    const { toast } = useToast()
+    const dispatch = useDispatch()
+    const HRState = useSelector((state) => state.HRReducer)
+    const [selectedAction, setSelectedAction] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
+
+    const HandleUpdateLeaveStatus = (status) => {
+        if (!HRState.data?._id) {
+            toast({ title: "Error", description: "No se pudo obtener el ID del HR", variant: "destructive" })
+            return
+        }
+
+        setIsLoading(true)
+        dispatch(HandleUpdateHRLeaveStatus({
+            leaveID: LeaveID,
+            status: status,
+            HRID: HRState.data._id
+        })).then((result) => {
+            setIsLoading(false)
+            if (result.error) {
+                toast({ title: "Error", description: result.payload?.message || "Error al actualizar", variant: "destructive" })
+            } else {
+                toast({ 
+                    title: status === "Approved" ? "Aprobado" : "Rechazado", 
+                    description: `La solicitud de ${EmployeeName} ha sido ${status === "Approved" ? "aprobada" : "rechazada"}`,
+                    variant: "default"
+                })
+            }
+        })
+    }
+
+    return (
+        <Dialog>
+            <DialogTrigger className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200
+                text-cyan-600 bg-cyan-50 border border-cyan-100 hover:bg-cyan-100
+                dark:text-cyan-300 dark:bg-[rgba(6,182,212,0.1)] dark:border-[rgba(6,182,212,0.2)] dark:hover:bg-[rgba(6,182,212,0.18)]">
+                <Check className="w-3.5 h-3.5" />
+                Revisar
+            </DialogTrigger>
+
+            <DialogContent className="max-w-[340px]
+                bg-white border border-gray-100 shadow-2xl rounded-2xl
+                dark:bg-[#13131f] dark:border-[rgba(6,182,212,0.15)]">
+                <div className="flex flex-col gap-5 p-1">
+                    <div className="text-center">
+                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3"
+                            style={{ background: isDark ? "rgba(6,182,212,0.1)" : "#cffafe" }}>
+                            <Calendar className="w-6 h-6" style={{ color: isDark ? "#06b6d4" : "#0891b2" }} />
+                        </div>
+                        <p className="text-base font-bold text-gray-900 dark:text-white mb-1">
+                            Revisar Solicitud
+                        </p>
+                        <p className="text-sm text-gray-400 dark:text-[rgba(255,255,255,0.35)]">
+                            {EmployeeName}
+                        </p>
+                    </div>
+
+                    <div className="flex flex-col gap-3">
+                        <Button 
+                            onClick={() => HandleUpdateLeaveStatus("Approved")}
+                            disabled={isLoading}
+                            className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white
+                                bg-emerald-500 hover:bg-emerald-600 border-0
+                                dark:bg-[rgba(16,185,129,0.7)] dark:hover:bg-[rgba(16,185,129,0.9)]"
+                        >
+                            <CheckCircle className="w-4 h-4" />
+                            Aprobar
+                        </Button>
+                        <Button 
+                            onClick={() => HandleUpdateLeaveStatus("Rejected")}
+                            disabled={isLoading}
+                            className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white
+                                bg-red-500 hover:bg-red-600 border-0
+                                dark:bg-[rgba(239,68,68,0.7)] dark:hover:bg-[rgba(239,68,68,0.9)]"
+                        >
+                            <XCircle className="w-4 h-4" />
+                            Rechazar
+                        </Button>
+                    </div>
+                    <DialogClose asChild>
+                        <Button className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold
+                            text-gray-600 bg-gray-100 hover:bg-gray-200 border-0
+                            dark:text-[rgba(255,255,255,0.6)] dark:bg-[rgba(255,255,255,0.05)] dark:hover:bg-[rgba(255,255,255,0.1)]">
+                            Cancelar
+                        </Button>
+                    </DialogClose>
                 </div>
             </DialogContent>
         </Dialog>
