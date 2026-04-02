@@ -10,7 +10,7 @@ import {
 } from "../../../redux/Thunks/HRLeavesThunk.js"
 import { Calendar, Plus, Edit, Trash2, Eye, Clock, CheckCircle, XCircle } from "lucide-react"
 import * as Dialog from "@radix-ui/react-dialog"
-import { useForm } from "../../../../hooks/useForm.js"
+import { useForm } from "../../../hooks/useForm.js"
 import { Button } from "../../../components/ui/button.jsx"
 import { Input } from "../../../components/ui/input.jsx"
 import { Label } from "../../../components/ui/label.jsx"

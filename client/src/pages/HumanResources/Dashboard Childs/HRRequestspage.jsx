@@ -6,10 +6,10 @@ import {
     HandleGetHRLeaves,
     HandleUpdateHRLeaveStatus,
     HandleDeleteLeaveByHR,
-    HandleGetHREmployees,
     HandleCreateLeaveByHR,
     HandleUpdateLeaveByHR
 } from "../../../redux/Thunks/HRLeavesThunk.js"
+import { HandleGetHREmployees } from "../../../redux/Thunks/HREmployeesThunk.js"
 import { Calendar, Filter, ChevronDown, CheckCircle, XCircle, Clock, Plus, Edit, Trash2, Eye } from "lucide-react"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useForm } from "../../../hooks/useForm.js"
