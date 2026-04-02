@@ -398,16 +398,48 @@ export const HRLeavesAsyncReducer = (builder, thunk) => {
         state.error.message = null;
         state.error.content = null;
 
-        if (action.payload.type === "GetAllLeaves") {
-            state.data = action.payload.data;
+        const payload = action.payload;
+        const thunkName = thunk.name;
+
+        // Obtener mis solicitudes (empleado)
+        if (thunkName === "HandleGetEmployeeLeaves") {
+            state.data = payload.data;
             state.fetchData = false;
         }
-        else if (action.payload.type === "UpdateLeaveStatus") {
+        // Obtener todas las solicitudes (HR)
+        else if (thunkName === "HandleGetHRLeaves") {
+            state.data = payload.data;
+            state.fetchData = false;
+        }
+        // Crear solicitud (empleado o HR)
+        else if (thunkName === "HandleCreateEmployeeLeave" || thunkName === "HandleCreateLeaveByHR") {
+            if (payload.data) {
+                state.data = state.data ? [...state.data, payload.data] : [payload.data];
+            }
+            state.success.status = true;
+            state.success.message = payload.message;
+        }
+        // Actualizar solicitud (empleado o HR)
+        else if (thunkName === "HandleUpdateEmployeeLeave" || thunkName === "HandleUpdateLeaveByHR") {
             state.data = (state.data || []).map(leave =>
-                leave._id === action.payload.data._id ? action.payload.data : leave
+                leave._id === payload.data._id ? payload.data : leave
             );
             state.success.status = true;
-            state.success.message = action.payload.message;
+            state.success.message = payload.message;
+        }
+        // Eliminar solicitud (empleado o HR)
+        else if (thunkName === "HandleDeleteEmployeeLeave" || thunkName === "HandleDeleteLeaveByHR") {
+            state.data = (state.data || []).filter(leave => leave._id !== action.meta.arg);
+            state.success.status = true;
+            state.success.message = payload.message;
+        }
+        // Aprobar/Rechazar solicitud (HR)
+        else if (thunkName === "HandleUpdateHRLeaveStatus") {
+            state.data = (state.data || []).map(leave =>
+                leave._id === payload.data._id ? payload.data : leave
+            );
+            state.success.status = true;
+            state.success.message = payload.message;
         }
     })
     builder.addCase(thunk.rejected, (state, action) => {

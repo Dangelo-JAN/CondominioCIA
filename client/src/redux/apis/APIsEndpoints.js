@@ -42,6 +42,22 @@ export const EmployeesIDsEndPoints = {
 }
 
 export const HRLeavesEndPoints = {
+    // Empleado
+    GET_EMPLOYEE_LEAVES: "/api/v1/leave/employee-leaves",
+    CREATE_LEAVE: "/api/v1/leave/create-leave",
+    UPDATE_EMPLOYEE_LEAVE: "/api/v1/leave/employee-update-leave",
+    DELETE_EMPLOYEE_LEAVE: (leaveID) => `/api/v1/leave/delete-leave/${leaveID}`,
+    
+    // HR
     GETALL: "/api/v1/leave/all",
+    CREATE_BY_HR: "/api/v1/leave/hr-create-leave",
+    UPDATE_BY_HR: "/api/v1/leave/hr-update-leave",
+    DELETE_BY_HR: (leaveID) => `/api/v1/leave/hr-delete-leave/${leaveID}`,
     UPDATE_STATUS: "/api/v1/leave/HR-update-leave"
+}
+
+export const HRAbsencesEndPoints = {
+    GETALL: "/api/v1/absence/all",
+    GET_BY_EMPLOYEE: (employeeID) => `/api/v1/absence/employee/${employeeID}`,
+    DELETE: (absenceID) => `/api/v1/absence/delete/${absenceID}`
 }

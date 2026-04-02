@@ -7,6 +7,12 @@ const LeaveSchema = new Schema({
     required: true,
     ref: "Employee"
   },
+  leavetype: {
+    type: String,
+    required: true,
+    enum: ["Vacaciones", "Reposo Médico", "Personal", "Otro"],
+    default: "Personal"
+  },
   startdate: {
     type: Date,
     required: true
@@ -33,6 +39,14 @@ const LeaveSchema = new Schema({
   approvedby: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "HumanResources"
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false
+  },
+  deletedAt: {
+    type: Date,
+    default: null
   },
   organizationID: {
     type: mongoose.Schema.Types.ObjectId,

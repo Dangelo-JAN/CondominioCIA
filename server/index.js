@@ -9,6 +9,7 @@ import DepartmentRouter from './routes/Department.route.js'
 import SalaryRouter from './routes/Salary.route.js'
 import NoticeRouter from "./routes/Notice.route.js"
 import LeaveRouter from './routes/Leave.route.js'
+import AbsenceRouter from './routes/Absence.route.js'
 import AttendanceRouter from './routes/Attendance.route.js'
 import RecruitmentRouter from './routes/Recuritment.route.js'
 import ApplicantRouter from './routes/Applicant.route.js'
@@ -62,6 +63,7 @@ app.use("/api/v1/department", DepartmentRouter)
 app.use("/api/v1/salary", SalaryRouter)
 app.use("/api/v1/notice", NoticeRouter)
 app.use("/api/v1/leave", LeaveRouter)
+app.use("/api/v1/absence", AbsenceRouter)
 app.use("/api/v1/attendance", AttendanceRouter)
 app.use("/api/v1/recruitment", RecruitmentRouter)
 app.use("/api/v1/applicant", ApplicantRouter)
