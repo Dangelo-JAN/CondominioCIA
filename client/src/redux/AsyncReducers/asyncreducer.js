@@ -387,7 +387,7 @@ export const EmployeeDashboardAsyncReducer = (builder, thunk) => {
 }
 
 // ── HR Leaves ────────────────────────────────────────────────────────────
-export const HRLeavesAsyncReducer = (builder, thunk) => {
+export const HRLeavesAsyncReducer = (builder, thunk, thunkName) => {
     builder.addCase(thunk.pending, (state) => {
         state.isLoading = true;
         state.error.content = null;
@@ -399,24 +399,35 @@ export const HRLeavesAsyncReducer = (builder, thunk) => {
         state.error.content = null;
 
         const payload = action.payload;
-        const thunkName = thunk.name;
+        
+        console.log("[DEBUG] HRLeavesAsyncReducer - thunkName:", thunkName, "payload:", payload)
 
         // Obtener mis solicitudes (empleado)
         if (thunkName === "HandleGetEmployeeLeaves") {
-            state.data = payload.data;
+            console.log("[DEBUG] HandleGetEmployeeLeaves - asignando payload.data:", payload?.data)
+            state.data = payload?.data || null;
             state.fetchData = false;
+            console.log("[DEBUG] HandleGetEmployeeLeaves - state.data actualizado:", state.data)
         }
         // Obtener todas las solicitudes (HR)
         else if (thunkName === "HandleGetHRLeaves") {
-            state.data = payload.data;
+            console.log("[DEBUG] HandleGetHRLeaves - asignando payload.data:", payload?.data)
+            state.data = payload?.data || null;
             state.fetchData = false;
+            console.log("[DEBUG] HandleGetHRLeaves - state.data actualizado:", state.data)
         }
         // Crear solicitud (empleado o HR)
         else if (thunkName === "HandleCreateEmployeeLeave" || thunkName === "HandleCreateLeaveByHR") {
-            if (payload.data) {
+            state.isLoading = false;
+            state.error.status = false;
+            state.error.message = null;
+            state.error.content = null;
+            
+            // Agregar al estado si la respuesta es exitosa
+            if (payload.success && payload.data) {
                 state.data = state.data ? [...state.data, payload.data] : [payload.data];
             }
-            state.success.status = true;
+            state.success.status = payload.success;
             state.success.message = payload.message;
         }
         // Actualizar solicitud (empleado o HR)
@@ -448,5 +459,6 @@ export const HRLeavesAsyncReducer = (builder, thunk) => {
         state.error.message = action.payload?.message;
         state.success.status = false;
         state.error.content = action.payload;
+        console.log(`[DEBUG] ${thunkName} - rejected:`, action.payload);
     })
 }
