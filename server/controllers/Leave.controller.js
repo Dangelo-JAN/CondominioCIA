@@ -91,6 +91,11 @@ export const HandleGetEmployeeLeaves = async (req, res) => {
             isDeleted: false 
         }).populate("approvedby", "firstname lastname")
 
+        // Headers anti-caché para evitar 304
+        res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+        res.set('Pragma', 'no-cache')
+        res.set('Expires', '0')
+
         return res.status(200).json({ success: true, message: "Solicitudes recuperadas exitosamente", data: leaves })
     } catch (error) {
         return res.status(500).json({ success: false, message: "Internal server error" })
@@ -175,6 +180,11 @@ export const HandleAllLeaves = async (req, res) => {
             isDeleted: false 
         }).populate("employee approvedby", "firstname lastname department")
 
+        // Headers anti-caché para evitar 304
+        res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+        res.set('Pragma', 'no-cache')
+        res.set('Expires', '0')
+        
         return res.status(200).json({ success: true, message: "All leave records retrieved successfully", data: leaves })
     } catch (error) {
         return res.status(500).json({ success: false, message: "Internal server error" })
