@@ -33,21 +33,21 @@ const HRLeavesSlice = createSlice({
     },
     extraReducers: (builder) => {
         // Empleado
-        HRLeavesAsyncReducer(builder, HandleGetEmployeeLeaves)
-        HRLeavesAsyncReducer(builder, HandleCreateEmployeeLeave)
-        HRLeavesAsyncReducer(builder, HandleUpdateEmployeeLeave)
-        HRLeavesAsyncReducer(builder, HandleDeleteEmployeeLeave)
+        HRLeavesAsyncReducer(builder, HandleGetEmployeeLeaves, "HandleGetEmployeeLeaves")
+        HRLeavesAsyncReducer(builder, HandleCreateEmployeeLeave, "HandleCreateEmployeeLeave")
+        HRLeavesAsyncReducer(builder, HandleUpdateEmployeeLeave, "HandleUpdateEmployeeLeave")
+        HRLeavesAsyncReducer(builder, HandleDeleteEmployeeLeave, "HandleDeleteEmployeeLeave")
         
         // HR - Solicitudes
-        HRLeavesAsyncReducer(builder, HandleGetHRLeaves)
-        HRLeavesAsyncReducer(builder, HandleCreateLeaveByHR)
-        HRLeavesAsyncReducer(builder, HandleUpdateLeaveByHR)
-        HRLeavesAsyncReducer(builder, HandleDeleteLeaveByHR)
-        HRLeavesAsyncReducer(builder, HandleUpdateHRLeaveStatus)
+        HRLeavesAsyncReducer(builder, HandleGetHRLeaves, "HandleGetHRLeaves")
+        HRLeavesAsyncReducer(builder, HandleCreateLeaveByHR, "HandleCreateLeaveByHR")
+        HRLeavesAsyncReducer(builder, HandleUpdateLeaveByHR, "HandleUpdateLeaveByHR")
+        HRLeavesAsyncReducer(builder, HandleDeleteLeaveByHR, "HandleDeleteLeaveByHR")
+        HRLeavesAsyncReducer(builder, HandleUpdateHRLeaveStatus, "HandleUpdateHRLeaveStatus")
         
         // HR - Ausencias
-        HRLeavesAsyncReducer(builder, HandleGetHRAbsences)
-        HRLeavesAsyncReducer(builder, HandleDeleteHRAbsence)
+        HRLeavesAsyncReducer(builder, HandleGetHRAbsences, "HandleGetHRAbsences")
+        HRLeavesAsyncReducer(builder, HandleDeleteHRAbsence, "HandleDeleteHRAbsence")
     }
 })
 

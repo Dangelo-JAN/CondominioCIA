@@ -398,11 +398,14 @@ export const HRRequestspage = () => {
     }
 
     // Handlers
-    const handleCreate = (formData) => {
-        dispatch(HandleCreateLeaveByHR(formData)).then(() => {
+    const handleCreate = async (formData) => {
+        try {
+            await dispatch(HandleCreateLeaveByHR(formData)).unwrap()
             setIsCreateOpen(false)
             dispatch(HandleGetHRLeaves())
-        })
+        } catch (error) {
+            console.error("Error al crear solicitud:", error)
+        }
     }
 
     const handleEdit = (formData) => {
