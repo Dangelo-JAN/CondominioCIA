@@ -1,4 +1,4 @@
-import { ListWrapper, HeadingBar, ListContainer } from "../../../components/common/Dashboard/ListDesigns"
+import { ThemedListWrapper, ThemedHeadingBar, ThemedListContainer } from "../../../components/common/Dashboard/ListDesigns"
 import { useEffect, useState, useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { HandleGetHRLeaves, HandleUpdateHRLeaveStatus } from "../../../redux/Thunks/HRLeavesThunk.js"
@@ -214,10 +214,10 @@ export const HRLeavesPage = () => {
 
             {/* Table */}
             <div className="flex flex-col gap-3 flex-1 overflow-auto">
-                <ListWrapper>
-                    <HeadingBar table_layout={"grid-cols-4"} table_headings={table_headings} />
-                </ListWrapper>
-                <ListContainer>
+                <ThemedListWrapper accent="cyan">
+                    <ThemedHeadingBar accent="cyan" table_layout={"grid-cols-4"} table_headings={table_headings} />
+                </ThemedListWrapper>
+                <ThemedListContainer accent="cyan">
                     {leavesCount === 0 ? (
                         <div className="flex flex-col items-center justify-center py-16 gap-3">
                             <div className="w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300"

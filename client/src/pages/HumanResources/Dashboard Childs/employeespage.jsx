@@ -1,20 +1,18 @@
-import { ListWrapper } from "../../../components/common/Dashboard/ListDesigns"
-import { HeadingBar } from "../../../components/common/Dashboard/ListDesigns"
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { HandleGetHREmployees } from "../../../redux/Thunks/HREmployeesThunk.js"
 import { Loading } from "../../../components/common/loading.jsx"
-import { ListItems } from "../../../components/common/Dashboard/ListDesigns"
-import { ListContainer } from "../../../components/common/Dashboard/ListDesigns"
+import { useIsDark } from "../../../hooks/useIsDark.js"
 import { AddEmployeesDialogBox } from "../../../components/common/Dashboard/dialogboxes.jsx"
 import { Users } from "lucide-react"
-import { useIsDark } from "../../../hooks/useIsDark.js"
+import { ThemedListWrapper, ThemedHeadingBar, ThemedListContainer, ListItems } from "../../../components/common/Dashboard/ListDesigns"
 
 export const HREmployeesPage = () => {
     const isDark = useIsDark()
     const dispatch = useDispatch()
     const HREmployeesState = useSelector((state) => state.HREmployeesPageReducer)
     const table_headings = ["Full Name", "Email", "Department", "Contact Number", "Modify Employee"]
+    const hiddenCols = ["Email", "Department", "Contact Number"]
 
     useEffect(() => {
         if (HREmployeesState.fetchData) {
@@ -63,10 +61,15 @@ export const HREmployeesPage = () => {
 
             {/* Table */}
             <div className="flex flex-col gap-3 flex-1 overflow-auto">
-                <ListWrapper>
-                    <HeadingBar table_layout={"grid-cols-5"} table_headings={table_headings} />
-                </ListWrapper>
-                <ListContainer>
+                <ThemedListWrapper accent="indigo">
+                    <ThemedHeadingBar 
+                        accent="indigo"
+                        table_layout={"grid-cols-5"} 
+                        table_headings={table_headings}
+                        hiddenCols={hiddenCols}
+                    />
+                </ThemedListWrapper>
+                <ThemedListContainer accent="indigo">
                     {employeeCount === 0 ? (
                         <div className="flex flex-col items-center justify-center py-16 gap-3">
                             <div className="w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300"
@@ -81,7 +84,7 @@ export const HREmployeesPage = () => {
                     ) : (
                         <ListItems TargetedState={HREmployeesState} />
                     )}
-                </ListContainer>
+                </ThemedListContainer>
             </div>
         </div>
     )
