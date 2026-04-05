@@ -16,7 +16,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { HandleGetHRDepartments, HandleDeleteHRDepartments, HandlePatchHRDepartments } from "../../../redux/Thunks/HRDepartmentPageThunk"
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog"
 import { Loading } from "../loading.jsx"
-import { HeadingBar } from "./ListDesigns.jsx"
+import { ThemedHeadingBar } from "./ListDesigns.jsx"
 import { DepartmentListItems } from "./ListDesigns.jsx"
 import { useToast } from "../../../hooks/use-toast.js"
 import { EmployeesIDSDialogBox } from "./dialogboxes.jsx"
@@ -404,7 +404,7 @@ export const DepartmentContent = ({ CurrentDepartmentData }) => {
                     className="rounded-xl overflow-auto p-2 h-[85%]
                         border border-indigo-100 bg-white
                         dark:border-[rgba(99,102,241,0.1)] dark:bg-[rgba(255,255,255,0.02)]">
-                    <HeadingBar table_layout={"sm:grid-cols-4"} table_headings={table_headings_employees} />
+                    <ThemedHeadingBar accent="purple" table_layout={"sm:grid-cols-4"} table_headings={table_headings_employees} />
                     <DepartmentListItems TargetedState={CurrentDepartmentData} />
                 </TabsContent>
 
@@ -412,7 +412,7 @@ export const DepartmentContent = ({ CurrentDepartmentData }) => {
                     className="rounded-xl overflow-auto p-2 h-[85%]
                         border border-indigo-100 bg-white
                         dark:border-[rgba(99,102,241,0.1)] dark:bg-[rgba(255,255,255,0.02)]">
-                    <HeadingBar table_layout={"sm:grid-cols-4"} table_headings={table_headings_notice} />
+                    <ThemedHeadingBar accent="purple" table_layout={"sm:grid-cols-4"} table_headings={table_headings_notice} />
                 </TabsContent>
             </Tabs>
         </div>
