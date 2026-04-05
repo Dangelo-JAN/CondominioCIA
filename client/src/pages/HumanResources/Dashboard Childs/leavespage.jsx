@@ -274,7 +274,7 @@ export const HRLeavesPage = () => {
                             </div>
                         ))
                     )}
-                </ListContainer>
+                </ThemedListContainer>
             </div>
         </div>
     )
