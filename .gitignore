@@ -1,5 +1,6 @@
-.agent/*
-.git-hooks/*
-.opencode/*
+.agent/
+.git-hooks/
+.opencode/
 opencode.json
 AGENTS.md
+.bitacoras/

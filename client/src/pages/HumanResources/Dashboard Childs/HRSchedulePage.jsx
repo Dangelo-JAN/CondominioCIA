@@ -4,10 +4,11 @@ import { HandleHRSchedule } from "../../../redux/Thunks/HRScheduleThunk.js"
 import { HandleGetHREmployees } from "../../../redux/Thunks/HREmployeesThunk.js"
 import { Loading } from "../../../components/common/loading.jsx"
 import { useToast } from "@/hooks/use-toast"
+import { ListItemCard, StatusBadge } from "../../../components/common/Dashboard/ListItemCard.jsx"
 import {
     Plus, Trash2, CalendarDays, ChevronDown, ChevronUp,
-    Users, Clock, ClipboardList, X, CheckCircle2, Circle,
-    AlertCircle, Pencil, ToggleLeft, ToggleRight
+    Users, ClipboardList, X, CheckCircle2, Circle,
+    Pencil, ToggleLeft, ToggleRight
 } from "lucide-react"
 
 const DAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
@@ -17,19 +18,7 @@ const emptyDay  = () => ({ day: "Lunes", tasks: [emptyTask()] })
 
 const formatDate = (d) => d ? new Date(d).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" }) : ""
 
-// ── Pill de estado ────────────────────────────────────────────────────────
-const StatusPill = ({ active }) => (
-    <span className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${
-        active
-            ? "bg-emerald-50 text-emerald-600 border-emerald-100 dark:bg-[rgba(16,185,129,0.1)] dark:text-emerald-400 dark:border-[rgba(16,185,129,0.2)]"
-            : "bg-gray-100 text-gray-400 border-gray-200 dark:bg-[rgba(255,255,255,0.04)] dark:text-gray-500 dark:border-[rgba(255,255,255,0.06)]"
-    }`}>
-        <span className={`w-1.5 h-1.5 rounded-full ${active ? "bg-emerald-400" : "bg-gray-300 dark:bg-gray-600"}`} />
-        {active ? "Activo" : "Inactivo"}
-    </span>
-)
-
-// ── Card de horario en la lista ───────────────────────────────────────────
+// ── Card de horario en la lista (usando ListItemCard) ───────────────────
 const ScheduleCard = ({ schedule, employees, onDelete, onToggle, onEdit }) => {
     const [open, setOpen] = useState(false)
     const assignedEmployee = employees?.find(e => e._id === schedule.employee?._id || e._id === schedule.employee)
@@ -37,125 +26,110 @@ const ScheduleCard = ({ schedule, employees, onDelete, onToggle, onEdit }) => {
     const allTasks  = schedule.schedule?.flatMap(d => d.tasks) || []
     const completed = allTasks.filter(t => t.completed).length
 
-    return (
-        <div className="rounded-2xl overflow-hidden border transition-all duration-200
-            border-gray-100 dark:border-[rgba(255,255,255,0.06)]
-            bg-white dark:bg-[rgba(255,255,255,0.02)]">
+    // Botones de acción (sin el toggle de expandir - se maneja en ListItemCard)
+    const actionButtons = (
+        <>
+            <button
+                onClick={() => onToggle(schedule)}
+                title={schedule.isactive ? "Desactivar" : "Activar"}
+                className="p-1.5 rounded-lg transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-[rgba(255,255,255,0.06)]"
+            >
+                {schedule.isactive
+                    ? <ToggleRight className="w-5 h-5 text-emerald-500" />
+                    : <ToggleLeft  className="w-5 h-5 text-gray-400" />
+                }
+            </button>
+            <button
+                onClick={() => onEdit(schedule)}
+                className="p-1.5 rounded-lg transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-[rgba(255,255,255,0.06)]"
+            >
+                <Pencil className="w-4 h-4 text-gray-400 hover:text-indigo-500 transition-colors" />
+            </button>
+            <button
+                onClick={() => onDelete(schedule._id)}
+                className="p-1.5 rounded-lg transition-colors duration-150 hover:bg-red-50 dark:hover:bg-[rgba(239,68,68,0.08)]"
+            >
+                <Trash2 className="w-4 h-4 text-gray-400 dark:text-gray-500 hover:text-red-400 transition-colors" />
+            </button>
+        </>
+    )
 
-            {/* Header */}
-            <div className="flex items-start justify-between px-4 py-3 gap-3">
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                        <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
-                            {schedule.title}
-                        </p>
-                        <StatusPill active={schedule.isactive} />
-                    </div>
-                    {schedule.description && (
-                        <p className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1 mb-1">
-                            {schedule.description}
-                        </p>
-                    )}
-                    <div className="flex items-center gap-3 flex-wrap">
-                        {assignedEmployee && (
-                            <div className="flex items-center gap-1">
-                                <Users className="w-3 h-3 text-indigo-400" />
-                                <span className="text-[11px] text-indigo-500 dark:text-indigo-400 font-medium">
-                                    {assignedEmployee.firstname} {assignedEmployee.lastname}
-                                </span>
-                            </div>
-                        )}
-                        <div className="flex items-center gap-1">
-                            <CalendarDays className="w-3 h-3 text-gray-300 dark:text-gray-600" />
-                            <span className="text-[11px] text-gray-400 dark:text-gray-600">
-                                {formatDate(schedule.startdate)} → {formatDate(schedule.enddate)}
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <ClipboardList className="w-3 h-3 text-gray-300 dark:text-gray-600" />
-                            <span className="text-[11px] text-gray-400 dark:text-gray-600">
-                                {completed}/{allTasks.length} tareas
-                            </span>
-                        </div>
-                    </div>
+    // Contenido del header - Misma info que versión anterior
+    const headerContent = (
+        <div className="flex items-center gap-3 flex-wrap">
+            {assignedEmployee && (
+                <div className="flex items-center gap-1">
+                    <Users className="w-3 h-3 text-indigo-400" />
+                    <span className="text-[11px] text-indigo-500 dark:text-indigo-400 font-medium">
+                        {assignedEmployee.firstname} {assignedEmployee.lastname}
+                    </span>
                 </div>
-
-                {/* Acciones */}
-                <div className="flex items-center gap-1 flex-shrink-0">
-                    <button
-                        onClick={() => onToggle(schedule)}
-                        title={schedule.isactive ? "Desactivar" : "Activar"}
-                        className="p-1.5 rounded-lg transition-colors duration-150
-                            hover:bg-gray-100 dark:hover:bg-[rgba(255,255,255,0.06)]"
-                    >
-                        {schedule.isactive
-                            ? <ToggleRight className="w-5 h-5 text-emerald-500" />
-                            : <ToggleLeft  className="w-5 h-5 text-gray-400" />
-                        }
-                    </button>
-                    <button
-                        onClick={() => onEdit(schedule)}
-                        className="p-1.5 rounded-lg transition-colors duration-150
-                            hover:bg-gray-100 dark:hover:bg-[rgba(255,255,255,0.06)]"
-                    >
-                        <Pencil className="w-4 h-4 text-gray-400 hover:text-indigo-500 transition-colors" />
-                    </button>
-                    <button
-                        onClick={() => onDelete(schedule._id)}
-                        className="p-1.5 rounded-lg transition-colors duration-150
-                            hover:bg-red-50 dark:hover:bg-[rgba(239,68,68,0.08)]"
-                    >
-                        <Trash2 className="w-4 h-4 text-gray-300 dark:text-gray-600 hover:text-red-400 transition-colors" />
-                    </button>
-                    <button
-                        onClick={() => setOpen(p => !p)}
-                        className="p-1.5 rounded-lg transition-colors duration-150
-                            hover:bg-gray-100 dark:hover:bg-[rgba(255,255,255,0.06)]"
-                    >
-                        {open
-                            ? <ChevronUp   className="w-4 h-4 text-gray-400" />
-                            : <ChevronDown className="w-4 h-4 text-gray-400" />
-                        }
-                    </button>
-                </div>
+            )}
+            <div className="flex items-center gap-1">
+                <CalendarDays className="w-3 h-3 text-gray-300 dark:text-gray-600" />
+                <span className="text-[11px] text-gray-400 dark:text-gray-600">
+                    {formatDate(schedule.startdate)} → {formatDate(schedule.enddate)}
+                </span>
             </div>
+            <div className="flex items-center gap-1">
+                <ClipboardList className="w-3 h-3 text-gray-300 dark:text-gray-600" />
+                <span className="text-[11px] text-gray-400 dark:text-gray-600">
+                    {completed}/{allTasks.length} tareas
+                </span>
+            </div>
+        </div>
+    )
 
-            {/* Detalle de días */}
-            {open && (
-                <div className="border-t border-gray-50 dark:border-[rgba(255,255,255,0.04)] px-4 py-3 flex flex-col gap-2">
-                    {schedule.schedule?.map(day => (
-                        <div key={day._id} className="flex flex-col gap-1.5">
-                            <p className="text-[11px] font-semibold uppercase tracking-wider text-indigo-500 dark:text-indigo-400">
-                                {day.day}
-                            </p>
-                            {day.tasks.map(task => (
-                                <div key={task._id}
-                                    className="flex items-start gap-2 px-3 py-2 rounded-xl
-                                        bg-gray-50 dark:bg-[rgba(255,255,255,0.03)]">
-                                    {task.completed
-                                        ? <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-emerald-500 flex-shrink-0" />
-                                        : <Circle       className="w-3.5 h-3.5 mt-0.5 text-gray-300 dark:text-gray-600 flex-shrink-0" />
-                                    }
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-xs font-medium text-gray-700 dark:text-[rgba(255,255,255,0.7)]">
-                                            {task.title}
-                                        </p>
-                                        {task.description && (
-                                            <p className="text-[11px] text-gray-400 dark:text-gray-600 mt-0.5">
-                                                {task.description}
-                                            </p>
-                                        )}
-                                    </div>
-                                    <span className="text-[11px] text-gray-400 dark:text-gray-600 flex-shrink-0">
-                                        {task.starttime}–{task.endtime}
-                                    </span>
-                                </div>
-                            ))}
+    // Contenido expandable - CON BORDES VISIBLES como versión anterior
+    const expandableContent = (
+        <div className="flex flex-col gap-2">
+            {schedule.schedule?.map(day => (
+                <div key={day._id} className="flex flex-col gap-1.5">
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-indigo-500 dark:text-indigo-400">
+                        {day.day}
+                    </p>
+                    {day.tasks.map(task => (
+                        <div key={task._id}
+                            className="flex items-start gap-2 px-3 py-2 rounded-xl
+                                bg-gray-50 dark:bg-[rgba(255,255,255,0.03)]
+                                border border-gray-100 dark:border-[rgba(255,255,255,0.04)]">
+                            {task.completed
+                                ? <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 text-emerald-500 flex-shrink-0" />
+                                : <Circle       className="w-3.5 h-3.5 mt-0.5 text-gray-400 dark:text-gray-500 flex-shrink-0" />
+                            }
+                            <div className="flex-1 min-w-0">
+                                <p className="text-xs font-medium text-gray-700 dark:text-[rgba(255,255,255,0.7)]">
+                                    {task.title}
+                                </p>
+                                {task.description && (
+                                    <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+                                        {task.description}
+                                    </p>
+                                )}
+                            </div>
+                            <span className="text-[11px] text-gray-500 dark:text-gray-400 flex-shrink-0">
+                                {task.starttime}–{task.endtime}
+                            </span>
                         </div>
                     ))}
                 </div>
-            )}
+            ))}
         </div>
+    )
+
+    return (
+        <ListItemCard
+            accent="indigo"
+            title={schedule.title}
+            description={schedule.description}
+            badge={<StatusBadge active={schedule.isactive} />}
+            actions={actionButtons}
+            headerMeta={headerContent}
+            isOpen={open}
+            onToggle={() => setOpen(p => !p)}
+        >
+            {expandableContent}
+        </ListItemCard>
     )
 }
 
