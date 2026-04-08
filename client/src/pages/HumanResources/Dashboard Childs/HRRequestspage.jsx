@@ -10,7 +10,7 @@ import {
     HandleUpdateLeaveByHR
 } from "../../../redux/Thunks/HRLeavesThunk.js"
 import { HandleGetHREmployees } from "../../../redux/Thunks/HREmployeesThunk.js"
-import { Calendar, Filter, ChevronDown, CheckCircle, XCircle, Clock, Plus, Edit, Trash2, Eye } from "lucide-react"
+import { Calendar, Filter, CheckCircle, XCircle, Clock, Plus, Edit, Trash2, Eye } from "lucide-react"
 import * as Dialog from "@radix-ui/react-dialog"
 import { useForm } from "../../../hooks/useForm.js"
 import { Button } from "../../../components/ui/button.jsx"
@@ -21,6 +21,7 @@ import {
     ThemedHeadingBar,
     ThemedListContainer,
 } from "../../../components/common/Dashboard/ListDesigns.jsx"
+import { CustomSelect } from "../../../components/ui/custom-select.jsx"
 
 const LEAVE_TYPES = ["Vacaciones", "Reposo Médico", "Personal", "Otro"]
 const STATUS_OPTIONS = [
@@ -115,20 +116,26 @@ const RequestForm = ({ initialData, employees, onSubmit, onClose, isLoading }) =
             {!initialData && (
                 <div className="flex flex-col gap-1.5">
                     <label style={labelStyle}>Empleado</label>
-                    <select name="employeeID" value={formData.employeeID} onChange={handleChange} required className={inputCls}>
-                        <option value="">Seleccionar empleado</option>
-                        {employees?.map(emp => (
-                            <option key={emp._id} value={emp._id}>{emp.firstname} {emp.lastname}</option>
-                        ))}
-                    </select>
+                    <CustomSelect
+                        value={formData.employeeID}
+                        onValueChange={(val) => handleChange({ target: { name: "employeeID", value: val } })}
+                        placeholder="Seleccionar empleado"
+                        options={employees?.map(emp => ({ value: emp._id, label: `${emp.firstname} ${emp.lastname}` })) || []}
+                        groupLabel="Empleados"
+                        className={inputCls}
+                    />
                 </div>
             )}
 
             <div className="flex flex-col gap-1.5">
                 <label style={labelStyle}>Tipo de ausencia</label>
-                <select name="leavetype" value={formData.leavetype} onChange={handleChange} required className={inputCls}>
-                    {LEAVE_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
-                </select>
+                <CustomSelect
+                    value={formData.leavetype}
+                    onValueChange={(val) => handleChange({ target: { name: "leavetype", value: val } })}
+                    placeholder="Seleccionar tipo"
+                    options={LEAVE_TYPES.map(type => ({ value: type, label: type }))}
+                    className={inputCls}
+                />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -407,31 +414,27 @@ export const HRRequestspage = () => {
                         style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#6b7280" }}>
                         <Filter className="w-3 h-3 inline mr-1" />Empleado
                     </label>
-                    <div className="relative">
-                        <select value={employeeFilter} onChange={e => setEmployeeFilter(e.target.value)}
-                            className={inputCls}>
-                            <option value="">Todos los empleados</option>
-                            {HREmployeesState.data?.map(emp => (
-                                <option key={emp._id} value={emp._id}>{emp.firstname} {emp.lastname}</option>
-                            ))}
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-                            style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#9ca3af" }} />
-                    </div>
+                    <CustomSelect
+                        value={employeeFilter}
+                        onValueChange={setEmployeeFilter}
+                        placeholder="Todos los empleados"
+                        options={HREmployeesState.data?.map(emp => ({ value: emp._id, label: `${emp.firstname} ${emp.lastname}` })) || []}
+                        groupLabel="Empleados"
+                        className={inputCls}
+                    />
                 </div>
 
                 {/* Estado */}
                 <div className="flex flex-col gap-1.5 w-full lg:w-48">
                     <label className="text-[10px] font-semibold uppercase tracking-wider"
                         style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#6b7280" }}>Estado</label>
-                    <div className="relative">
-                        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-                            className={inputCls}>
-                            {STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-                            style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#9ca3af" }} />
-                    </div>
+                    <CustomSelect
+                        value={statusFilter}
+                        onValueChange={setStatusFilter}
+                        placeholder="Todos"
+                        options={STATUS_OPTIONS.map(opt => ({ value: opt.value, label: opt.label }))}
+                        className={inputCls}
+                    />
                 </div>
 
                 {/* Fechas */}

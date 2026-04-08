@@ -3,7 +3,9 @@ import { useDispatch, useSelector } from "react-redux"
 import { HandleHRProfiles } from "../../../redux/Thunks/HRProfilesThunk.js"
 import { Loading } from "../../../components/common/loading.jsx"
 import { useToast } from "@/hooks/use-toast"
+import { useIsDark } from "../../../hooks/useIsDark.js"
 import { ListItemCard } from "../../../components/common/Dashboard/ListItemCard.jsx"
+import { CustomSelect } from "../../../components/ui/custom-select.jsx"
 import {
     Users, Plus, Trash2,
     ToggleLeft, ToggleRight, X, Shield, ShieldCheck,
@@ -56,6 +58,7 @@ const HRCard = ({ hr, isCurrentUser, onUpdatePermissions, onUpdateRole, onToggle
     const [localPerms, setLocalPerms] = useState(hr.permissions || {})
     const [saving, setSaving] = useState(false)
     const { toast } = useToast()
+    const isDark = useIsDark()
 
     const isAdmin = hr.role === "HR-Admin"
     const roleStyle = ROLE_STYLES[hr.role] || ROLE_STYLES["HR-Viewer"]
@@ -120,17 +123,15 @@ const HRCard = ({ hr, isCurrentUser, onUpdatePermissions, onUpdateRole, onToggle
 
     // Selector de rol (solo si no es Admin ni uno mismo)
     const roleSelector = !isAdmin && !isCurrentUser && (
-        <select
+        <CustomSelect
             value={hr.role}
-            onChange={e => handleRoleChange(e.target.value)}
-            className="text-xs font-semibold px-2 py-1 rounded-lg outline-none cursor-pointer
-                border border-gray-200 dark:border-[rgba(255,255,255,0.12)]
-                bg-white dark:bg-[rgba(255,255,255,0.05)]
-                text-gray-700 dark:text-gray-300"
-        >
-            <option value="HR-Manager">HR-Manager</option>
-            <option value="HR-Viewer">HR-Viewer</option>
-        </select>
+            onValueChange={handleRoleChange}
+            options={[
+                { value: "HR-Manager", label: "HR-Manager" },
+                { value: "HR-Viewer", label: "HR-Viewer" },
+            ]}
+            className="text-xs font-semibold px-2 py-1 rounded-lg border border-gray-200 dark:border-[rgba(255,255,255,0.12)] bg-white dark:bg-[rgba(255,255,255,0.05)] text-gray-700 dark:text-gray-300"
+        />
     )
 
     // Badge de Admin
@@ -246,6 +247,7 @@ const InviteModal = ({ onClose, onInvite }) => {
     const [form, setForm] = useState({ firstname: "", lastname: "", email: "", role: "HR-Manager" })
     const [sending, setSending] = useState(false)
     const { toast } = useToast()
+    const isDark = useIsDark()
 
     const handleSubmit = async () => {
         if (!form.firstname || !form.lastname || !form.email) {
@@ -329,14 +331,16 @@ const InviteModal = ({ onClose, onInvite }) => {
                     <div className="flex flex-col gap-1">
                         <label className="text-[11px] font-semibold uppercase tracking-wider
                             text-gray-400 dark:text-gray-500">Rol</label>
-                        <select
+                        <CustomSelect
                             value={form.role}
-                            onChange={e => setForm(p => ({ ...p, role: e.target.value }))}
+                            onValueChange={(val) => setForm(p => ({ ...p, role: val }))}
+                            options={[
+                                { value: "HR-Manager", label: "HR-Manager" },
+                                { value: "HR-Viewer", label: "HR-Viewer" },
+                            ]}
+                            placeholder="Seleccionar rol"
                             className="input-field w-full"
-                        >
-                            <option value="HR-Manager">HR-Manager</option>
-                            <option value="HR-Viewer">HR-Viewer</option>
-                        </select>
+                        />
                     </div>
                 </div>
 
