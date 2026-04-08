@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from "react-redux"
 import { HandleHRProfiles } from "../../../redux/Thunks/HRProfilesThunk.js"
 import { Loading } from "../../../components/common/loading.jsx"
 import { useToast } from "@/hooks/use-toast"
+import { ListItemCard } from "../../../components/common/Dashboard/ListItemCard.jsx"
 import {
-    Users, Plus, Trash2, ChevronDown, ChevronUp,
+    Users, Plus, Trash2,
     ToggleLeft, ToggleRight, X, Shield, ShieldCheck,
     ShieldAlert, Mail, Send
 } from "lucide-react"
@@ -28,9 +29,9 @@ const ACTIONS = ["create", "read", "update", "delete"]
 const ACTION_LABELS = { create: "Crear", read: "Ver", update: "Editar", delete: "Eliminar" }
 
 const ROLE_STYLES = {
-    "HR-Admin":   { bg: "rgba(99,102,241,0.1)",  border: "rgba(99,102,241,0.25)", color: "#6366f1",  icon: ShieldCheck },
-    "HR-Manager": { bg: "rgba(139,92,246,0.1)",  border: "rgba(139,92,246,0.25)", color: "#8b5cf6",  icon: Shield },
-    "HR-Viewer":  { bg: "rgba(100,116,139,0.1)", border: "rgba(100,116,139,0.25)",color: "#64748b",  icon: ShieldAlert },
+    "HR-Admin":   { bg: "rgba(99,102,241,0.15)",  border: "rgba(99,102,241,0.35)", color: "#6366f1",  icon: ShieldCheck },
+    "HR-Manager": { bg: "rgba(139,92,246,0.15)",  border: "rgba(139,92,246,0.35)", color: "#8b5cf6",  icon: Shield },
+    "HR-Viewer":  { bg: "rgba(100,116,139,0.15)", border: "rgba(100,116,139,0.35)",color: "#64748b",  icon: ShieldAlert },
 }
 
 // ── Toggle de permiso ─────────────────────────────────────────────────────
@@ -49,7 +50,7 @@ const PermToggle = ({ value, onChange, disabled }) => (
     </button>
 )
 
-// ── Card de perfil HR ─────────────────────────────────────────────────────
+// ── Card de perfil HR (usando ListItemCard) ──────────────────────────────
 const HRCard = ({ hr, isCurrentUser, onUpdatePermissions, onUpdateRole, onToggleActive, onDelete }) => {
     const [open, setOpen] = useState(false)
     const [localPerms, setLocalPerms] = useState(hr.permissions || {})
@@ -81,157 +82,162 @@ const HRCard = ({ hr, isCurrentUser, onUpdatePermissions, onUpdateRole, onToggle
         else toast({ variant: "destructive", title: "Error al actualizar rol" })
     }
 
-    return (
-        <div className="rounded-2xl overflow-hidden border transition-all duration-200
-            border-gray-100 dark:border-[rgba(255,255,255,0.06)]
-            bg-white dark:bg-[rgba(255,255,255,0.02)]">
+    // Badge para usuario actual
+    const currentUserBadge = isCurrentUser && (
+        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full
+            bg-indigo-50 text-indigo-500 dark:bg-[rgba(99,102,241,0.15)] dark:text-indigo-300">
+            Tú
+        </span>
+    )
 
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{ background: roleStyle.bg, border: `1px solid ${roleStyle.border}` }}>
-                        <RoleIcon className="w-4 h-4" style={{ color: roleStyle.color }} />
-                    </div>
-                    <div className="min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
-                                {hr.firstname} {hr.lastname}
-                            </p>
-                            {isCurrentUser && (
-                                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full
-                                    bg-indigo-50 text-indigo-500 dark:bg-[rgba(99,102,241,0.1)]">
-                                    Tú
-                                </span>
-                            )}
-                            {!hr.isactive && (
-                                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full
-                                    bg-red-50 text-red-400 dark:bg-[rgba(239,68,68,0.1)]">
-                                    Inactivo
-                                </span>
-                            )}
-                            {!hr.isverified && (
-                                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full
-                                    bg-amber-50 text-amber-500 dark:bg-[rgba(245,158,11,0.1)]">
-                                    Pendiente
-                                </span>
-                            )}
-                        </div>
-                        <p className="text-xs text-gray-400 dark:text-gray-600 truncate">
-                            {hr.email}
-                        </p>
-                    </div>
-                </div>
+    // Badge de estado inactivo
+    const inactiveBadge = !hr.isactive && (
+        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full
+            bg-red-50 text-red-400 dark:bg-[rgba(239,68,68,0.15)] dark:text-red-300">
+            Inactivo
+        </span>
+    )
 
-                <div className="flex items-center gap-2 flex-shrink-0">
-                    {/* Selector de rol — solo si no es Admin ni uno mismo */}
-                    {!isAdmin && !isCurrentUser && (
-                        <select
-                            value={hr.role}
-                            onChange={e => handleRoleChange(e.target.value)}
-                            className="text-xs font-semibold px-2 py-1 rounded-lg outline-none cursor-pointer
-                                border border-gray-200 dark:border-[rgba(255,255,255,0.08)]
-                                bg-white dark:bg-[rgba(255,255,255,0.05)]
-                                text-gray-700 dark:text-gray-300"
-                        >
-                            <option value="HR-Manager">HR-Manager</option>
-                            <option value="HR-Viewer">HR-Viewer</option>
-                        </select>
-                    )}
+    // Badge de verificación pendiente
+    const pendingBadge = !hr.isverified && (
+        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full
+            bg-amber-50 text-amber-500 dark:bg-[rgba(245,158,11,0.15)] dark:text-amber-300">
+            Pendiente
+        </span>
+    )
 
-                    {isAdmin && (
-                        <span className="text-xs font-semibold px-2.5 py-1 rounded-lg"
-                            style={{ background: roleStyle.bg, color: roleStyle.color, border: `1px solid ${roleStyle.border}` }}>
-                            HR-Admin
-                        </span>
-                    )}
+    // Título con badges
+    const titleContent = (
+        <div className="flex items-center gap-2 flex-wrap">
+            <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                {hr.firstname} {hr.lastname}
+            </p>
+            {currentUserBadge}
+            {inactiveBadge}
+            {pendingBadge}
+        </div>
+    )
 
-                    {!isAdmin && !isCurrentUser && (
-                        <>
-                            <button onClick={() => onToggleActive(hr._id)}
-                                className="p-1.5 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-[rgba(255,255,255,0.06)]">
-                                {hr.isactive
-                                    ? <ToggleRight className="w-5 h-5 text-emerald-500" />
-                                    : <ToggleLeft  className="w-5 h-5 text-gray-400" />
-                                }
-                            </button>
-                            <button onClick={() => onDelete(hr._id)}
-                                className="p-1.5 rounded-lg transition-colors hover:bg-red-50 dark:hover:bg-[rgba(239,68,68,0.08)]">
-                                <Trash2 className="w-4 h-4 text-gray-300 dark:text-gray-600 hover:text-red-400 transition-colors" />
-                            </button>
-                        </>
-                    )}
+    // Selector de rol (solo si no es Admin ni uno mismo)
+    const roleSelector = !isAdmin && !isCurrentUser && (
+        <select
+            value={hr.role}
+            onChange={e => handleRoleChange(e.target.value)}
+            className="text-xs font-semibold px-2 py-1 rounded-lg outline-none cursor-pointer
+                border border-gray-200 dark:border-[rgba(255,255,255,0.12)]
+                bg-white dark:bg-[rgba(255,255,255,0.05)]
+                text-gray-700 dark:text-gray-300"
+        >
+            <option value="HR-Manager">HR-Manager</option>
+            <option value="HR-Viewer">HR-Viewer</option>
+        </select>
+    )
 
-                    {!isAdmin && (
-                        <button onClick={() => setOpen(p => !p)}
-                            className="p-1.5 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-[rgba(255,255,255,0.06)]">
-                            {open
-                                ? <ChevronUp   className="w-4 h-4 text-gray-400" />
-                                : <ChevronDown className="w-4 h-4 text-gray-400" />
-                            }
-                        </button>
-                    )}
-                </div>
+    // Badge de Admin
+    const adminBadge = isAdmin && (
+        <span className="text-xs font-semibold px-2.5 py-1 rounded-lg"
+            style={{ background: roleStyle.bg, color: roleStyle.color, border: `1px solid ${roleStyle.border}` }}>
+            HR-Admin
+        </span>
+    )
+
+    // Botones de acción
+    const actionButtons = !isAdmin && !isCurrentUser && (
+        <>
+            <button onClick={() => onToggleActive(hr._id)}
+                className="p-1.5 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-[rgba(255,255,255,0.06)]">
+                {hr.isactive
+                    ? <ToggleRight className="w-5 h-5 text-emerald-500" />
+                    : <ToggleLeft  className="w-5 h-5 text-gray-400" />
+                }
+            </button>
+            <button onClick={() => onDelete(hr._id)}
+                className="p-1.5 rounded-lg transition-colors hover:bg-red-50 dark:hover:bg-[rgba(239,68,68,0.08)]">
+                <Trash2 className="w-4 h-4 text-gray-400 dark:text-gray-500 hover:text-red-400 transition-colors" />
+            </button>
+        </>
+    )
+
+    // Contenido del panel de permisos
+    const permissionsContent = (
+        <div className="border-t px-4 py-4"
+            style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+            <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                    <thead>
+                        <tr>
+                            <th className="text-left pb-3 pr-4 font-semibold uppercase tracking-wider
+                                text-gray-400 dark:text-gray-500 w-32">
+                                Módulo
+                            </th>
+                            {ACTIONS.map(a => (
+                                <th key={a} className="pb-3 px-2 font-semibold uppercase tracking-wider
+                                    text-gray-400 dark:text-gray-500 text-center">
+                                    {ACTION_LABELS[a]}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50 dark:divide-[rgba(255,255,255,0.03)]">
+                        {MODULES.map(mod => (
+                            <tr key={mod.key}>
+                                <td className="py-2 pr-4 font-medium text-gray-600 dark:text-[rgba(255,255,255,0.5)]">
+                                    {mod.label}
+                                </td>
+                                {ACTIONS.map(action => (
+                                    <td key={action} className="py-2 px-2 text-center">
+                                        <div className="flex justify-center">
+                                            <PermToggle
+                                                value={localPerms[mod.key]?.[action] ?? false}
+                                                onChange={(val) => handlePermChange(mod.key, action, val)}
+                                                disabled={isCurrentUser}
+                                            />
+                                        </div>
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
 
-            {/* Panel de permisos */}
-            {open && !isAdmin && (
-                <div className="border-t border-gray-50 dark:border-[rgba(255,255,255,0.04)] px-4 py-4">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-xs">
-                            <thead>
-                                <tr>
-                                    <th className="text-left pb-3 pr-4 font-semibold uppercase tracking-wider
-                                        text-gray-400 dark:text-gray-600 w-32">
-                                        Módulo
-                                    </th>
-                                    {ACTIONS.map(a => (
-                                        <th key={a} className="pb-3 px-2 font-semibold uppercase tracking-wider
-                                            text-gray-400 dark:text-gray-600 text-center">
-                                            {ACTION_LABELS[a]}
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50 dark:divide-[rgba(255,255,255,0.03)]">
-                                {MODULES.map(mod => (
-                                    <tr key={mod.key}>
-                                        <td className="py-2 pr-4 font-medium text-gray-600 dark:text-[rgba(255,255,255,0.5)]">
-                                            {mod.label}
-                                        </td>
-                                        {ACTIONS.map(action => (
-                                            <td key={action} className="py-2 px-2 text-center">
-                                                <div className="flex justify-center">
-                                                    <PermToggle
-                                                        value={localPerms[mod.key]?.[action] ?? false}
-                                                        onChange={(val) => handlePermChange(mod.key, action, val)}
-                                                        disabled={isCurrentUser}
-                                                    />
-                                                </div>
-                                            </td>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {!isCurrentUser && (
-                        <div className="flex justify-end mt-4">
-                            <button
-                                onClick={handleSavePerms}
-                                disabled={saving}
-                                className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold
-                                    text-white transition-all duration-200 disabled:opacity-50"
-                                style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
-                            >
-                                {saving ? "Guardando..." : "Guardar permisos"}
-                            </button>
-                        </div>
-                    )}
+            {!isCurrentUser && (
+                <div className="flex justify-end mt-4">
+                    <button
+                        onClick={handleSavePerms}
+                        disabled={saving}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold
+                            text-white transition-all duration-200 disabled:opacity-50"
+                        style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)" }}
+                    >
+                        {saving ? "Guardando..." : "Guardar permisos"}
+                    </button>
                 </div>
             )}
         </div>
+    )
+
+    return (
+        <ListItemCard
+            accent="indigo"
+            title={hr.firstname + " " + hr.lastname}
+            description={hr.email}
+            badge={
+                <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+                        style={{ background: roleStyle.bg, border: `1px solid ${roleStyle.border}` }}>
+                        <RoleIcon className="w-4 h-4" style={{ color: roleStyle.color }} />
+                    </div>
+                    {roleSelector}
+                    {adminBadge}
+                </div>
+            }
+            actions={actionButtons}
+            isOpen={open}
+            onToggle={!isAdmin ? () => setOpen(p => !p) : undefined}
+        >
+            {permissionsContent}
+        </ListItemCard>
     )
 }
 
