@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { HandleHRProfiles } from "../../../redux/Thunks/HRProfilesThunk.js"
 import { Loading } from "../../../components/common/loading.jsx"
 import { useToast } from "@/hooks/use-toast"
+import { useIsDark } from "../../../hooks/useIsDark.js"
 import { ListItemCard } from "../../../components/common/Dashboard/ListItemCard.jsx"
 import {
     Users, Plus, Trash2,
@@ -246,6 +247,11 @@ const InviteModal = ({ onClose, onInvite }) => {
     const [form, setForm] = useState({ firstname: "", lastname: "", email: "", role: "HR-Manager" })
     const [sending, setSending] = useState(false)
     const { toast } = useToast()
+    const isDark = useIsDark()
+
+    // Estilos para opciones de select en modo oscuro (Design System v2 - Sección 1 y 4)
+    // Fondo mínimo oscuro: 0.05, Texto terciario: rgba(255,255,255,0.35)
+    const optionStyle = { background: isDark ? "rgba(255,255,255,0.05)" : "#ffffff", color: isDark ? "rgba(255,255,255,0.9)" : "#374151" }
 
     const handleSubmit = async () => {
         if (!form.firstname || !form.lastname || !form.email) {
@@ -334,8 +340,8 @@ const InviteModal = ({ onClose, onInvite }) => {
                             onChange={e => setForm(p => ({ ...p, role: e.target.value }))}
                             className="input-field w-full"
                         >
-                            <option value="HR-Manager">HR-Manager</option>
-                            <option value="HR-Viewer">HR-Viewer</option>
+                            <option value="HR-Manager" style={optionStyle}>HR-Manager</option>
+                            <option value="HR-Viewer" style={optionStyle}>HR-Viewer</option>
                         </select>
                     </div>
                 </div>
