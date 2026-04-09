@@ -111,29 +111,31 @@ const RequestForm = ({ initialData, employees, onSubmit, onClose, isLoading }) =
 
     const labelStyle = { color: isDark ? "rgba(255,255,255,0.6)" : "#6b7280", fontSize: "10px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }
 
-    // Estilos para opciones de select en modo oscuro (Design System v2 - Sección 1 y 4)
-    // Fondo mínimo oscuro: 0.05, Texto terciario: rgba(255,255,255,0.35)
-    const optionStyle = { background: isDark ? "rgba(255,255,255,0.05)" : "#ffffff", color: isDark ? "rgba(255,255,255,0.9)" : "#374151" }
-
     return (
         <form onSubmit={e => { e.preventDefault(); onSubmit(formData) }} className="space-y-4">
             {!initialData && (
                 <div className="flex flex-col gap-1.5">
                     <label style={labelStyle}>Empleado</label>
-                    <select name="employeeID" value={formData.employeeID} onChange={handleChange} required className={inputCls}>
-                        <option value="" style={optionStyle}>Seleccionar empleado</option>
-                        {employees?.map(emp => (
-                            <option key={emp._id} value={emp._id} style={optionStyle}>{emp.firstname} {emp.lastname}</option>
-                        ))}
-                    </select>
+                    <CustomSelect
+                        value={formData.employeeID}
+                        onValueChange={(val) => handleChange({ target: { name: "employeeID", value: val } })}
+                        placeholder="Seleccionar empleado"
+                        options={employees?.map(emp => ({ value: emp._id, label: `${emp.firstname} ${emp.lastname}` })) || []}
+                        groupLabel="Empleados"
+                        className={inputCls}
+                    />
                 </div>
             )}
 
             <div className="flex flex-col gap-1.5">
                 <label style={labelStyle}>Tipo de ausencia</label>
-                <select name="leavetype" value={formData.leavetype} onChange={handleChange} required className={inputCls}>
-                    {LEAVE_TYPES.map(type => <option key={type} value={type} style={optionStyle}>{type}</option>)}
-                </select>
+                <CustomSelect
+                    value={formData.leavetype}
+                    onValueChange={(val) => handleChange({ target: { name: "leavetype", value: val } })}
+                    placeholder="Seleccionar tipo"
+                    options={LEAVE_TYPES.map(type => ({ value: type, label: type }))}
+                    className={inputCls}
+                />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
