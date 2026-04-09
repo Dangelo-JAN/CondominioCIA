@@ -249,6 +249,10 @@ const InviteModal = ({ onClose, onInvite }) => {
     const { toast } = useToast()
     const isDark = useIsDark()
 
+    // Estilos para opciones de select en modo oscuro (Design System v2 - Sección 1 y 4)
+    // Fondo mínimo oscuro: 0.05, Texto terciario: rgba(255,255,255,0.35)
+    const optionStyle = { background: isDark ? "rgba(255,255,255,0.05)" : "#ffffff", color: isDark ? "rgba(255,255,255,0.9)" : "#374151" }
+
     const handleSubmit = async () => {
         if (!form.firstname || !form.lastname || !form.email) {
             toast({ variant: "destructive", title: "Todos los campos son requeridos" })
@@ -340,7 +344,10 @@ const InviteModal = ({ onClose, onInvite }) => {
                             ]}
                             placeholder="Seleccionar rol"
                             className="input-field w-full"
-                        />
+                        >
+                            <option value="HR-Manager" style={optionStyle}>HR-Manager</option>
+                            <option value="HR-Viewer" style={optionStyle}>HR-Viewer</option>
+                        </select>
                     </div>
                 </div>
 
