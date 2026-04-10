@@ -118,11 +118,10 @@ export const HandleUpdateHRLeaveStatus = createAsyncThunk(
     'HandleUpdateHRLeaveStatus',
     async (leaveData, { rejectWithValue }) => {
         try {
-            const { leaveID, status, HRID } = leaveData
+            const { leaveID, status } = leaveData
             const response = await hrApiService.patch(HRLeavesEndPoints.UPDATE_STATUS, {
                 leaveID,
-                status,
-                HRID
+                status
             })
             return response.data
         } catch (error) {
