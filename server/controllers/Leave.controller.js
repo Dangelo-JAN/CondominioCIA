@@ -313,21 +313,17 @@ export const HandleDeleteLeaveByHR = async (req, res) => {
 // Aprobar/Rechazar solicitud (HR) - CREA AUSENCIA AL APROBAR
 export const HandleUpdateLeavebyHR = async (req, res) => {
     try {
-        const { leaveID, status, HRID } = req.body
+        const { leaveID, status } = req.body
+        const HRID = req.HRid // Ya viene del token en req.HRid
 
-        if (!leaveID || !status || !HRID) {
+        if (!leaveID || !status) {
             return res.status(400).json({ success: false, message: "All fields are required" })
         }
 
         const leave = await Leave.findOne({ _id: leaveID, organizationID: req.ORGID, isDeleted: false })
-        const HR = await HumanResources.findById(HRID)
 
         if (!leave) {
             return res.status(404).json({ success: false, message: "Leave record not found" })
-        }
-
-        if (!HR) {
-            return res.status(404).json({ success: false, message: "HR not found" })
         }
 
         leave.status = status
