@@ -344,18 +344,30 @@ export const HRRequestspage = () => {
         })
     }
 
-    const handleApprove = (leaveID) => {
-        const HRID = JSON.parse(localStorage.getItem("HRData"))?._id
-        if (HRID) dispatch(HandleUpdateHRLeaveStatus({ leaveID, status: "Approved", HRID })).then(() => {
-            setIsDetailsOpen(false); setSelectedRequest(null); dispatch(HandleGetHRLeaves())
-        })
+    const handleApprove = async (leaveID) => {
+        try {
+            const res = await dispatch(HandleUpdateHRLeaveStatus({ leaveID, status: "Approved" })).unwrap()
+            if (res.success) {
+                setIsDetailsOpen(false); setSelectedRequest(null); dispatch(HandleGetHRLeaves())
+            } else {
+                alert(res.message || "Error al aprobar")
+            }
+        } catch (err) {
+            alert(err.message || "Error al aprobar la solicitud")
+        }
     }
 
-    const handleReject = (leaveID) => {
-        const HRID = JSON.parse(localStorage.getItem("HRData"))?._id
-        if (HRID) dispatch(HandleUpdateHRLeaveStatus({ leaveID, status: "Rejected", HRID })).then(() => {
-            setIsDetailsOpen(false); setSelectedRequest(null); dispatch(HandleGetHRLeaves())
-        })
+    const handleReject = async (leaveID) => {
+        try {
+            const res = await dispatch(HandleUpdateHRLeaveStatus({ leaveID, status: "Rejected" })).unwrap()
+            if (res.success) {
+                setIsDetailsOpen(false); setSelectedRequest(null); dispatch(HandleGetHRLeaves())
+            } else {
+                alert(res.message || "Error al rechazar")
+            }
+        } catch (err) {
+            alert(err.message || "Error al rechazar la solicitud")
+        }
     }
 
     const handleDelete = (leaveID) => {

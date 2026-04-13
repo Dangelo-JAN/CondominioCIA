@@ -16,7 +16,6 @@ export const hrApiService = axios.create({
 hrApiService.interceptors.request.use((config) => {
     const url = config.url || ""
     const isPublic = HR_PUBLIC.some(route => url.includes(route))
-    console.log("HR INTERCEPTOR:", url, "isPublic:", isPublic, "token:", localStorage.getItem("HRtoken")?.slice(0, 20))
     
     // Agregar token si no es ruta pública
     if (!isPublic) {

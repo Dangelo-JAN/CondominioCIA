@@ -2,6 +2,33 @@ import { Department } from "../models/Department.model.js"
 import { HumanResources } from "../models/HR.model.js"
 import { Organization } from "../models/Organization.model.js"
 
+// Obtener datos del HR actual autenticado
+export const HandleHRMe = async (req, res) => {
+    try {
+        const HR = await HumanResources.findOne({ _id: req.HRid, organizationID: req.ORGID })
+        
+        if (!HR) {
+            return res.status(404).json({ success: false, message: "HR Not Found", type: "HRMe" })
+        }
+
+        return res.status(200).json({ 
+            success: true, 
+            message: "HR Data Retrieved Successfully", 
+            type: "HRMe",
+            data: {
+                _id: HR._id,
+                firstname: HR.firstname,
+                lastname: HR.lastname,
+                email: HR.email,
+                role: HR.role,
+                organizationID: HR.organizationID
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
+    }
+}
+
 export const HandleAllHR = async (req, res) => {
     try {
         const HR = await HumanResources.find({ organizationID: req.ORGID }).populate("department")

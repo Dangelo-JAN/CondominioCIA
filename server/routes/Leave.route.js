@@ -33,11 +33,11 @@ router.get("/all", VerifyhHRToken, PermissionCheck("leaves", "read"), HandleAllL
 router.get("/:leaveID", VerifyhHRToken, PermissionCheck("leaves", "read"), HandleLeave)
 // Crear solicitud por empleado (HR crea/edita)
 router.post("/hr-create-leave", VerifyhHRToken, PermissionCheck("leaves", "create"), HandleCreateLeaveByHR)
-// Actualizar solicitud por HR
+// Aprobar/Rechazar solicitud
+router.patch("/HR-update-leave", VerifyhHRToken, PermissionCheck("leaves", "update"), HandleUpdateLeavebyHR)
+// Actualizar solicitud por HR (edición completa)
 router.patch("/hr-update-leave", VerifyhHRToken, PermissionCheck("leaves", "update"), HandleUpdateLeaveByHR)
 // Eliminar solicitud por HR (soft-delete)
 router.delete("/hr-delete-leave/:leaveID", VerifyhHRToken, PermissionCheck("leaves", "delete"), HandleDeleteLeaveByHR)
-// Aprobar/Rechazar solicitud
-router.patch("/HR-update-leave", VerifyhHRToken, PermissionCheck("leaves", "update"), HandleUpdateLeavebyHR)
 
 export default router
