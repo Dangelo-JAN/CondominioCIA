@@ -5,6 +5,7 @@ import { HandleGetHREmployees } from "../../../redux/Thunks/HREmployeesThunk.js"
 import { HandleGetHRDepartments } from "../../../redux/Thunks/HRDepartmentPageThunk.js"
 import { Loading } from "../../../components/common/loading.jsx"
 import { useToast } from "@/hooks/use-toast"
+import { useIsDark } from "../../../hooks/useIsDark.js"
 import {
     ImageIcon, Trash2, Eye, CheckCircle2, X,
     Filter, Users, Building2, CalendarDays, RotateCcw
@@ -88,13 +89,19 @@ const PhotoModal = ({ photo, onClose, onDelete, onReview }) => {
     )
 }
 
-// ── Card de foto ──────────────────────────────────────────────────────────
-const PhotoCard = ({ photo, onPreview, onDelete, onReview }) => (
-    <div className="group relative rounded-2xl overflow-hidden border transition-all duration-200
-        border-gray-100 dark:border-[rgba(255,255,255,0.06)]
-        bg-white dark:bg-[rgba(255,255,255,0.02)]">
+// ── Card de foto ───────────────────────────────────────────────��──────────
+const PhotoCard = ({ photo, onPreview, onDelete, onReview }) => {
+    const isDark = useIsDark()
 
-        <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-[rgba(255,255,255,0.03)]">
+    return (
+    <div className="group relative rounded-2xl overflow-hidden transition-all duration-300"
+        style={{
+            background: isDark ? "linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(255,255,255,0.02) 100%)" : "linear-gradient(135deg, #e0e7ff 0%, #ffffff 60%)",
+            border: isDark ? "1px solid rgba(99,102,241,0.40)" : "1px solid #a5b4fc"
+        }}>
+
+        <div className="relative aspect-video overflow-hidden transition-colors duration-300"
+            style={{ background: isDark ? "rgba(255,255,255,0.05)" : "#f3f4f6" }}>
             <img
                 src={photo.photourl}
                 alt={photo.description || "Foto"}
@@ -138,23 +145,28 @@ const PhotoCard = ({ photo, onPreview, onDelete, onReview }) => (
         </div>
 
         <div className="px-3 py-2.5">
-            <p className="text-xs font-semibold text-gray-700 dark:text-[rgba(255,255,255,0.7)] truncate">
+            <p className="text-xs font-semibold truncate transition-colors duration-300"
+                style={{ color: isDark ? "#ffffff" : "#111827" }}>
                 {photo.employee?.firstname} {photo.employee?.lastname}
             </p>
             <div className="flex items-center justify-between mt-0.5">
-                <p className="text-[11px] text-gray-400 dark:text-gray-600 truncate flex-1">
+                <p className="text-[11px] truncate flex-1 transition-colors duration-300"
+                    style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#6b7280" }}>
                     {photo.description || "Sin descripción"}
                 </p>
-                <span className="text-[11px] text-gray-400 dark:text-gray-600 flex-shrink-0 ml-2">
+                <span className="text-[11px] flex-shrink-0 ml-2 transition-colors duration-300"
+                    style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#9ca3af" }}>
                     {formatDate(photo.workdate)}
                 </span>
             </div>
         </div>
     </div>
-)
+    )
+}
 
 // ── Página principal ──────────────────────────────────────────────────────
 export const HRWorkPhotosPage = () => {
+    const isDark = useIsDark()
     const dispatch = useDispatch()
     const { toast } = useToast()
     const { photos, isLoading } = useSelector(s => s.HRWorkPhotoReducer)
@@ -265,17 +277,19 @@ export const HRWorkPhotosPage = () => {
                 </div>
             </div>
 
-            <div className="h-px w-full bg-gray-100 dark:bg-[rgba(99,102,241,0.08)]" />
+            <div className="h-px w-full transition-colors duration-300" style={{ background: isDark ? "rgba(99,102,241,0.08)" : "#f3f4f6" }} />
 
             {/* Filtros */}
-            <div className="rounded-2xl p-4 flex flex-col sm:flex-row gap-3
-                bg-gray-50 border border-gray-100
-                dark:bg-[rgba(255,255,255,0.02)] dark:border-[rgba(255,255,255,0.06)]">
+            <div className="rounded-2xl p-4 flex flex-col sm:flex-row gap-3 transition-colors duration-300"
+                style={{
+                    background: isDark ? "linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(255,255,255,0.02) 100%)" : "linear-gradient(135deg, #e0e7ff 0%, #ffffff 60%)",
+                    border: isDark ? "1px solid rgba(99,102,241,0.25)" : "1px solid #a5b4fc"
+                }}>
 
                 <div className="flex items-center gap-2 flex-shrink-0">
-                    <Filter className="w-4 h-4 text-indigo-500" />
-                    <span className="text-xs font-semibold uppercase tracking-wider
-                        text-gray-400 dark:text-gray-500">
+                    <Filter className="w-4 h-4 transition-colors duration-300" style={{ color: isDark ? "#6366f1" : "#4f46e5" }} />
+                    <span className="text-xs font-semibold uppercase tracking-wider transition-colors duration-300"
+                        style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#6b7280" }}>
                         Filtros
                     </span>
                 </div>
@@ -283,7 +297,7 @@ export const HRWorkPhotosPage = () => {
                 <div className="flex flex-col sm:flex-row gap-3 flex-1">
                     {/* Departamento */}
                     <div className="flex items-center gap-2 flex-1">
-                        <Building2 className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                        <Building2 className="w-4 h-4 flex-shrink-0 transition-colors duration-300" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#9ca3af" }} />
                         <select
                             value={filters.department}
                             onChange={e => setFilters(p => ({ ...p, department: e.target.value, employee: "" }))}
@@ -301,7 +315,7 @@ export const HRWorkPhotosPage = () => {
 
                     {/* Empleado */}
                     <div className="flex items-center gap-2 flex-1">
-                        <Users className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                        <Users className="w-4 h-4 flex-shrink-0 transition-colors duration-300" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#9ca3af" }} />
                         <select
                             value={filters.employee}
                             onChange={e => setFilters(p => ({ ...p, employee: e.target.value }))}
@@ -319,7 +333,7 @@ export const HRWorkPhotosPage = () => {
 
                     {/* Fecha */}
                     <div className="flex items-center gap-2 flex-1">
-                        <CalendarDays className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                        <CalendarDays className="w-4 h-4 flex-shrink-0 transition-colors duration-300" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#9ca3af" }} />
                         <input
                             type="date"
                             value={filters.date}
@@ -333,9 +347,12 @@ export const HRWorkPhotosPage = () => {
                         <button
                             onClick={resetFilters}
                             className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold
-                                text-gray-500 border border-gray-200 hover:bg-gray-100 transition-colors
-                                dark:text-gray-400 dark:border-[rgba(255,255,255,0.08)]
-                                dark:hover:bg-[rgba(255,255,255,0.05)] flex-shrink-0"
+                                border transition-colors duration-200 flex-shrink-0"
+                            style={{
+                                color: isDark ? "#9ca3af" : "#6b7280",
+                                borderColor: isDark ? "rgba(255,255,255,0.08)" : "#d1d5db",
+                                backgroundColor: isDark ? "transparent" : "#f9fafb"
+                            }}
                         >
                             <RotateCcw className="w-3.5 h-3.5" />
                             Limpiar
@@ -347,16 +364,18 @@ export const HRWorkPhotosPage = () => {
             {/* Galería */}
             {filteredPhotos.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 gap-3">
-                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center
-                        bg-gray-100 dark:bg-[rgba(255,255,255,0.04)]">
-                        <ImageIcon className="w-7 h-7 text-gray-300 dark:text-gray-600" />
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center transition-colors duration-300"
+                        style={{ background: isDark ? "rgba(255,255,255,0.05)" : "#f3f4f6" }}>
+                        <ImageIcon className="w-7 h-7 transition-colors duration-300" style={{ color: isDark ? "rgba(255,255,255,0.35)" : "#9ca3af" }} />
                     </div>
-                    <p className="text-base font-semibold text-gray-400 dark:text-gray-500">
+                    <p className="text-base font-semibold transition-colors duration-300"
+                        style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#6b7280" }}>
                         {hasActiveFilters ? "Sin resultados para los filtros aplicados" : "Sin fotos subidas aún"}
                     </p>
                     {hasActiveFilters && (
                         <button onClick={resetFilters}
-                            className="text-sm text-indigo-500 hover:text-indigo-600 font-medium transition-colors">
+                            className="text-sm font-medium transition-colors"
+                            style={{ color: isDark ? "#818cf8" : "#6366f1" }}>
                             Limpiar filtros
                         </button>
                     )}
