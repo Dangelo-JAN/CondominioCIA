@@ -158,10 +158,10 @@ export const HandleDeleteSchedule = async (req, res) => {
 export const HandleGetMySchedules = async (req, res) => {
     try {
 
-        console.log("EMid:", req.EMid)
+        console.log("EMid:", req.EMPID)
         console.log("ORGID:", req.ORGID)
         const schedules = await Schedule.find({
-            employee: req.EMid,
+            employee: req.EMPID,
             organizationID: req.ORGID,
             isactive: true
         })
@@ -192,7 +192,7 @@ export const HandleCompleteTask = async (req, res) => {
 
         const schedule = await Schedule.findOne({
             _id: scheduleID,
-            employee: req.EMid,
+            employee: req.EMPID,
             organizationID: req.ORGID
         })
 

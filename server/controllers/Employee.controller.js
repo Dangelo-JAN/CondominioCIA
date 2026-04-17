@@ -38,7 +38,7 @@ export const HandleEmployeeByHR = async (req, res) => {
 
 export const HandleEmployeeByEmployee = async (req, res) => {
     try {
-        const employee = await Employee.findOne({ _id: req.EMid, organizationID: req.ORGID }).select("firstname lastname email contactnumber department attendance notice salary leaverequest generaterequest")
+        const employee = await Employee.findOne({ _id: req.EMPID, organizationID: req.ORGID }).select("firstname lastname email contactnumber department attendance notice salary leaverequest generaterequest")
 
         if (!employee) {
             return res.status(404).json({ success: false, message: "employee not found" })

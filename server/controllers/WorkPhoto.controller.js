@@ -18,7 +18,7 @@ export const HandleUploadWorkPhoto = async (req, res) => {
             return res.status(400).json({ success: false, message: "La foto y la fecha son requeridas" })
         }
 
-        const employee = await Employee.findOne({ _id: req.EMid, organizationID: req.ORGID })
+        const employee = await Employee.findOne({ _id: req.EMPID, organizationID: req.ORGID })
 
         if (!employee) {
             return res.status(404).json({ success: false, message: "Empleado no encontrado" })
@@ -26,7 +26,7 @@ export const HandleUploadWorkPhoto = async (req, res) => {
 
         // Subir imagen a Cloudinary
         const uploadResult = await cloudinary.uploader.upload(photo, {
-            folder: `ems/${req.ORGID}/workphotos/${req.EMid}`,
+            folder: `ems/${req.ORGID}/workphotos/${req.EMPID}`,
             resource_type: "image",
             transformation: [
                 { quality: "auto", fetch_format: "auto" },
@@ -35,7 +35,7 @@ export const HandleUploadWorkPhoto = async (req, res) => {
         })
 
         const newPhoto = await WorkPhoto.create({
-            employee: req.EMid,
+            employee: req.EMPID,
             photourl: uploadResult.secure_url,
             publicid: uploadResult.public_id,
             description: description || null,
@@ -58,7 +58,7 @@ export const HandleUploadWorkPhoto = async (req, res) => {
 export const HandleGetMyWorkPhotos = async (req, res) => {
     try {
         const photos = await WorkPhoto.find({
-            employee: req.EMid,
+            employee: req.EMPID,
             organizationID: req.ORGID
         }).sort({ workdate: -1 })
 
@@ -80,7 +80,7 @@ export const HandleDeleteMyWorkPhoto = async (req, res) => {
 
         const photo = await WorkPhoto.findOne({
             _id: photoID,
-            employee: req.EMid,
+            employee: req.EMPID,
             organizationID: req.ORGID
         })
 

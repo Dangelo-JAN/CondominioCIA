@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import { hrApiService } from "../apis/HRApiService"
+import { employeeApiService } from "../apis/EmployeeApiService"
 import { HRLeavesEndPoints, HRAbsencesEndPoints } from "../apis/APIsEndpoints"
 
 // ============ EMPLEADO ============
@@ -9,7 +10,7 @@ export const HandleGetEmployeeLeaves = createAsyncThunk(
     'HandleGetEmployeeLeaves',
     async (_, { rejectWithValue }) => {
         try {
-            const response = await hrApiService.get(HRLeavesEndPoints.GET_EMPLOYEE_LEAVES)
+            const response = await employeeApiService.get(HRLeavesEndPoints.GET_EMPLOYEE_LEAVES)
             return response.data
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message)
@@ -22,7 +23,7 @@ export const HandleCreateEmployeeLeave = createAsyncThunk(
     'HandleCreateEmployeeLeave',
     async (leaveData, { rejectWithValue }) => {
         try {
-            const response = await hrApiService.post(HRLeavesEndPoints.CREATE_LEAVE, leaveData)
+            const response = await employeeApiService.post(HRLeavesEndPoints.CREATE_LEAVE, leaveData)
             return response.data
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message)
@@ -35,7 +36,7 @@ export const HandleUpdateEmployeeLeave = createAsyncThunk(
     'HandleUpdateEmployeeLeave',
     async (leaveData, { rejectWithValue }) => {
         try {
-            const response = await hrApiService.patch(HRLeavesEndPoints.UPDATE_EMPLOYEE_LEAVE, leaveData)
+            const response = await employeeApiService.patch(HRLeavesEndPoints.UPDATE_EMPLOYEE_LEAVE, leaveData)
             return response.data
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message)
@@ -48,7 +49,7 @@ export const HandleDeleteEmployeeLeave = createAsyncThunk(
     'HandleDeleteEmployeeLeave',
     async (leaveID, { rejectWithValue }) => {
         try {
-            const response = await hrApiService.delete(HRLeavesEndPoints.DELETE_EMPLOYEE_LEAVE(leaveID))
+            const response = await employeeApiService.delete(HRLeavesEndPoints.DELETE_EMPLOYEE_LEAVE(leaveID))
             return response.data
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message)

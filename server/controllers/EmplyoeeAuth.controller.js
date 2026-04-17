@@ -132,7 +132,7 @@ export const HandleEmplyoeeLogin = async (req, res) => {
 
 export const HandleEmployeeCheck = async (req, res) => {
     try {
-        const employee = await Employee.findOne({ _id: req.EMid, organizationID: req.ORGID })
+        const employee = await Employee.findOne({ _id: req.EMPID, organizationID: req.ORGID })
         if (!employee) {
             return res.status(404).json({ success: false, message: "Employee not found" })
         }
@@ -199,7 +199,7 @@ export const HandleEmplyoeeSetPassword = async (req, res) => {
 
 export const HandleEmployeeCheckVerifyEmail = async (req, res) => {
     try {
-        const employee = await Employee.findOne({ _id: req.EMid, organizationID: req.ORGID })
+        const employee = await Employee.findOne({ _id: req.EMPID, organizationID: req.ORGID })
 
         if (!employee) {
             return res.status(404).json({ success: false, message: "Employee not found", type: "Employeecodeavailable" })
