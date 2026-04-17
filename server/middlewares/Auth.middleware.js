@@ -13,7 +13,7 @@ export const VerifyEmployeeToken = (req, res, next) => {
         if (!decoded) {
             return res.status(403).json({ success: false, message: "Unauthenticated employee", gologin: true })
         }
-        req.EMid   = decoded.EMid
+        req.EMPID  = decoded.EMid
         req.EMrole = decoded.EMrole
         req.ORGID  = decoded.ORGID
         next()
