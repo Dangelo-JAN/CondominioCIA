@@ -11,17 +11,16 @@ import {
 } from "../../../redux/Thunks/HRLeavesThunk.js"
 import { HandleGetHREmployees } from "../../../redux/Thunks/HREmployeesThunk.js"
 import { Calendar, Filter, CheckCircle, XCircle, Clock, Plus, Edit, Trash2, Eye } from "lucide-react"
-import * as Dialog from "@radix-ui/react-dialog"
 import { useForm } from "../../../hooks/useForm.js"
 import { Button } from "../../../components/ui/button.jsx"
 import { Input } from "../../../components/ui/input.jsx"
-import { Label } from "../../../components/ui/label.jsx"
 import {
     ThemedListWrapper,
     ThemedHeadingBar,
     ThemedListContainer,
 } from "../../../components/common/Dashboard/ListDesigns.jsx"
 import { CustomSelect } from "../../../components/ui/custom-select.jsx"
+import { ThemedModal } from "../../../components/common/Dashboard/ThemedModal.jsx"
 
 const LEAVE_TYPES = ["Vacaciones", "Reposo Médico", "Personal", "Otro"]
 const STATUS_OPTIONS = [
@@ -81,7 +80,7 @@ const getStatusBadge = (status, isDark) => {
 const inputCls = `w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-all duration-200 appearance-none
     bg-gray-50 border border-gray-200 text-gray-900
     focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-100
-    dark:bg-[rgba(255,255,255,0.05)] dark:border-[rgba(255,255,255,0.12)] dark:text-white
+    dark:bg-[rgba(255,255,255,0.05)] dark:border-[rgba(255,255,255,0.12)] dark:text-white dark:placeholder:text-[rgba(255,255,255,0.4)]
     dark:focus:border-[rgba(245,158,11,0.5)] dark:focus:bg-[rgba(245,158,11,0.06)]`
 
 // ── Formulario de solicitud ───────────────────────────────────────────────
@@ -141,17 +140,17 @@ const RequestForm = ({ initialData, employees, onSubmit, onClose, isLoading }) =
             <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                     <label style={labelStyle}>Fecha inicio</label>
-                    <Input type="date" name="startdate" value={formData.startdate} onChange={handleChange} required className="rounded-xl" />
+                    <Input type="date" name="startdate" value={formData.startdate} onChange={handleChange} required className={inputCls} />
                 </div>
                 <div className="flex flex-col gap-1.5">
                     <label style={labelStyle}>Fecha fin</label>
-                    <Input type="date" name="enddate" value={formData.enddate} onChange={handleChange} required className="rounded-xl" />
+                    <Input type="date" name="enddate" value={formData.enddate} onChange={handleChange} required className={inputCls} />
                 </div>
             </div>
 
             <div className="flex flex-col gap-1.5">
                 <label style={labelStyle}>Título</label>
-                <Input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Ej: Solicitud de vacaciones" required className="rounded-xl" />
+                <Input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Ej: Solicitud de vacaciones" required className={inputCls} />
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -162,7 +161,10 @@ const RequestForm = ({ initialData, employees, onSubmit, onClose, isLoading }) =
             </div>
 
             <div className="flex justify-end gap-3 pt-2">
-                <Button type="button" variant="outline" onClick={onClose} className="rounded-xl">Cancelar</Button>
+                <Button type="button" variant="outline" onClick={onClose} 
+                    className="rounded-xl text-gray-600 border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-800">
+                    Cancelar
+                </Button>
                 <Button type="submit" disabled={isLoading}
                     className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white">
                     {isLoading ? "Guardando..." : initialData ? "Actualizar" : "Crear"}
@@ -591,48 +593,28 @@ export const HRRequestspage = () => {
             </div>
 
             {/* Modal crear */}
-            <Dialog.Root open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                <Dialog.Portal>
-                    <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
-                    <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg p-6 rounded-2xl z-50
-                        bg-white dark:bg-[#0f0f1a] shadow-xl max-h-[90vh] overflow-y-auto border"
-                        style={{ borderColor: isDark ? "rgba(255,255,255,0.12)" : "#fde68a" }}>
-                        <Dialog.Title className="text-xl font-bold mb-4" style={{ color: isDark ? "#fff" : "#111827" }}>
-                            Nueva solicitud de ausencia
-                        </Dialog.Title>
-                        <RequestForm employees={HREmployeesState.data} onSubmit={handleCreate}
-                            onClose={() => setIsCreateOpen(false)} isLoading={HRLeavesState.isLoading} />
-                        <Dialog.Close asChild>
-                            <button className="absolute top-4 right-4 p-1.5 rounded-full transition-colors
-                                hover:bg-gray-100 dark:hover:bg-[rgba(255,255,255,0.08)]"
-                                style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#9ca3af" }}>✕</button>
-                        </Dialog.Close>
-                    </Dialog.Content>
-                </Dialog.Portal>
-            </Dialog.Root>
+            <ThemedModal
+                open={isCreateOpen}
+                onOpenChange={setIsCreateOpen}
+                title="Nueva solicitud de ausencia"
+                accent="amber"
+            >
+                <RequestForm employees={HREmployeesState.data} onSubmit={handleCreate}
+                    onClose={() => setIsCreateOpen(false)} isLoading={HRLeavesState.isLoading} />
+            </ThemedModal>
 
             {/* Modal editar */}
-            <Dialog.Root open={isEditOpen} onOpenChange={setIsEditOpen}>
-                <Dialog.Portal>
-                    <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
-                    <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg p-6 rounded-2xl z-50
-                        bg-white dark:bg-[#0f0f1a] shadow-xl max-h-[90vh] overflow-y-auto border"
-                        style={{ borderColor: isDark ? "rgba(255,255,255,0.12)" : "#fde68a" }}>
-                        <Dialog.Title className="text-xl font-bold mb-4" style={{ color: isDark ? "#fff" : "#111827" }}>
-                            Editar solicitud
-                        </Dialog.Title>
-                        <RequestForm initialData={selectedRequest} employees={HREmployeesState.data}
-                            onSubmit={handleEdit}
-                            onClose={() => { setIsEditOpen(false); setSelectedRequest(null) }}
-                            isLoading={HRLeavesState.isLoading} />
-                        <Dialog.Close asChild>
-                            <button className="absolute top-4 right-4 p-1.5 rounded-full transition-colors
-                                hover:bg-gray-100 dark:hover:bg-[rgba(255,255,255,0.08)]"
-                                style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#9ca3af" }}>✕</button>
-                        </Dialog.Close>
-                    </Dialog.Content>
-                </Dialog.Portal>
-            </Dialog.Root>
+            <ThemedModal
+                open={isEditOpen}
+                onOpenChange={setIsEditOpen}
+                title="Editar solicitud"
+                accent="amber"
+            >
+                <RequestForm initialData={selectedRequest} employees={HREmployeesState.data}
+                    onSubmit={handleEdit}
+                    onClose={() => { setIsEditOpen(false); setSelectedRequest(null) }}
+                    isLoading={HRLeavesState.isLoading} />
+            </ThemedModal>
 
             {/* Modal detalle */}
             {isDetailsOpen && selectedRequest && (
