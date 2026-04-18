@@ -10,6 +10,7 @@ import { EmployeeSchedulePage } from "../pages/Employees/Dashboard Childs/Employ
 import { EmployeeWorkPhotosPage } from "../pages/Employees/Dashboard Childs/EmployeeWorkPhotosPage.jsx"
 import { EmployeeProfilePage } from "../pages/Employees/Dashboard Childs/EmployeeProfilePage.jsx"
 import { EmployeeRequestspage } from "../pages/Employees/Dashboard Childs/EmployeeRequestspage.jsx"
+import { EmployeeAbsencesPage } from "../pages/Employees/Dashboard Childs/EmployeeAbsencesPage.jsx"
 
 export const EmployeeRoutes = [
     {
@@ -47,6 +48,10 @@ export const EmployeeRoutes = [
             {
                 path: "/auth/employee/employee-dashboard/requests",
                 element: <EmployeeRequestspage />
+            },
+            {
+                path: "/auth/employee/employee-dashboard/absences",
+                element: <EmployeeAbsencesPage />
             }
         ]
     },

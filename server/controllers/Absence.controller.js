@@ -32,10 +32,16 @@ export const HandleGetAbsence = async (req, res) => {
     }
 }
 
-// Obtener ausencias de un empleado específico
+// Obtener ausencias de un empleado específico (HR o propio empleado)
 export const HandleGetEmployeeAbsences = async (req, res) => {
     try {
-        const { employeeID } = req.params
+        // Si viene employeeID en params, usarlo (HR); si no, usar el token (empleado)
+        const employeeID = req.params.employeeID || req.EMPID
+        
+        if (!employeeID) {
+            return res.status(400).json({ success: false, message: "Employee ID not provided" })
+        }
+        
         const absences = await Absence.find({ 
             employee: employeeID,
             organizationID: req.ORGID,
