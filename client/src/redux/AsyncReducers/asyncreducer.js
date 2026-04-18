@@ -414,6 +414,11 @@ export const HRLeavesAsyncReducer = (builder, thunk, thunkName) => {
             state.fetchData = false;
             console.log("[DEBUG] HandleGetEmployeeLeaves - state.data actualizado:", state.data)
         }
+        // Obtener mis ausencias aprobadas (empleado)
+        else if (thunkName === "HandleGetEmployeeAbsences") {
+            // Handle both cases: wrapped in data or direct array
+            state.absencesData = payload?.data || payload || null;
+        }
         // Obtener todas las solicitudes (HR)
         else if (thunkName === "HandleGetHRLeaves") {
             console.log("[DEBUG] HandleGetHRLeaves - asignando payload.data:", payload?.data)

@@ -59,6 +59,7 @@ export const HRLeavesEndPoints = {
 
 export const HRAbsencesEndPoints = {
     GETALL: "/api/v1/absence/all",
+    GET_MY_ABSENCES: "/api/v1/absence/my-absences",
     GET_BY_EMPLOYEE: (employeeID) => `/api/v1/absence/employee/${employeeID}`,
     DELETE: (absenceID) => `/api/v1/absence/delete/${absenceID}`
 }

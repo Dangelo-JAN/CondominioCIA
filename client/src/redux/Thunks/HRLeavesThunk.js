@@ -57,6 +57,21 @@ export const HandleDeleteEmployeeLeave = createAsyncThunk(
     }
 )
 
+// ============ EMPLEADO - AUSENCIAS ============
+
+// Obtener mis ausencias aprobadas
+export const HandleGetEmployeeAbsences = createAsyncThunk(
+    'HandleGetEmployeeAbsences',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await employeeApiService.get(HRAbsencesEndPoints.GET_MY_ABSENCES)
+            return response.data
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message)
+        }
+    }
+)
+
 // ============ HR - SOLICITUDES ============
 
 // Obtener todas las solicitudes (HR)
