@@ -24,6 +24,13 @@ const EmployeeSlice = createSlice({
             state.isAuthourized = false
             state.isResetPasswords = false
             state.error = { status: false, message: null, content: null }
+        },
+        resetEmployeeError: (state) => {
+            state.error = { status: false, message: null, content: null }
+        },
+        clearEmployeeAuthState: (state) => {
+            state.isAuthenticated = false
+            state.error = { status: false, message: null, content: null }
         }
     },
     extraReducers: (builder) => {
@@ -32,5 +39,5 @@ const EmployeeSlice = createSlice({
     }
 })
 
-export const { logoutEmployee } = EmployeeSlice.actions
+export const { logoutEmployee, resetEmployeeError, clearEmployeeAuthState } = EmployeeSlice.actions
 export default EmployeeSlice.reducer

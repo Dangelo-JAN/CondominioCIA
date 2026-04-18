@@ -48,6 +48,21 @@ const EmployeeSchema = new Schema({
     verificationtokenexpires: {
         type: Date
     },
+    // Campos para invitación (cuando HR crea empleado sin password)
+    invitationtoken: {
+        type: String
+    },
+    invitationtokenexpires: {
+        type: Date
+    },
+    isactive: {
+        type: Boolean,
+        default: true
+    },
+    invitedby: {
+        type: Schema.Types.ObjectId,
+        ref: "HumanResources"
+    },
     resetpasswordtoken: {
         type: String
     },

@@ -80,11 +80,8 @@ export const HandleGetHRLeaves = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await hrApiService.get(HRLeavesEndPoints.GETALL)
-            console.log("[DEBUG] HandleGetHRLeaves - response:", response)
-            console.log("[DEBUG] HandleGetHRLeaves - response.data:", response.data)
             return response.data
         } catch (error) {
-            console.log("[DEBUG] HandleGetHRLeaves - error:", error)
             return rejectWithValue(error.response?.data || error.message)
         }
     }

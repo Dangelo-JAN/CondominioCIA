@@ -56,8 +56,6 @@ export const ResetHRPasswordPage = () => {
         return () => loadingbar.current?.complete();
     }, []);
 
-    console.log(HRState)
-
     return (
         <div className="reset-password-container">
             <LoadingBar ref={loadingbar} />
