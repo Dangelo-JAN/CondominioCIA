@@ -9,11 +9,12 @@ import {
     HandleDeleteEmployeeLeave
 } from "../../../redux/Thunks/HRLeavesThunk.js"
 import { Calendar, Plus, Edit, Trash2, Eye, Clock, CheckCircle, XCircle } from "lucide-react"
-import * as Dialog from "@radix-ui/react-dialog"
 import { useForm } from "../../../hooks/useForm.js"
 import { Button } from "../../../components/ui/button.jsx"
 import { Input } from "../../../components/ui/input.jsx"
 import { Label } from "../../../components/ui/label.jsx"
+import { CustomSelect } from "../../../components/ui/custom-select.jsx"
+import { ThemedModal } from "../../../components/common/Dashboard/ThemedModal.jsx"
 
 const LEAVE_TYPES = ["Vacaciones", "Reposo Médico", "Personal", "Otro"]
 const STATUS_OPTIONS = [
@@ -33,6 +34,13 @@ const LeaveRequestForm = ({ initialData, onSubmit, onClose, isLoading }) => {
         reason: initialData?.reason || ""
     })
 
+    // Estilos de input matching HRRequestspage - aplicados a TODOS los inputs
+    const inputCls = `w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-all duration-200 appearance-none
+        bg-gray-50 border border-gray-200 text-gray-900
+        focus:border-amber-400 focus:bg-white focus:ring-2 focus:ring-amber-100
+        dark:bg-[rgba(255,255,255,0.05)] dark:border-[rgba(255,255,255,0.12)] dark:text-white dark:placeholder:text-[rgba(255,255,255,0.4)]
+        dark:focus:border-[rgba(245,158,11,0.5)] dark:focus:bg-[rgba(245,158,11,0.06)]`
+
     useEffect(() => {
         if (initialData) {
             setFormData({
@@ -50,112 +58,57 @@ const LeaveRequestForm = ({ initialData, onSubmit, onClose, isLoading }) => {
         onSubmit(formData)
     }
 
+    const labelStyle = { color: isDark ? "rgba(255,255,255,0.6)" : "#6b7280", fontSize: "10px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }
+
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             {/* Tipo de ausencia */}
-            <div className="space-y-2">
-                <Label className="text-sm font-medium" style={{ color: isDark ? "#fff" : "#374151" }}>
-                    Tipo de Ausencia
-                </Label>
-                <select
-                    name="leavetype"
+            <div className="flex flex-col gap-1.5">
+                <label style={labelStyle}>Tipo de ausencia</label>
+                <CustomSelect
                     value={formData.leavetype}
-                    onChange={handleChange}
-                    required
-                    className={`w-full rounded-xl px-3 py-2.5 text-sm outline-none transition-all duration-200 appearance-none
-                        bg-gray-50 border border-gray-200 text-gray-900
-                        focus:border-cyan-400 focus:bg-white focus:ring-2 focus:ring-cyan-100
-                        dark:bg-[rgba(255,255,255,0.04)] dark:border-[rgba(255,255,255,0.08)] dark:text-white
-                        dark:focus:border-[rgba(6,182,212,0.5)] dark:focus:bg-[rgba(6,182,212,0.06)]`}
-                >
-                    {LEAVE_TYPES.map(type => (
-                        <option key={type} value={type}>{type}</option>
-                    ))}
-                </select>
+                    onValueChange={(val) => handleChange({ target: { name: "leavetype", value: val } })}
+                    placeholder="Seleccionar tipo"
+                    options={LEAVE_TYPES.map(type => ({ value: type, label: type }))}
+                    className={inputCls}
+                />
             </div>
 
             {/* Fechas */}
             <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                    <Label className="text-sm font-medium" style={{ color: isDark ? "#fff" : "#374151" }}>
-                        Fecha Inicio
-                    </Label>
-                    <Input
-                        type="date"
-                        name="startdate"
-                        value={formData.startdate}
-                        onChange={handleChange}
-                        required
-                        className={`rounded-xl`}
-                    />
+                <div className="flex flex-col gap-1.5">
+                    <label style={labelStyle}>Fecha inicio</label>
+                    <Input type="date" name="startdate" value={formData.startdate} onChange={handleChange} required className={inputCls} />
                 </div>
-                <div className="space-y-2">
-                    <Label className="text-sm font-medium" style={{ color: isDark ? "#fff" : "#374151" }}>
-                        Fecha Fin
-                    </Label>
-                    <Input
-                        type="date"
-                        name="enddate"
-                        value={formData.enddate}
-                        onChange={handleChange}
-                        required
-                        className={`rounded-xl`}
-                    />
+                <div className="flex flex-col gap-1.5">
+                    <label style={labelStyle}>Fecha fin</label>
+                    <Input type="date" name="enddate" value={formData.enddate} onChange={handleChange} required className={inputCls} />
                 </div>
             </div>
 
             {/* Título */}
-            <div className="space-y-2">
-                <Label className="text-sm font-medium" style={{ color: isDark ? "#fff" : "#374151" }}>
-                    Título
-                </Label>
-                <Input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    placeholder="Ej: Solicitud de vacaciones"
-                    required
-                    className={`rounded-xl`}
-                />
+            <div className="flex flex-col gap-1.5">
+                <label style={labelStyle}>Título</label>
+                <Input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Ej: Solicitud de vacaciones" required className={inputCls} />
             </div>
 
             {/* Razón */}
-            <div className="space-y-2">
-                <Label className="text-sm font-medium" style={{ color: isDark ? "#fff" : "#374151" }}>
-                    Razón
-                </Label>
-                <textarea
-                    name="reason"
-                    value={formData.reason}
-                    onChange={handleChange}
-                    placeholder="Describe la razón de tu solicitud..."
-                    required
-                    rows={3}
-                    className={`w-full rounded-xl px-3 py-2 text-sm outline-none transition-all duration-200 resize-none
-                        bg-gray-50 border border-gray-200 text-gray-900
-                        focus:border-cyan-400 focus:bg-white focus:ring-2 focus:ring-cyan-100
-                        dark:bg-[rgba(255,255,255,0.04)] dark:border-[rgba(255,255,255,0.08)] dark:text-white
-                        dark:focus:border-[rgba(6,182,212,0.5)] dark:focus:bg-[rgba(6,182,212,0.06)]`}
-                />
+            <div className="flex flex-col gap-1.5">
+                <label style={labelStyle}>Razón</label>
+                <textarea name="reason" value={formData.reason} onChange={handleChange}
+                    placeholder="Describe la razón de tu solicitud..." required rows={3}
+                    className={`${inputCls} resize-none`} />
             </div>
 
             {/* Botones */}
-            <div className="flex justify-end gap-3 pt-4">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onClose}
-                    className="rounded-xl"
-                >
+            <div className="flex justify-end gap-3 pt-2">
+                <Button type="button" variant="outline" onClick={onClose} 
+                    className="rounded-xl text-gray-600 border-gray-300 hover:bg-gray-100 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-800">
                     Cancelar
                 </Button>
-                <Button
-                    type="submit"
-                    disabled={isLoading}
-                    className="rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600"
-                >
-                    {isLoading ? "Guardando..." : initialData ? "Actualizar" : "Crear Solicitud"}
+                <Button type="submit" disabled={isLoading}
+                    className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white">
+                    {isLoading ? "Guardando..." : initialData ? "Actualizar" : "Crear"}
                 </Button>
             </div>
         </form>
@@ -169,107 +122,118 @@ const RequestDetailsDialog = ({ request, onClose, onEdit, onDelete, isLoading })
 
     const getStatusBadge = (status) => {
         const config = {
-            Pending: { bg: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.30)", color: "#fbbf24", label: "Pendiente", icon: Clock },
-            Approved: { bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.30)", color: "#34d399", label: "Aprobado", icon: CheckCircle },
-            Rejected: { bg: "rgba(239,68,68,0.12)", border: "rgba(239,68,68,0.30)", color: "#f87171", label: "Rechazado", icon: XCircle }
+            Pending: { 
+                bgL: "#fef3c7", bdrL: "#fcd34d", colorL: "#92400e",
+                bgD: "rgba(245,158,11,0.15)", bdrD: "rgba(245,158,11,0.35)", colorD: "#fbbf24",
+                icon: Clock, label: "Pendiente" 
+            },
+            Approved: { 
+                bgL: "#d1fae5", bdrL: "#6ee7b7", colorL: "#065f46",
+                bgD: "rgba(16,185,129,0.15)", bdrD: "rgba(16,185,129,0.35)", colorD: "#34d399",
+                icon: CheckCircle, label: "Aprobado" 
+            },
+            Rejected: { 
+                bgL: "#fee2e2", bdrL: "#fca5a5", colorL: "#991b1b",
+                bgD: "rgba(239,68,68,0.15)", bdrD: "rgba(239,68,68,0.35)", colorD: "#f87171",
+                icon: XCircle, label: "Rechazado" 
+            },
         }
         const c = config[status] || config.Pending
         const Icon = c.icon
         return (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
-                style={{ background: c.bg, color: c.color, border: `1px solid ${c.border}` }}>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
+                style={{ 
+                    background: isDark ? c.bgD : c.bgL, 
+                    color: isDark ? c.colorD : c.colorL,
+                    border: `1px solid ${isDark ? c.bdrD : c.bdrL}` 
+                }}>
                 <Icon className="w-3 h-3" />
                 {c.label}
             </span>
         )
     }
 
+    const labelStyle = { 
+        fontSize: "10px", 
+        fontWeight: 600, 
+        textTransform: "uppercase", 
+        letterSpacing: "0.08em" 
+    }
+
     return (
-        <Dialog.Root open={true} onOpenChange={onClose}>
-            <Dialog.Portal>
-                <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
-                <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg p-6 rounded-2xl z-50
-                    bg-white dark:bg-[#0f0f1a] border border-gray-200 dark:border-[rgba(255,255,255,0.12)]
-                    shadow-xl max-h-[90vh] overflow-y-auto">
-                    <Dialog.Title className="text-xl font-bold mb-4" style={{ color: isDark ? "#fff" : "#111827" }}>
-                        Detalles de mi Solicitud
-                    </Dialog.Title>
-
-                    <div className="space-y-4">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <p className="text-xs uppercase tracking-wider" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#9ca3af" }}>Tipo de Ausencia</p>
-                                <p className="font-medium mt-1" style={{ color: isDark ? "#fff" : "#374151" }}>{request.leavetype}</p>
-                            </div>
-                            {getStatusBadge(request.status)}
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4 p-4 rounded-xl" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f9fafb" }}>
-                            <div>
-                                <p className="text-xs uppercase tracking-wider" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#9ca3af" }}>Título</p>
-                                <p className="font-medium mt-1" style={{ color: isDark ? "#fff" : "#374151" }}>{request.title}</p>
-                            </div>
-                            <div>
-                                <p className="text-xs uppercase tracking-wider" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#9ca3af" }}>Fecha Inicio</p>
-                                <p className="font-medium mt-1" style={{ color: isDark ? "#fff" : "#374151" }}>
-                                    {new Date(request.startdate).toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" })}
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-xs uppercase tracking-wider" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#9ca3af" }}>Fecha Fin</p>
-                                <p className="font-medium mt-1" style={{ color: isDark ? "#fff" : "#374151" }}>
-                                    {new Date(request.enddate).toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" })}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <p className="text-xs uppercase tracking-wider mb-1" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#9ca3af" }}>Razón</p>
-                            <p className="p-3 rounded-xl text-sm" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f9fafb", color: isDark ? "rgba(255,255,255,0.8)" : "#374151" }}>
-                                {request.reason}
-                            </p>
-                        </div>
-
-                        {request.approvedby && (
-                            <div className="p-3 rounded-xl" style={{ background: isDark ? "rgba(6,182,212,0.1)" : "#ecfeff" }}>
-                                <p className="text-xs uppercase tracking-wider" style={{ color: isDark ? "rgba(6,182,212,0.6)" : "#0891b2" }}>
-                                    {request.status === "Approved" ? "Aprobado por" : "Rechazado por"}
-                                </p>
-                                <p className="font-medium mt-1" style={{ color: isDark ? "#22d3ee" : "#0e7490" }}>
-                                    {request.approvedby.firstname} {request.approvedby.lastname}
-                                </p>
-                            </div>
-                        )}
+        <ThemedModal
+            open={true}
+            onOpenChange={onClose}
+            title="Detalles de mi Solicitud"
+            accent="amber"
+            footer={
+                request.status === "Pending" && (
+                    <div className="flex justify-end gap-2">
+                        <Button
+                            onClick={() => onDelete(request._id)}
+                            variant="outline"
+                            className="rounded-xl text-red-500 border-red-500 hover:bg-red-50"
+                            disabled={isLoading}
+                        >
+                            <Trash2 className="w-4 h-4 mr-1" /> Eliminar
+                        </Button>
+                        <Button
+                            onClick={() => onEdit(request)}
+                            className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
+                        >
+                            <Edit className="w-4 h-4 mr-1" /> Editar
+                        </Button>
                     </div>
+                )
+            }
+        >
+            <div className="space-y-4">
+                <div className="flex justify-between items-start">
+                    <div>
+                        <p className="text-xs uppercase tracking-wider mb-1" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#9ca3af" }}>Tipo de Ausencia</p>
+                        <p className="font-medium" style={{ color: isDark ? "#fff" : "#374151" }}>{request.leavetype}</p>
+                    </div>
+                    {getStatusBadge(request.status)}
+                </div>
 
-                    {/* Acciones - solo si está Pending */}
-                    {request.status === "Pending" && (
-                        <div className="flex justify-end gap-2 mt-6 pt-4 border-t" style={{ borderColor: isDark ? "rgba(255,255,255,0.1)" : "#e5e7eb" }}>
-                            <Button
-                                onClick={() => onDelete(request._id)}
-                                variant="outline"
-                                className="rounded-xl text-red-500 border-red-500 hover:bg-red-50"
-                                disabled={isLoading}
-                            >
-                                <Trash2 className="w-4 h-4 mr-1" /> Eliminar
-                            </Button>
-                            <Button
-                                onClick={() => onEdit(request)}
-                                className="rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white"
-                            >
-                                <Edit className="w-4 h-4 mr-1" /> Editar
-                            </Button>
-                        </div>
-                    )}
+                <div className="grid grid-cols-2 gap-4 p-4 rounded-xl" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f9fafb" }}>
+                    <div>
+                        <p className="text-xs uppercase tracking-wider mb-1" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#9ca3af" }}>Título</p>
+                        <p className="font-medium" style={{ color: isDark ? "#fff" : "#374151" }}>{request.title}</p>
+                    </div>
+                    <div>
+                        <p className="text-xs uppercase tracking-wider mb-1" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#9ca3af" }}>Fecha Inicio</p>
+                        <p className="font-medium" style={{ color: isDark ? "#fff" : "#374151" }}>
+                            {new Date(request.startdate).toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" })}
+                        </p>
+                    </div>
+                    <div className="col-span-2">
+                        <p className="text-xs uppercase tracking-wider mb-1" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#9ca3af" }}>Fecha Fin</p>
+                        <p className="font-medium" style={{ color: isDark ? "#fff" : "#374151" }}>
+                            {new Date(request.enddate).toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" })}
+                        </p>
+                    </div>
+                </div>
 
-                    <Dialog.Close asChild>
-                        <button className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#9ca3af" }}>
-                            ✕
-                        </button>
-                    </Dialog.Close>
-                </Dialog.Content>
-            </Dialog.Portal>
-        </Dialog.Root>
+                <div>
+                    <p className="text-xs uppercase tracking-wider mb-1" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#9ca3af" }}>Razón</p>
+                    <p className="p-3 rounded-xl text-sm" style={{ background: isDark ? "rgba(255,255,255,0.04)" : "#f9fafb", color: isDark ? "rgba(255,255,255,0.8)" : "#374151" }}>
+                        {request.reason}
+                    </p>
+                </div>
+
+                {request.approvedby && (
+                    <div className="p-3 rounded-xl" style={{ background: isDark ? "rgba(245,158,11,0.1)" : "#fffbeb" }}>
+                        <p className="text-xs uppercase tracking-wider mb-1" style={{ color: isDark ? "rgba(245,158,11,0.6)" : "#d97706" }}>
+                            {request.status === "Approved" ? "Aprobado por" : "Rechazado por"}
+                        </p>
+                        <p className="font-medium" style={{ color: isDark ? "#fbbf24" : "#b45309" }}>
+                            {request.approvedby.firstname} {request.approvedby.lastname}
+                        </p>
+                    </div>
+                )}
+            </div>
+        </ThemedModal>
     )
 }
 
@@ -496,34 +460,33 @@ export const EmployeeRequestspage = () => {
             </div>
 
             {/* Create Dialog */}
-            <Dialog.Root open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                <Dialog.Portal>
-                    <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
-                    <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg p-6 rounded-2xl z-50
-                        bg-white dark:bg-[#0f0f1a] border border-gray-200 dark:border-[rgba(255,255,255,0.12)] shadow-xl max-h-[90vh] overflow-y-auto">
-                        <Dialog.Title className="text-xl font-bold mb-4" style={{ color: isDark ? "#fff" : "#111827" }}>Nueva Solicitud de Ausencia</Dialog.Title>
-                        <LeaveRequestForm onSubmit={handleCreate} onClose={() => setIsCreateOpen(false)} isLoading={HRLeavesState.isLoading} />
-                        <Dialog.Close asChild>
-                            <button className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#9ca3af" }}>✕</button>
-                        </Dialog.Close>
-                    </Dialog.Content>
-                </Dialog.Portal>
-            </Dialog.Root>
+            <ThemedModal
+                open={isCreateOpen}
+                onOpenChange={setIsCreateOpen}
+                title="Nueva Solicitud de Ausencia"
+                accent="amber"
+            >
+                <LeaveRequestForm 
+                    onSubmit={handleCreate} 
+                    onClose={() => setIsCreateOpen(false)} 
+                    isLoading={HRLeavesState.isLoading} 
+                />
+            </ThemedModal>
 
             {/* Edit Dialog */}
-            <Dialog.Root open={isEditOpen} onOpenChange={setIsEditOpen}>
-                <Dialog.Portal>
-                    <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" />
-                    <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg p-6 rounded-2xl z-50
-                        bg-white dark:bg-[#0f0f1a] border border-gray-200 dark:border-[rgba(255,255,255,0.12)] shadow-xl max-h-[90vh] overflow-y-auto">
-                        <Dialog.Title className="text-xl font-bold mb-4" style={{ color: isDark ? "#fff" : "#111827" }}>Editar Solicitud</Dialog.Title>
-                        <LeaveRequestForm initialData={selectedRequest} onSubmit={handleEdit} onClose={() => { setIsEditOpen(false); setSelectedRequest(null) }} isLoading={HRLeavesState.isLoading} />
-                        <Dialog.Close asChild>
-                            <button className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#9ca3af" }}>✕</button>
-                        </Dialog.Close>
-                    </Dialog.Content>
-                </Dialog.Portal>
-            </Dialog.Root>
+            <ThemedModal
+                open={isEditOpen}
+                onOpenChange={setIsEditOpen}
+                title="Editar Solicitud"
+                accent="amber"
+            >
+                <LeaveRequestForm 
+                    initialData={selectedRequest} 
+                    onSubmit={handleEdit}
+                    onClose={() => { setIsEditOpen(false); setSelectedRequest(null) }}
+                    isLoading={HRLeavesState.isLoading}
+                />
+            </ThemedModal>
 
             {/* Details Dialog */}
             {isDetailsOpen && selectedRequest && (
