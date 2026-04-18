@@ -5,6 +5,7 @@ import {
     HandleCreateEmployeeLeave,
     HandleUpdateEmployeeLeave,
     HandleDeleteEmployeeLeave,
+    HandleGetEmployeeAbsences,
     HandleGetHRLeaves,
     HandleCreateLeaveByHR,
     HandleUpdateLeaveByHR,
@@ -32,11 +33,14 @@ const HRLeavesSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        // Empleado
+        // Empleado - Solicitudes
         HRLeavesAsyncReducer(builder, HandleGetEmployeeLeaves, "HandleGetEmployeeLeaves")
         HRLeavesAsyncReducer(builder, HandleCreateEmployeeLeave, "HandleCreateEmployeeLeave")
         HRLeavesAsyncReducer(builder, HandleUpdateEmployeeLeave, "HandleUpdateEmployeeLeave")
         HRLeavesAsyncReducer(builder, HandleDeleteEmployeeLeave, "HandleDeleteEmployeeLeave")
+        
+        // Empleado - Ausencias
+        HRLeavesAsyncReducer(builder, HandleGetEmployeeAbsences, "HandleGetEmployeeAbsences")
         
         // HR - Solicitudes
         HRLeavesAsyncReducer(builder, HandleGetHRLeaves, "HandleGetHRLeaves")
