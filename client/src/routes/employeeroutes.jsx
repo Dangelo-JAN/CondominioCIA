@@ -11,6 +11,7 @@ import { EmployeeWorkPhotosPage } from "../pages/Employees/Dashboard Childs/Empl
 import { EmployeeProfilePage } from "../pages/Employees/Dashboard Childs/EmployeeProfilePage.jsx"
 import { EmployeeRequestspage } from "../pages/Employees/Dashboard Childs/EmployeeRequestspage.jsx"
 import { EmployeeAbsencesPage } from "../pages/Employees/Dashboard Childs/EmployeeAbsencesPage.jsx"
+import { EmployeeAcceptInvitationPage } from "../pages/Employees/EmployeeAcceptInvitationPage.jsx"
 
 export const EmployeeRoutes = [
     {
@@ -66,5 +67,9 @@ export const EmployeeRoutes = [
     {
         path: "/auth/employee/resetpassword/:token",
         element: <ResetPassword />
+    },
+    {
+        path: "/auth/employee/accept-invitation/:token",
+        element: <EmployeeAcceptInvitationPage />
     },
 ]
