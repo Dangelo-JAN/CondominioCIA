@@ -81,6 +81,8 @@ export const HandleEmplyoeeSignup = async (req, res) => {
                     role: "Employee",
                     verificationtoken: verificationcode,
                     verificationtokenexpires: Date.now() + 5 * 60 * 1000,
+                    isverified: false,
+                    isactive: true, // Activo pero requiere verificar email
                     organizationID: organization._id
                 })
 
@@ -96,7 +98,22 @@ export const HandleEmplyoeeSignup = async (req, res) => {
                 organization.employees.push(newEmployee._id)
                 await organization.save()
 
-                return res.status(201).json({ success: true, message: "Employee Registered Successfully", newEmployee: newEmployee.email, type: "EmployeeCreate" })
+                // Enviar correo de verificación de email
+                const verifyURL = `${process.env.CLIENT_URL}/auth/employee/verify-email`
+                await SendVerificationEmail(email, verificationcode)
+
+                return res.status(201).json({ 
+                    success: true, 
+                    message: "Empleado registrado. Se envió un correo de verificación.",
+                    data: {
+                        _id: newEmployee._id,
+                        firstname: newEmployee.firstname,
+                        lastname: newEmployee.lastname,
+                        email: newEmployee.email,
+                        isverified: newEmployee.isverified
+                    },
+                    type: "EmployeeCreate" 
+                })
             }
         } catch (error) {
             res.status(400).json({ success: false, message: "Oops! Something went wrong", error: error })
@@ -206,6 +223,16 @@ export const HandleEmplyoeeLogin = async (req, res) => {
 
         if (!employee) {
             return res.status(404).json({ success: false, message: "Invalid Credentials, Please Enter Correct One" })
+        }
+
+        // Verificar si el empleado está activo
+        if (!employee.isactive) {
+            return res.status(403).json({ success: false, message: "Cuenta inactiva. Debes aceptar la invitación primero." })
+        }
+
+        // Verificar si el email está verificado (solo si tiene verificationtoken)
+        if (!employee.isverified && employee.verificationtoken) {
+            return res.status(403).json({ success: false, message: "Debes verificar tu correo electrónico antes de iniciar sesión." })
         }
 
         const isMatch = await bcrypt.compare(password, employee.password)
