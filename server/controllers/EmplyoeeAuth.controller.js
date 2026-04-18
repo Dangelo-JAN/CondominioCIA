@@ -1,6 +1,6 @@
 import { Employee } from "../models/Employee.model.js"
 import bcrypt from 'bcrypt'
-import { GenerateVerificationToken } from "../utils/generalterverificationtoken.js"
+import { GenerateVerificationToken } from "../utils/generateVerificationToken.js"
 import { SendVerificationEmail, SendWelcomeEmail, SendForgotPasswordEmail, SendResetPasswordConfimation, SendEmployeeInvitationEmail } from "../sendgrid/emails.js"
 import { GenerateJwtTokenAndSetCookiesEmployee } from "../utils/generatejwttokenandsetcookies.js"
 import crypto from "crypto"
