@@ -125,47 +125,6 @@ export const HandleEmplyoeeSignup = async (req, res) => {
     }
 }
 
-        const organization = await Organization.findOne({ _id: req.ORGID })
-
-        if (!organization) {
-            return res.status(404).json({ success: false, message: "Organization or Company not found" })
-        }
-
-        try {
-            const hashedPassword = await bcrypt.hash(password, 10)
-            const verificationcode = GenerateVerificationToken(6)
-
-            const newEmployee = await Employee.create({
-                firstname, lastname, email, password: hashedPassword, contactnumber,
-                role: "Employee",
-                verificationtoken: verificationcode,
-                verificationtokenexpires: Date.now() + 5 * 60 * 1000,
-                organizationID: organization._id
-            })
-
-            // Auto-inicializar asistencia al crear el empleado
-            const newAttendance = await Attendance.create({
-                employee: newEmployee._id,
-                status: "Not Specified",
-                organizationID: organization._id
-            })
-            newEmployee.attendance = newAttendance._id
-            await newEmployee.save()
-
-            organization.employees.push(newEmployee._id)
-            await organization.save()
-
-            return res.status(201).json({ success: true, message: "Employee Registered Successfully", newEmployee: newEmployee.email, type: "EmployeeCreate" })
-        } catch (error) {
-            res.status(400).json({ success: false, message: "Oops! Something went wrong", error: error })
-        }
-
-    } catch (error) {
-        console.log(error)
-        res.status(400).json({ success: false, message: "All Fields are required" })
-    }
-}
-
 export const HandleEmplyoeeVerifyEmail = async (req, res) => {
     const { verificationcode } = req.body
     try {
