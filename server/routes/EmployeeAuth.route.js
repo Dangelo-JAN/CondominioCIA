@@ -2,7 +2,8 @@ import express from 'express'
 import {
     HandleEmplyoeeSignup, HandleEmplyoeeVerifyEmail, HandleEmplyoeeLogout,
     HandleEmplyoeeLogin, HandleEmplyoeeForgotPassword, HandleEmplyoeeSetPassword,
-    HandleResetEmplyoeeVerifyEmail, HandleEmployeeCheck, HandleEmployeeCheckVerifyEmail
+    HandleResetEmplyoeeVerifyEmail, HandleEmployeeCheck, HandleEmployeeCheckVerifyEmail,
+    HandleAcceptEmployeeInvitation
 } from '../controllers/EmplyoeeAuth.controller.js'
 import { VerifyEmployeeToken, VerifyhHRToken } from '../middlewares/Auth.middleware.js'
 import { PermissionCheck } from '../middlewares/RoleAuth.middleware.js'
@@ -11,7 +12,10 @@ const router = express.Router()
 
 // Crear empleado requiere permiso de create en employees
 router.post("/signup", VerifyhHRToken, PermissionCheck("employees", "create"), HandleEmplyoeeSignup)
-router.post("/verify-email", VerifyEmployeeToken, HandleEmplyoeeVerifyEmail)
+// Aceptar invitación de empleado (público - sin auth)
+router.post("/accept-invitation/:token", HandleAcceptEmployeeInvitation)
+// Verificar email - público sin auth
+router.post("/verify-email", HandleEmplyoeeVerifyEmail)
 router.post("/resend-verify-email", VerifyEmployeeToken, HandleResetEmplyoeeVerifyEmail)
 router.post("/login", HandleEmplyoeeLogin)
 router.get("/check-login", VerifyEmployeeToken, HandleEmployeeCheck)

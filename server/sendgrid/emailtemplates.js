@@ -324,3 +324,46 @@ export const PASSWORD_RESET_SUCCESS_TEMPLATE = `
 </body>
 </html>
 `
+
+// ── Invitación Empleado ─────────────────────────────────────────────────────────
+export const INVITATION_EMPLOYEE_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invitación al equipo</title>
+</head>
+<body style="${BASE_STYLE}">
+  <div style="${CARD_STYLE}">
+    ${HEADER("Invitación al equipo")}
+    <p style="margin: 0 0 12px; color: #4b5563; font-size: 15px;">Hola, <strong>{name}</strong>,</p>
+    <p style="margin: 0 0 24px; color: #4b5563; font-size: 15px;">
+        Has sido invitado a unirte al equipo de <strong>{companyName}</strong> en EMS.
+    </p>
+    <div style="text-align: center; margin: 32px 0;">
+        <a href="{inviteURL}" style="
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 14px 32px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.3px;
+            box-shadow: 0 4px 15px rgba(16,185,129,0.3);
+        ">Aceptar invitación</a>
+    </div>
+    <p style="margin: 0 0 8px; color: #6b7280; font-size: 14px;">
+        ⏱ Este enlace expirará en <strong>48 horas</strong>.
+    </p>
+    <p style="margin: 0; color: #9ca3af; font-size: 13px;">
+        Si no esperabas esta invitación, puedes ignorar este correo.<br>
+        <span style="color: #10b981; word-break: break-all;">{inviteURL}</span>
+    </p>
+    ${FOOTER}
+  </div>
+</body>
+</html>
+`

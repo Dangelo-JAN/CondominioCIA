@@ -47,8 +47,6 @@ export const ResetHRVerifyEmailPage = () => {
         return () => loadingbar.current?.complete();
     }, []);
 
-    console.log(HRState)
-
     return (
         <>
             <LoadingBar ref={loadingbar} />
