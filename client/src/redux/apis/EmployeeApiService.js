@@ -4,6 +4,8 @@ const EM_PUBLIC = [
     "/api/auth/employee/login",
     "/api/auth/employee/signup",
     "/api/auth/employee/forgot-password",
+    "/api/auth/employee/verify-email",
+    "/api/auth/employee/resend-verify-email",
     "reset-password",
 ]
 

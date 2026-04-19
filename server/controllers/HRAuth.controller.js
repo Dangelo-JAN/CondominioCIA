@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import { GenerateJwtTokenAndSetCookiesHR } from "../utils/generatejwttokenandsetcookies.js"
 import { SendVerificationEmail, SendWelcomeEmail, SendForgotPasswordEmail, SendResetPasswordConfimation } from "../sendgrid/emails.js"
-import { GenerateVerificationToken } from "../utils/generateverificationtoken.js"
+import { GenerateVerificationToken } from "../utils/generateVerificationToken.js"
 import { Organization } from "../models/Organization.model.js"
 
 export const HandleHRSignup = async (req, res) => {

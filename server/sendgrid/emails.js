@@ -1,5 +1,6 @@
 import {
     INVITATION_HR_TEMPLATE,
+    INVITATION_EMPLOYEE_TEMPLATE,
     VERIFICATION_EMAIL_TEMPLATE,
     WELCOME_HR_TEMPLATE,
     WELCOME_EMPLOYEE_TEMPLATE,
@@ -36,6 +37,18 @@ export const SendInvitationEmail = async (email, firstname, inviteURL, role) => 
         html: INVITATION_HR_TEMPLATE
             .replace("{name}", firstname)
             .replace("{role}", roleLabel)
+            .replace(/{inviteURL}/g, inviteURL),
+    })
+}
+
+// ── Invitación Empleado ─────────────────────────────────────────────────────────
+export const SendEmployeeInvitationEmail = async (email, firstname, inviteURL, companyName) => {
+    return sendMail({
+        to: email,
+        subject: "Te han invitado a unirte al equipo",
+        html: INVITATION_EMPLOYEE_TEMPLATE
+            .replace(/{name}/g, firstname)
+            .replace(/{companyName}/g, companyName)
             .replace(/{inviteURL}/g, inviteURL),
     })
 }

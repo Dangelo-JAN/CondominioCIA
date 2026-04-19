@@ -33,7 +33,6 @@ export const FormSubmitToast = ({ formdata }) => {
     //     }
     // }
 
-    console.log(HREmployeesState, "This is the HR plus Employees State")
     return (
         <>
             <Button
