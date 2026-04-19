@@ -12,7 +12,7 @@ export const employeeApiService = axios.create({
     headers: { 'Content-Type': 'application/json' },
 })
 
-// Interceptor para agregar headers anti-caché a todas las peticiones
+// Interceptor para agregar token y anti-caché a todas las peticiones
 employeeApiService.interceptors.request.use((config) => {
     const url = config.url || ""
     const isPublic = EM_PUBLIC.some(route => url.includes(route))

@@ -361,6 +361,8 @@ export const EmployeeDashboardAsyncReducer = (builder, thunk) => {
             state.attendance = action.payload.data
             state.fetchData = false
         }
+        else if (action.payload.type === "rejected") {
+        }
         else if (action.payload.type === "CheckIn" || action.payload.type === "CheckOut") {
             state.attendance = action.payload.data
             state.fetchData = false

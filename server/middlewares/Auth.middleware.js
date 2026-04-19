@@ -10,9 +10,16 @@ export const VerifyEmployeeToken = (req, res, next) => {
     }
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        
         if (!decoded) {
             return res.status(403).json({ success: false, message: "Unauthenticated employee", gologin: true })
         }
+        
+        // Verificar que tiene EMid (empleado)
+        if (!decoded.EMid) {
+            return res.status(403).json({ success: false, message: "Cuenta HR inactiva o no encontrada", gologin: true })
+        }
+        
         req.EMPID  = decoded.EMid
         req.EMrole = decoded.EMrole
         req.ORGID  = decoded.ORGID
