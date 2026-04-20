@@ -8,7 +8,7 @@ import { ListItemCard, StatusBadge } from "../../../components/common/Dashboard/
 import {
     Plus, Trash2, CalendarDays, ChevronDown, ChevronUp,
     Users, ClipboardList, X, CheckCircle2, Circle,
-    Pencil, ToggleLeft, ToggleRight
+    Pencil, ToggleLeft, ToggleRight, Copy
 } from "lucide-react"
 
 const DAYS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
@@ -19,7 +19,7 @@ const emptyDay  = () => ({ day: "Lunes", tasks: [emptyTask()] })
 const formatDate = (d) => d ? new Date(d).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" }) : ""
 
 // ── Card de horario en la lista (usando ListItemCard) ───────────────────
-const ScheduleCard = ({ schedule, employees, onDelete, onToggle, onEdit }) => {
+const ScheduleCard = ({ schedule, employees, onDelete, onToggle, onEdit, onDuplicate }) => {
     const [open, setOpen] = useState(false)
     const assignedEmployee = employees?.find(e => e._id === schedule.employee?._id || e._id === schedule.employee)
 
@@ -29,6 +29,13 @@ const ScheduleCard = ({ schedule, employees, onDelete, onToggle, onEdit }) => {
     // Botones de acción (sin el toggle de expandir - se maneja en ListItemCard)
     const actionButtons = (
         <>
+            <button
+                onClick={() => onDuplicate(schedule)}
+                title="Copiar horario"
+                className="p-1.5 rounded-lg transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-[rgba(255,255,255,0.06)]"
+            >
+                <Copy className="w-4 h-4 text-gray-400 hover:text-indigo-500 transition-colors" />
+            </button>
             <button
                 onClick={() => onToggle(schedule)}
                 title={schedule.isactive ? "Desactivar" : "Activar"}
@@ -117,12 +124,20 @@ const ScheduleCard = ({ schedule, employees, onDelete, onToggle, onEdit }) => {
         </div>
     )
 
+    // Verificar si el horario está vencido
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const endDate = new Date(schedule.enddate)
+    endDate.setHours(0, 0, 0, 0)
+    const isExpired = endDate < today
+    const isActive = schedule.isactive && !isExpired
+
     return (
         <ListItemCard
             accent="indigo"
             title={schedule.title}
             description={schedule.description}
-            badge={<StatusBadge active={schedule.isactive} />}
+            badge={<StatusBadge active={isActive} />}
             actions={actionButtons}
             headerMeta={headerContent}
             isOpen={open}
@@ -255,18 +270,20 @@ const DayEditor = ({ dayItem, dayIndex, onChange, onRemove, canRemove }) => {
 }
 
 // ── Formulario de creación / edición ─────────────────────────────────────
-const ScheduleForm = ({ employees, onSubmit, onCancel, editingSchedule }) => {
-    const isEdit = !!editingSchedule
+const ScheduleForm = ({ employees, onSubmit, onCancel, editingSchedule, viewMode }) => {
+    const isEdit = !!editingSchedule && !!editingSchedule._id
+  
+    // Verificar si es una copia (tiene schedule pero no tiene _id)
+    const isDuplicated = viewMode === "duplicate" || (!!editingSchedule && !editingSchedule._id)
 
     const [form, setForm] = useState({
-        title:       isEdit ? editingSchedule.title       : "",
-        description: isEdit ? editingSchedule.description : "",
-        employee:    isEdit ? (editingSchedule.employee?._id || editingSchedule.employee || "") : "",
-        startdate:   isEdit ? editingSchedule.startdate?.split("T")[0] : "",
-        enddate:     isEdit ? editingSchedule.enddate?.split("T")[0]   : "",
-        isactive:    isEdit ? editingSchedule.isactive    : true,
-        schedule:    isEdit
-            ? editingSchedule.schedule.map(d => ({
+        title:       editingSchedule?.title       || "",
+        description: editingSchedule?.description || "",
+        employee:    editingSchedule?.employee?._id || editingSchedule?.employee || "",
+        startdate:   (editingSchedule?.startdate?.split("T")[0]) || "",
+        enddate:     (editingSchedule?.enddate?.split("T")[0])   || "",
+        isactive:    editingSchedule?.isactive ?? true,
+        schedule:    editingSchedule?.schedule?.map(d => ({
                 day:   d.day,
                 tasks: d.tasks.map(t => ({
                     title:       t.title,
@@ -274,8 +291,7 @@ const ScheduleForm = ({ employees, onSubmit, onCancel, editingSchedule }) => {
                     starttime:   t.starttime,
                     endtime:     t.endtime
                 }))
-            }))
-            : [emptyDay()]
+            })) || [emptyDay()]
     })
 
     const updateDay = (dayIndex, field, value) => {
@@ -294,11 +310,17 @@ const ScheduleForm = ({ employees, onSubmit, onCancel, editingSchedule }) => {
     }
 
     const handleSubmit = () => {
-        if (!form.title || !form.employee || !form.startdate || !form.enddate) return
-        const payload = isEdit
-            ? { ...form, scheduleID: editingSchedule._id }
-            : form
-        onSubmit(payload)
+        // Para duplicados, solo requerir título y empleado (fechas opcionales)
+        if (isDuplicated) {
+            if (!form.title || !form.employee) return
+            onSubmit({ ...form, scheduleID: editingSchedule?._id })
+        } else if (isEdit) {
+            if (!form.title || !form.employee || !form.startdate || !form.enddate) return
+            onSubmit({ ...form, scheduleID: editingSchedule?._id })
+        } else {
+            if (!form.title || !form.employee || !form.startdate || !form.enddate) return
+            onSubmit(form)
+        }
     }
 
     return (
@@ -460,12 +482,26 @@ export const HRSchedulePage = () => {
     }, [])
 
     const handleCreate = async (data) => {
-        const res = await dispatch(HandleHRSchedule({ type: "Create", data }))
-        if (res.payload?.success) {
-            toast({ variant: "success", title: "Horario creado", description: res.payload.message })
-            setView("list")
+        // Si es una copia (tiene scheduleID), usar el endpoint de duplicar
+        if (data.scheduleID) {
+            const res = await dispatch(HandleHRSchedule({ 
+                type: "Duplicate", 
+                data: { scheduleID: data.scheduleID, ...data } 
+            }))
+            if (res.payload?.success) {
+                toast({ variant: "success", title: "Horario copiado", description: res.payload.message })
+                setView("list")
+            } else {
+                toast({ variant: "destructive", title: "Error", description: res.payload?.message })
+            }
         } else {
-            toast({ variant: "destructive", title: "Error", description: res.payload?.message })
+            const res = await dispatch(HandleHRSchedule({ type: "Create", data }))
+            if (res.payload?.success) {
+                toast({ variant: "success", title: "Horario creado", description: res.payload.message })
+                setView("list")
+            } else {
+                toast({ variant: "destructive", title: "Error", description: res.payload?.message })
+            }
         }
     }
 
@@ -490,6 +526,21 @@ export const HRSchedulePage = () => {
     }
 
     const handleToggle = async (schedule) => {
+        // No permitir activar horarios vencidos
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const endDate = new Date(schedule.enddate)
+        endDate.setHours(0, 0, 0, 0)
+        
+        if (!schedule.isactive && endDate < today) {
+            toast({
+                variant: "destructive",
+                title: "No se puede activar",
+                description: "El horario está vencido"
+            })
+            return
+        }
+        
         const res = await dispatch(HandleHRSchedule({
             type: "Update",
             data: { scheduleID: schedule._id, isactive: !schedule.isactive }
@@ -505,6 +556,28 @@ export const HRSchedulePage = () => {
     const handleEdit = (schedule) => {
         setEditingSchedule(schedule)
         setView("edit")
+    }
+
+    const handleDuplicate = async (schedule) => {
+        // Extraer los datos del horario para precargar el formulario
+        const duplicatedData = {
+            title: `${schedule.title} (Copia)`,
+            description: schedule.description || "",
+            employee: schedule.employee?._id || schedule.employee || "",
+            startdate: "", // Vacío como solicitaste
+            enddate: "",   // Vacío como solicitaste
+            schedule: schedule.schedule.map(d => ({
+                day: d.day,
+                tasks: d.tasks.map(t => ({
+                    title: t.title,
+                    description: t.description || "",
+                    starttime: t.starttime,
+                    endtime: t.endtime
+                }))
+            }))
+        }
+        setEditingSchedule(duplicatedData)
+        setView("duplicate")
     }
 
     const schedules  = scheduleState.data || []
@@ -527,9 +600,10 @@ export const HRSchedulePage = () => {
                     <div className="flex items-center gap-3">
                         <h1 className="text-2xl xl:text-3xl font-bold tracking-tight
                             text-gray-900 dark:text-white">
-                            {view === "list"   ? "Horarios"         : ""}
-                            {view === "create" ? "Nuevo horario"    : ""}
-                            {view === "edit"   ? "Editar horario"   : ""}
+                            {view === "list"     ? "Horarios"          : ""}
+                            {view === "create"    ? "Nuevo horario"     : ""}
+                            {view === "edit"      ? "Editar horario"   : ""}
+                            {view === "duplicate" ? "Copiar horario"  : ""}
                         </h1>
                         {view === "list" && (
                             <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold
@@ -583,6 +657,7 @@ export const HRSchedulePage = () => {
                                 onDelete={handleDelete}
                                 onToggle={handleToggle}
                                 onEdit={handleEdit}
+                                onDuplicate={handleDuplicate}
                             />
                         ))
                     )}
@@ -596,6 +671,18 @@ export const HRSchedulePage = () => {
                     onSubmit={handleCreate}
                     onCancel={() => setView("list")}
                     editingSchedule={null}
+                    viewMode="create"
+                />
+            )}
+
+            {/* ── Vista Copiar ──────────────────────────────────────────── */}
+            {view === "duplicate" && (
+                <ScheduleForm
+                    employees={employees}
+                    onSubmit={handleCreate}
+                    onCancel={() => { setView("list"); setEditingSchedule(null) }}
+                    editingSchedule={editingSchedule}
+                    viewMode="duplicate"
                 />
             )}
 
@@ -606,6 +693,7 @@ export const HRSchedulePage = () => {
                     onSubmit={handleUpdate}
                     onCancel={() => { setView("list"); setEditingSchedule(null) }}
                     editingSchedule={editingSchedule}
+                    viewMode="edit"
                 />
             )}
         </div>

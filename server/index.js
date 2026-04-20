@@ -35,6 +35,7 @@ app.use(cookieParser())
 const allowedOrigins = [
   process.env.CLIENT_URL,
   /\.vercel\.app$/,
+  /cron-job\.org$/,  // Para servicios de cron externos
 ];
 
 app.use(cors({
