@@ -11,10 +11,10 @@ const router = express.Router()
 
 router.post("/initialize", VerifyEmployeeToken, HandleInitializeAttendance)
 router.get("/all", VerifyhHRToken, PermissionCheck("attendance", "read"), HandleAllAttendance)
+router.get("/my-attendance", VerifyEmployeeToken, HandleGetMyAttendance)
 router.get("/:attendanceID", VerifyhHRToken, PermissionCheck("attendance", "read"), HandleAttendance)
 router.patch("/update-attendance", VerifyEmployeeToken, HandleUpdateAttendance)
 router.delete("/delete-attendance/:attendanceID", VerifyhHRToken, PermissionCheck("attendance", "delete"), HandleDeleteAttendance)
-router.get("/my-attendance", VerifyEmployeeToken, HandleGetMyAttendance)
 router.patch("/checkin", VerifyEmployeeToken, HandleCheckIn)
 router.patch("/checkout", VerifyEmployeeToken, HandleCheckOut)
 

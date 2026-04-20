@@ -48,9 +48,34 @@ export const AddEmployeesDialogBox = () => {
         firstname: "", lastname: "", email: "",
         contactnumber: "", textpassword: "", password: "",
     })
+    const [sendInvitation, setSendInvitation] = useState(false)
+    const { toast } = useToast()
 
     const handleformchange = (event) => {
         CommonStateHandler(formdata, setformdata, event)
+    }
+
+    const handleSubmit = async () => {
+        try {
+            // Si sendInvitation es true, no enviar password
+            const dataToSend = sendInvitation 
+                ? { firstname: formdata.firstname, lastname: formdata.lastname, email: formdata.email, contactnumber: formdata.contactnumber }
+                : formdata
+
+            const res = await HandlePostHREmployees({ apiroute: "ADDEMPLOYEE", data: dataToSend })
+            
+            if (sendInvitation) {
+                toast({ variant: "success", title: "Invitación enviada", description: `Se envió un correo a ${formdata.email}` })
+            } else {
+                toast({ variant: "success", title: "Empleado registrado", description: `${formdata.firstname} ${formdata.lastname} ha sido agregado` })
+            }
+            
+            // Limpiar formulario
+            setformdata({ firstname: "", lastname: "", email: "", contactnumber: "", textpassword: "", password: "" })
+            setSendInvitation(false)
+        } catch (error) {
+            toast({ variant: "destructive", title: "Error", description: error.message || "Error al procesar la solicitud" })
+        }
     }
 
     return (
@@ -72,6 +97,20 @@ export const AddEmployeesDialogBox = () => {
                         <p className="text-sm text-gray-400 dark:text-[rgba(255,255,255,0.3)] mt-1">
                             Completa todos los campos para registrar al empleado. Se enviará un correo de verificación automáticamente.
                         </p>
+                    </div>
+
+                    {/* Toggle Invitación */}
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-100 dark:bg-[rgba(16,185,129,0.08)] dark:border-[rgba(16,185,129,0.2)]">
+                        <input
+                            type="checkbox"
+                            id="sendInvitation"
+                            checked={sendInvitation}
+                            onChange={(e) => setSendInvitation(e.target.checked)}
+                            className="w-4 h-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                        />
+                        <label htmlFor="sendInvitation" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Enviar invitación por correo electrónico
+                        </label>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -108,8 +147,33 @@ export const AddEmployeesDialogBox = () => {
                         ))}
                     </div>
 
+                    {/* Contraseñas - solo si no es invitación */}
+                    {!sendInvitation && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {[
+                                { id: "text-password", name: "textpassword", label: "Contraseña", type: "text", value: formdata.textpassword },
+                                { id: "password", name: "password", label: "Confirmar contraseña", type: "password", value: formdata.password },
+                            ].map(field => (
+                                <div key={field.id} className="flex flex-col gap-1.5">
+                                    <label htmlFor={field.id} className={labelCls}>{field.label}</label>
+                                    <input
+                                        id={field.id} name={field.name} type={field.type}
+                                        value={field.value} onChange={handleformchange}
+                                        className={inputCls}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     <div className="flex justify-end pt-1">
-                        <FormSubmitToast formdata={formdata} />
+                        <Button
+                            type="button"
+                            onClick={handleSubmit}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg px-4 py-2"
+                        >
+                            {sendInvitation ? "Enviar invitación" : "Agregar empleado"}
+                        </Button>
                     </div>
                 </div>
             </DialogContent>

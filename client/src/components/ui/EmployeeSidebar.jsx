@@ -2,6 +2,7 @@ import { useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { HandlePostEmployees } from "../../redux/Thunks/EmployeeThunk.js"
 import { logoutEmployee } from "../../redux/Slices/EmployeeSlice.js"
+import { resetDashboardState } from "../../redux/Slices/EmployeeDashboardSlice.js"
 import { DashboardSidebar } from "./DashboardSidebar.jsx"
 
 const EMPLOYEE_NAV_ITEMS = [
@@ -22,6 +23,7 @@ export function EmployeeDashboardSidebar() {
         dispatch(HandlePostEmployees({ apiroute: "LOGOUT" }))
             .finally(() => {
                 dispatch(logoutEmployee())
+                dispatch(resetDashboardState())
                 navigate("/")
             })
     }
