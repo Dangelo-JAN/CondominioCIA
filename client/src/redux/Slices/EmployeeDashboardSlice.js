@@ -16,10 +16,20 @@ const EmployeeDashboardSlice = createSlice({
             content: null
         }
     },
-    reducers: {},
+    reducers: {
+        resetDashboardState: (state) => {
+            state.isLoading = false
+            state.attendance = null
+            state.schedules = []
+            state.photos = []
+            state.fetchData = false
+            state.error = { status: false, message: null, content: null }
+        }
+    },
     extraReducers: (builder) => {
         EmployeeDashboardAsyncReducer(builder, HandleEmployeeDashboard)
     }
 })
 
+export const { resetDashboardState } = EmployeeDashboardSlice.actions
 export default EmployeeDashboardSlice.reducer
