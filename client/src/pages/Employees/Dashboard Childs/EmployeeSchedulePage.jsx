@@ -32,18 +32,27 @@ const DIVIDER = {
 }
 
 // ── DayCard ───────────────────────────────────────────────────────────────
-const DayCard = ({ daySchedule, scheduleID, onCompleteTask, isDark }) => {
+const DayCard = ({ daySchedule, scheduleID, onCompleteTask, isDark, canInteract, isScheduleActive }) => {
     const [open, setOpen] = useState(false)
     const completedCount = daySchedule.tasks.filter(t => t.completed).length
     const totalCount = daySchedule.tasks.length
     const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
     const sub = isDark ? SUBCARD.dark : SUBCARD.light
 
+    // Determinar si este día es el actual
+    const today = new Date()
+    const currentDayName = DAYS_ORDER[today.getDay() === 0 ? 6 : today.getDay() - 1]
+    const isCurrentDay = daySchedule.day === currentDayName && isScheduleActive
+
+    // Estilos para días pasados o no actuales
+    const isPastDay = !isCurrentDay && isScheduleActive
+
     return (
         <div className="rounded-2xl overflow-hidden transition-all duration-200"
             style={{
                 background: sub.bg,
                 border: `1px solid ${sub.border}`,
+                opacity: isPastDay && !open ? 0.5 : 1,
             }}>
 
             <button
@@ -56,15 +65,28 @@ const DayCard = ({ daySchedule, scheduleID, onCompleteTask, isDark }) => {
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                         style={{
-                            background: isDark ? "rgba(99,102,241,0.15)" : "#e0e7ff",
-                            border: `1px solid ${isDark ? "rgba(99,102,241,0.3)" : "#c7d2fe"}`,
+                            background: isCurrentDay 
+                                ? isDark ? "rgba(16,185,129,0.15)" : "#d1fae5"
+                                : isDark ? "rgba(99,102,241,0.15)" : "#e0e7ff",
+                            border: `1px solid ${
+                                isCurrentDay 
+                                    ? isDark ? "rgba(16,185,129,0.4)" : "#6ee7b7"
+                                    : isDark ? "rgba(99,102,241,0.3)" : "#c7d2fe"
+                            }`,
                         }}>
-                        <CalendarDays className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+                        {isCurrentDay 
+                            ? <Clock className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+                            : <CalendarDays className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+                        }
                     </div>
                     <div className="text-left">
                         <p className="text-sm font-semibold"
-                            style={{ color: isDark ? "#ffffff" : "#111827" }}>
+                            style={{ 
+                                color: isDark ? "#ffffff" : "#111827",
+                                fontStyle: isCurrentDay ? "normal" : "normal"
+                            }}>
                             {daySchedule.day}
+                            {isCurrentDay && <span className="ml-2 text-[10px] text-emerald-500">HOY</span>}
                         </p>
                         <p className="text-[11px]"
                             style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(107,114,128,1)" }}>
@@ -102,54 +124,65 @@ const DayCard = ({ daySchedule, scheduleID, onCompleteTask, isDark }) => {
                             </p>
                         </div>
                     ) : (
-                        daySchedule.tasks.map(task => (
-                            <button
-                                key={task._id}
-                                onClick={() => onCompleteTask(scheduleID, daySchedule._id, task._id)}
-                                className="flex items-start gap-3 p-3 rounded-xl text-left w-full mt-2
-                                    transition-all duration-150"
-                                style={{ border: "1px solid transparent" }}
-                                onMouseEnter={e => {
-                                    e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.05)" : "#f5f7ff"
-                                    e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.1)" : "#c7d2fe"
-                                }}
-                                onMouseLeave={e => {
-                                    e.currentTarget.style.background = "transparent"
-                                    e.currentTarget.style.borderColor = "transparent"
-                                }}
-                            >
-                                {task.completed
-                                    ? <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0 text-emerald-500" />
-                                    : <Circle className="w-4 h-4 mt-0.5 flex-shrink-0"
-                                        style={{ color: isDark ? "rgba(255,255,255,0.2)" : "#d1d5db" }} />
-                                }
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium"
-                                        style={{
-                                            color: task.completed
-                                                ? isDark ? "rgba(255,255,255,0.3)" : "rgba(156,163,175,1)"
-                                                : isDark ? "rgba(255,255,255,0.85)" : "#111827",
-                                            textDecoration: task.completed ? "line-through" : "none"
-                                        }}>
-                                        {task.title}
-                                    </p>
-                                    {task.description && (
-                                        <p className="text-xs mt-0.5 line-clamp-2"
-                                            style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(107,114,128,1)" }}>
-                                            {task.description}
+                        daySchedule.tasks.map(task => {
+                            // Solo permitir interacción si es día actual y el horario está activo
+                            const canCheck = canInteract && isCurrentDay
+
+                            return (
+                                <button
+                                    key={task._id}
+                                    onClick={() => canCheck && onCompleteTask(scheduleID, daySchedule._id, task._id)}
+                                    className={`flex items-start gap-3 p-3 rounded-xl text-left w-full mt-2
+                                        transition-all duration-150 ${canCheck ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+                                    style={{ border: "1px solid transparent" }}
+                                    onMouseEnter={e => {
+                                        if (canCheck) {
+                                            e.currentTarget.style.background = isDark ? "rgba(255,255,255,0.05)" : "#f5f7ff"
+                                            e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.1)" : "#c7d2fe"
+                                        }
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.background = "transparent"
+                                        e.currentTarget.style.borderColor = "transparent"
+                                    }}
+                                >
+                                    {task.completed
+                                        ? <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0 text-emerald-500" />
+                                        : <Circle className="w-4 h-4 mt-0.5 flex-shrink-0"
+                                            style={{ color: canCheck 
+                                                ? isDark ? "rgba(255,255,255,0.2)" : "#d1d5db"
+                                                : isDark ? "rgba(255,255,255,0.1)" : "#e5e7eb"
+                                            }} />
+                                    }
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium"
+                                            style={{
+                                                color: task.completed
+                                                    ? isDark ? "rgba(255,255,255,0.3)" : "rgba(156,163,175,1)"
+                                                    : isDark ? "rgba(255,255,255,0.85)" : "#111827",
+                                                textDecoration: task.completed ? "line-through" : "none",
+                                                opacity: canCheck ? 1 : 0.5
+                                            }}>
+                                            {task.title}
                                         </p>
-                                    )}
-                                    <div className="flex items-center gap-1 mt-1">
-                                        <Clock className="w-3 h-3"
-                                            style={{ color: isDark ? "rgba(255,255,255,0.25)" : "#d1d5db" }} />
-                                        <span className="text-[11px]"
-                                            style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(107,114,128,1)" }}>
-                                            {task.starttime} — {task.endtime}
-                                        </span>
+                                        {task.description && (
+                                            <p className="text-xs mt-0.5 line-clamp-2"
+                                                style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(107,114,128,1)" }}>
+                                                {task.description}
+                                            </p>
+                                        )}
+                                        <div className="flex items-center gap-1 mt-1">
+                                            <Clock className="w-3 h-3"
+                                                style={{ color: isDark ? "rgba(255,255,255,0.25)" : "#d1d5db" }} />
+                                            <span className="text-[11px]"
+                                                style={{ color: isDark ? "rgba(255,255,255,0.35)" : "rgba(107,114,128,1)" }}>
+                                                {task.starttime} — {task.endtime}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                            </button>
-                        ))
+                                </button>
+                            )
+                        })
                     )}
                 </div>
             )}
@@ -158,7 +191,7 @@ const DayCard = ({ daySchedule, scheduleID, onCompleteTask, isDark }) => {
 }
 
 // ── ScheduleCard ──────────────────────────────────────────────────────────
-const ScheduleCard = ({ schedule, onCompleteTask, isDark }) => {
+const ScheduleCard = ({ schedule, onCompleteTask, isDark, isCurrentSchedule }) => {
     const [expanded, setExpanded] = useState(true)
     const card = isDark ? CARD.dark : CARD.light
 
@@ -170,6 +203,21 @@ const ScheduleCard = ({ schedule, onCompleteTask, isDark }) => {
         (a, b) => DAYS_ORDER.indexOf(a.day) - DAYS_ORDER.indexOf(b.day)
     )
 
+    // El horario está activo solo si:
+    // 1. status es "active" (o no existe - compatibilidad hacia atrás)
+    // 2. La fecha enddate no ha vencido
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const endDate = new Date(schedule.enddate)
+    endDate.setHours(0, 0, 0, 0)
+    
+    const isScheduleExpired = endDate < today
+    const isScheduleClosed = schedule.status === "closed"
+    const isScheduleActive = (schedule.status === "active" || !schedule.status) && !isScheduleExpired
+
+    // Solo puede interactuar si el horario está activo
+    const canInteract = isScheduleActive
+
     return (
         <div className="rounded-2xl overflow-hidden"
             style={{ background: card.bg, border: `1px solid ${card.border}`, boxShadow: card.shadow }}>
@@ -179,10 +227,21 @@ const ScheduleCard = ({ schedule, onCompleteTask, isDark }) => {
                 style={{ borderBottom: `1px solid ${isDark ? DIVIDER.dark : DIVIDER.light}` }}>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-indigo-500 dark:text-indigo-400">
-                            Horario activo
+                        <p className={`text-[10px] font-semibold uppercase tracking-[0.18em] ${
+                            isScheduleActive 
+                                ? "text-indigo-500 dark:text-indigo-400"
+                                : "text-gray-400 dark:text-gray-500"
+                        }`}>
+                            {isScheduleActive ? "Horario activo" : "Horario inactivo"}
                         </p>
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        {isScheduleActive && (
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        )}
+                        {isCurrentSchedule && isScheduleActive && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">
+                                Actual
+                            </span>
+                        )}
                     </div>
                     <h3 className="text-base font-bold truncate"
                         style={{ color: isDark ? "#ffffff" : "#111827" }}>
@@ -207,7 +266,11 @@ const ScheduleCard = ({ schedule, onCompleteTask, isDark }) => {
                             <div className="h-full rounded-full bg-indigo-500 transition-all duration-500"
                                 style={{ width: `${progress}%` }} />
                         </div>
-                        <span className="text-xs font-semibold text-indigo-500 dark:text-indigo-400">
+                        <span className={`text-xs font-semibold ${
+                            isScheduleActive 
+                                ? "text-indigo-500 dark:text-indigo-400"
+                                : "text-gray-400"
+                        }`}>
                             {progress}%
                         </span>
                     </div>
@@ -238,6 +301,8 @@ const ScheduleCard = ({ schedule, onCompleteTask, isDark }) => {
                             scheduleID={schedule._id}
                             onCompleteTask={onCompleteTask}
                             isDark={isDark}
+                            canInteract={canInteract}
+                            isScheduleActive={isScheduleActive}
                         />
                     ))}
                 </div>
@@ -315,14 +380,24 @@ export const EmployeeSchedulePage = () => {
                 </div>
             ) : (
                 <div className="flex flex-col gap-4">
-                    {schedules.map(schedule => (
-                        <ScheduleCard
-                            key={schedule._id}
-                            schedule={schedule}
-                            onCompleteTask={handleCompleteTask}
-                            isDark={isDark}
-                        />
-                    ))}
+                    {schedules.map((schedule, index) => {
+                        // Determinar si es el horario actual
+                        const today = new Date()
+                        const todayStart = new Date(today.setHours(0, 0, 0, 0))
+                        const scheduleStart = new Date(schedule.startdate)
+                        const scheduleEnd = new Date(schedule.enddate)
+                        const isCurrentSchedule = scheduleStart <= today && scheduleEnd >= today
+
+                        return (
+                            <ScheduleCard
+                                key={schedule._id}
+                                schedule={schedule}
+                                onCompleteTask={handleCompleteTask}
+                                isDark={isDark}
+                                isCurrentSchedule={isCurrentSchedule}
+                            />
+                        )
+                    })}
                 </div>
             )}
         </div>

@@ -7,6 +7,7 @@ const ScheduleEndPoints = {
     GET_EMPLOYEE: (employeeID) => `/api/v1/schedule/employee/${employeeID}`,
     UPDATE:       "/api/v1/schedule/update",
     DELETE:       (scheduleID) => `/api/v1/schedule/delete/${scheduleID}`,
+    DUPLICATE:    (scheduleID) => `/api/v1/schedule/duplicate/${scheduleID}`,
 }
 
 export const HandleHRSchedule = createAsyncThunk(
@@ -40,6 +41,15 @@ export const HandleHRSchedule = createAsyncThunk(
             if (type === "Delete") {
                 const res = await hrApiService.delete(ScheduleEndPoints.DELETE(data.scheduleID))
                 return { ...res.data, type: "Delete", scheduleID: data.scheduleID }
+            }
+
+            if (type === "Duplicate") {
+                const res = await hrApiService.post(ScheduleEndPoints.DUPLICATE(data.scheduleID), {
+                    title: data.title,
+                    startdate: data.startdate,
+                    enddate: data.enddate
+                })
+                return { ...res.data, type: "Duplicate" }
             }
 
         } catch (error) {

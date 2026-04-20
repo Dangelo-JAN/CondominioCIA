@@ -67,8 +67,26 @@ export const EmployeeHomePage = () => {
     const hasCheckedIn = !!todayLog?.checkin
     const hasCheckedOut = !!todayLog?.checkout
 
-    const activeSchedule = schedules?.find(s => s.isactive)
-    const todayTasks = activeSchedule?.schedule?.find(d => d.day === todayDay)?.tasks || []
+    // Filtrar horarios activos Y no vencidos
+    const todayNormalized = new Date(today)
+    todayNormalized.setHours(0, 0, 0, 0)
+    
+    const activeSchedule = schedules?.find(s => {
+        if (!s.isactive && s.isactive !== undefined) return false
+        // Verificar que no esté vencido
+        const endDate = new Date(s.enddate)
+        endDate.setHours(0, 0, 0, 0)
+        if (endDate < todayNormalized) return false
+        // Verificar que today esté dentro del rango de fechas
+        const startDate = new Date(s.startdate)
+        startDate.setHours(0, 0, 0, 0)
+        return startDate <= todayNormalized
+    })
+    
+    // Solo mostrar tareas del día de hoy (no de cualquier día)
+    const todayDayName = DAYS_ES[today.getDay()]
+    const todayTasks = activeSchedule?.schedule?.find(d => d.day === todayDayName)?.tasks || []
+    const hasActiveSchedule = !!activeSchedule
 
     const card = isDark ? CARD.dark : CARD.light
     const subcard = isDark ? SUBCARD.dark : SUBCARD.light
@@ -260,12 +278,20 @@ export const EmployeeHomePage = () => {
                     </div>
 
                     <div className="flex flex-col gap-2 overflow-y-auto max-h-[280px]">
-                        {todayTasks.length === 0 ? (
+                        {!hasActiveSchedule ? (
                             <div className="flex flex-col items-center justify-center py-8 gap-2">
                                 <CalendarDays className="w-8 h-8"
                                     style={{ color: isDark ? "rgba(255,255,255,0.15)" : "#d1d5db" }} />
                                 <p className="text-sm text-gray-400 dark:text-gray-600">
-                                    Sin tareas asignadas para hoy
+                                    Sin horario activo
+                                </p>
+                            </div>
+                        ) : todayTasks.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-8 gap-2">
+                                <CalendarDays className="w-8 h-8"
+                                    style={{ color: isDark ? "rgba(255,255,255,0.15)" : "#d1d5db" }} />
+                                <p className="text-sm text-gray-400 dark:text-gray-600">
+                                    Sin tareas para hoy
                                 </p>
                             </div>
                         ) : (

@@ -10,7 +10,12 @@ const AbsenceSchema = new Schema({
     leaveRequest: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Leave",
-        required: true
+        required: false
+    },
+    scheduleId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Schedule",
+        required: false
     },
     startdate: {
         type: Date,
@@ -23,7 +28,7 @@ const AbsenceSchema = new Schema({
     leavetype: {
         type: String,
         required: true,
-        enum: ["Vacaciones", "Reposo Médico", "Personal", "Otro"]
+        enum: ["Vacaciones", "Reposo Médico", "Personal", "Otro", "Tarea No Realizada"]
     },
     title: {
         type: String,

@@ -1,6 +1,10 @@
 import { Schedule } from "../models/Schedule.model.js"
+import { Absence } from "../models/Absence.model.js"
 import { Employee } from "../models/Employee.model.js"
 import { HumanResources } from "../models/HR.model.js"
+
+// Días de la semana ordenados
+const DAYS_ORDER = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
 
 // ── HR: Crear horario y asignarlo a un empleado ───────────────────────────
 export const HandleCreateSchedule = async (req, res) => {
@@ -196,6 +200,11 @@ export const HandleCompleteTask = async (req, res) => {
             return res.status(404).json({ success: false, message: "Horario no encontrado" })
         }
 
+        // Verificar que el horario esté activo
+        if (schedule.status !== "active") {
+            return res.status(400).json({ success: false, message: "El horario está cerrado" })
+        }
+
         const day = schedule.schedule.id(dayID)
         if (!day) {
             return res.status(404).json({ success: false, message: "Día no encontrado" })
@@ -213,6 +222,172 @@ export const HandleCompleteTask = async (req, res) => {
             success: true,
             message: `Tarea marcada como ${task.completed ? "completada" : "pendiente"}`,
             data: schedule
+        })
+
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
+    }
+}
+
+// ── HR: Duplicar horario ─────────────────────────────────────────────────
+export const HandleDuplicateSchedule = async (req, res) => {
+    try {
+        const { scheduleID } = req.params
+        const { title, startdate, enddate } = req.body
+
+        if (!scheduleID) {
+            return res.status(400).json({ success: false, message: "scheduleID es requerido" })
+        }
+
+        const originalSchedule = await Schedule.findOne({
+            _id: scheduleID,
+            organizationID: req.ORGID
+        })
+
+        if (!originalSchedule) {
+            return res.status(404).json({ success: false, message: "Horario no encontrado" })
+        }
+
+        const duplicatedSchedule = new Schedule({
+            employee: originalSchedule.employee,
+            title: title || `${originalSchedule.title} (Copia)`,
+            description: originalSchedule.description,
+            startdate: startdate || null,
+            enddate: enddate || null,
+            schedule: originalSchedule.schedule,
+            isactive: true,
+            status: "active",
+            createdby: req.HRid,
+            organizationID: req.ORGID
+        })
+
+        await duplicatedSchedule.save()
+
+        return res.status(201).json({
+            success: true,
+            message: "Horario duplicado exitosamente",
+            data: duplicatedSchedule
+        })
+
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
+    }
+}
+
+// ── HR: Cerrar horario ────────────────────────────────────────────────────────
+export const HandleCloseSchedule = async (req, res) => {
+    try {
+        const { scheduleID } = req.params
+
+        const schedule = await Schedule.findOne({
+            _id: scheduleID,
+            organizationID: req.ORGID
+        })
+
+        if (!schedule) {
+            return res.status(404).json({ success: false, message: "Horario no encontrado" })
+        }
+
+        if (schedule.status === "closed") {
+            return res.status(400).json({ success: false, message: "El horario ya está cerrado" })
+        }
+
+        schedule.status = "closed"
+        schedule.closedAt = new Date()
+        await schedule.save()
+
+        return res.status(200).json({
+            success: true,
+            message: "Horario cerrado exitosamente",
+            data: schedule
+        })
+
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
+    }
+}
+
+// ── CRON: Cerrar horarios vencidos ───────────────────────────────────────────
+export const HandleCloseExpiredSchedules = async (req, res) => {
+    try {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+
+        const result = await Schedule.updateMany(
+            {
+                status: "active",
+                enddate: { $lt: today }
+            },
+            {
+                status: "closed",
+                closedAt: new Date()
+            }
+        )
+
+        return res.status(200).json({
+            success: true,
+            message: `Se cerraron ${result.modifiedCount} horarios vencidos`,
+            data: { modifiedCount: result.modifiedCount }
+        })
+
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Internal Server Error", error: error })
+    }
+}
+
+// ── CRON: Registro de ausencias por tareas no completadas ─────────────
+export const HandleRegisterDailyAbsences = async (req, res) => {
+    try {
+        const yesterday = new Date()
+        yesterday.setDate(yesterday.getDate() - 1)
+        yesterday.setHours(0, 0, 0, 0)
+
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+
+        const yesterdayDayName = DAYS_ORDER[yesterday.getDay()]
+
+        const activeSchedules = await Schedule.find({
+            status: "active",
+            startdate: { $lte: yesterday },
+            enddate: { $gte: yesterday }
+        })
+
+        let absencesRegistered = 0
+
+        for (const schedule of activeSchedules) {
+            const daySchedule = schedule.schedule.find(d => d.day === yesterdayDayName)
+
+            if (!daySchedule || !daySchedule.tasks || daySchedule.tasks.length === 0) {
+                continue
+            }
+
+            const incompleteTasks = daySchedule.tasks.filter(t => !t.completed)
+
+            if (incompleteTasks.length > 0) {
+                const taskNames = incompleteTasks.map(t => t.title).join(", ")
+
+                await Absence.create({
+                    employee: schedule.employee,
+                    leaveRequest: null,
+                    scheduleId: schedule._id,
+                    startdate: yesterday,
+                    enddate: yesterday,
+                    leavetype: "Tarea No Realizada",
+                    title: "Ausencia por Tarea No Realizada",
+                    reason: `Tareas no completadas del ${yesterdayDayName}: ${taskNames}`,
+                    createdBy: req.HRid || req.EMPID,
+                    organizationID: schedule.organizationID
+                })
+
+                absencesRegistered++
+            }
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: `Se registraron ${absencesRegistered} ausencias por tareas no completadas`,
+            data: { absencesRegistered }
         })
 
     } catch (error) {

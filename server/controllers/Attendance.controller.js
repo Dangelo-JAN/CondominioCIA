@@ -1,5 +1,9 @@
 import { Attendance } from "../models/Attendance.model.js"
 import { Employee } from "../models/Employee.model.js"
+import { Schedule } from "../models/Schedule.model.js"
+import { Absence } from "../models/Absence.model.js"
+
+const DAYS_ORDER = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
 
 export const HandleInitializeAttendance = async (req, res) => {
     try {
@@ -212,6 +216,40 @@ export const HandleCheckOut = async (req, res) => {
         todayLog.duration = durationMinutes
 
         await attendance.save()
+
+        // ✅ Registrar ausencias por tareas no completadas del día
+        const yesterday = new Date(now)
+        yesterday.setDate(yesterday.getDate() - 1)
+        const yesterdayDayName = DAYS_ORDER[yesterday.getDay()]
+
+        const activeSchedule = await Schedule.findOne({
+            employee: employeeID,
+            isactive: true,
+            startdate: { $lte: now },
+            enddate: { $gte: now }
+        })
+
+        if (activeSchedule) {
+            const daySchedule = activeSchedule.schedule.find(d => d.day === yesterdayDayName)
+            if (daySchedule && daySchedule.tasks && daySchedule.tasks.length > 0) {
+                const incompleteTasks = daySchedule.tasks.filter(t => !t.completed)
+                if (incompleteTasks.length > 0) {
+                    const taskNames = incompleteTasks.map(t => t.title).join(", ")
+                    await Absence.create({
+                        employee: employeeID,
+                        leaveRequest: null,
+                        scheduleId: activeSchedule._id,
+                        startdate: yesterday,
+                        enddate: yesterday,
+                        leavetype: "Tarea No Realizada",
+                        title: "Ausencia por Tarea No Realizada",
+                        reason: `Tareas no completadas del ${yesterdayDayName}: ${taskNames}`,
+                        createdBy: req.HRid || employeeID,
+                        organizationID: req.ORGID
+                    })
+                }
+            }
+        }
 
         return res.status(200).json({
             success: true,

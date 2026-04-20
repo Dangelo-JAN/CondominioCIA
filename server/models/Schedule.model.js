@@ -60,6 +60,15 @@ const ScheduleSchema = new Schema({
         type: Boolean,
         default: true
     },
+    status: {
+        type: String,
+        enum: ["active", "closed", "expired"],
+        default: "active"
+    },
+    closedAt: {
+        type: Date,
+        default: null
+    },
     createdby: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "HumanResources",
