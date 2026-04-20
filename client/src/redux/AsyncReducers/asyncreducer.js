@@ -188,7 +188,6 @@ export const HREmployeesPageAsyncReducer = (builder, thunk) => {
         }
     })
     builder.addCase(thunk.rejected, (state, action) => {
-        console.log(action)
         state.isLoading = false;
         state.error.status = true;
         state.error.message = action.payload.message
@@ -407,14 +406,10 @@ export const HRLeavesAsyncReducer = (builder, thunk, thunkName) => {
 
         const payload = action.payload;
         
-        console.log("[DEBUG] HRLeavesAsyncReducer - thunkName:", thunkName, "payload:", payload)
-
         // Obtener mis solicitudes (empleado)
         if (thunkName === "HandleGetEmployeeLeaves") {
-            console.log("[DEBUG] HandleGetEmployeeLeaves - asignando payload.data:", payload?.data)
             state.data = payload?.data || null;
             state.fetchData = false;
-            console.log("[DEBUG] HandleGetEmployeeLeaves - state.data actualizado:", state.data)
         }
         // Obtener mis ausencias aprobadas (empleado)
         else if (thunkName === "HandleGetEmployeeAbsences") {
@@ -423,10 +418,8 @@ export const HRLeavesAsyncReducer = (builder, thunk, thunkName) => {
         }
         // Obtener todas las solicitudes (HR)
         else if (thunkName === "HandleGetHRLeaves") {
-            console.log("[DEBUG] HandleGetHRLeaves - asignando payload.data:", payload?.data)
             state.data = payload?.data || null;
             state.fetchData = false;
-            console.log("[DEBUG] HandleGetHRLeaves - state.data actualizado:", state.data)
         }
         // Crear solicitud (empleado o HR)
         else if (thunkName === "HandleCreateEmployeeLeave" || thunkName === "HandleCreateLeaveByHR") {
@@ -471,6 +464,5 @@ export const HRLeavesAsyncReducer = (builder, thunk, thunkName) => {
         state.error.message = action.payload?.message;
         state.success.status = false;
         state.error.content = action.payload;
-        console.log(`[DEBUG] ${thunkName} - rejected:`, action.payload);
     })
 }

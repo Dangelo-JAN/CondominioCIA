@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { useIsDark } from "../../../hooks/useIsDark.js"
 import { FormSubmitToast } from "./Toasts.jsx"
 import { Loading } from "../loading.jsx"
-import { HandleDeleteHREmployees } from "../../../redux/Thunks/HREmployeesThunk.js"
+import { HandleDeleteHREmployees, HandlePostHREmployees } from "../../../redux/Thunks/HREmployeesThunk.js"
 import { HandlePostHRDepartments, HandlePatchHRDepartments, HandleDeleteHRDepartments } from "../../../redux/Thunks/HRDepartmentPageThunk.js"
 import { HandleUpdateHRLeaveStatus } from "../../../redux/Thunks/HRLeavesThunk.js"
 import { useToast } from "../../../hooks/use-toast.js"
@@ -95,7 +95,7 @@ export const AddEmployeesDialogBox = () => {
                         <SectionLabel>Nuevo Empleado</SectionLabel>
                         <h2 className="text-xl font-bold text-gray-900 dark:text-white">Información del empleado</h2>
                         <p className="text-sm text-gray-400 dark:text-[rgba(255,255,255,0.3)] mt-1">
-                            Completa todos los campos para registrar al empleado.
+                            Completa todos los campos para registrar al empleado. Se enviará un correo de verificación automáticamente.
                         </p>
                     </div>
 
@@ -119,6 +119,22 @@ export const AddEmployeesDialogBox = () => {
                             { id: "lastname", name: "lastname", label: "Apellido", type: "text", value: formdata.lastname },
                             { id: "email", name: "email", label: "Correo electrónico", type: "email", value: formdata.email },
                             { id: "contactnumber", name: "contactnumber", label: "Teléfono", type: "number", value: formdata.contactnumber },
+                        ].map(field => (
+                            <div key={field.id} className="flex flex-col gap-1.5">
+                                <label htmlFor={field.id} className={labelCls}>{field.label}</label>
+                                <input
+                                    id={field.id} name={field.name} type={field.type}
+                                    value={field.value} onChange={handleformchange}
+                                    className={inputCls}
+                                />
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {[
+                            { id: "text-password", name: "textpassword", label: "Contraseña", type: "text", value: formdata.textpassword },
+                            { id: "password", name: "password", label: "Confirmar contraseña", type: "password", value: formdata.password },
                         ].map(field => (
                             <div key={field.id} className="flex flex-col gap-1.5">
                                 <label htmlFor={field.id} className={labelCls}>{field.label}</label>

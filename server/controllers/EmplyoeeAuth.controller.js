@@ -80,7 +80,7 @@ export const HandleEmplyoeeSignup = async (req, res) => {
                     firstname, lastname, email, password: hashedPassword, contactnumber,
                     role: "Employee",
                     verificationtoken: verificationcode,
-                    verificationtokenexpires: Date.now() + 5 * 60 * 1000,
+                    verificationtokenexpires: Date.now() + 24 * 60 * 60 * 1000,
                     isverified: false,
                     isactive: true, // Activo pero requiere verificar email
                     organizationID: organization._id
@@ -120,18 +120,18 @@ export const HandleEmplyoeeSignup = async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error)
         res.status(400).json({ success: false, message: "All Fields are required" })
     }
 }
 
 export const HandleEmplyoeeVerifyEmail = async (req, res) => {
     const { verificationcode } = req.body
+    
     try {
+        // Buscar por código sin filtrar por organización (ruta pública)
         const ValidateEmployee = await Employee.findOne({
             verificationtoken: verificationcode,
-            verificationtokenexpires: { $gt: Date.now() },
-            organizationID: req.ORGID
+            verificationtokenexpires: { $gt: Date.now() }
         })
 
         if (!ValidateEmployee) {
@@ -165,7 +165,7 @@ export const HandleResetEmplyoeeVerifyEmail = async (req, res) => {
 
         const verificationcode = GenerateVerificationToken(6)
         employee.verificationtoken = verificationcode
-        employee.verificationtokenexpires = Date.now() + 5 * 60 * 1000
+        employee.verificationtokenexpires = Date.now() + 24 * 60 * 60 * 1000
         await employee.save()
 
         const SendVerificationEmailStatus = await SendVerificationEmail(email, verificationcode)

@@ -12,6 +12,7 @@ import { EmployeeProfilePage } from "../pages/Employees/Dashboard Childs/Employe
 import { EmployeeRequestspage } from "../pages/Employees/Dashboard Childs/EmployeeRequestspage.jsx"
 import { EmployeeAbsencesPage } from "../pages/Employees/Dashboard Childs/EmployeeAbsencesPage.jsx"
 import { EmployeeAcceptInvitationPage } from "../pages/Employees/EmployeeAcceptInvitationPage.jsx"
+import { EmployeeVerifyEmailPage } from "../pages/Employees/EmployeeVerifyEmailPage.jsx"
 
 export const EmployeeRoutes = [
     {
@@ -71,5 +72,9 @@ export const EmployeeRoutes = [
     {
         path: "/auth/employee/accept-invitation/:token",
         element: <EmployeeAcceptInvitationPage />
+    },
+    {
+        path: "/auth/employee/verify-email",
+        element: <EmployeeVerifyEmailPage />
     },
 ]
