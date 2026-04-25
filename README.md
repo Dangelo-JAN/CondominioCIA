@@ -1,4 +1,4 @@
-# Employees Management System (EMS)
+# Employees Management System (EMS) - Gestor CIA
 
 > [!IMPORTANT]
 > Note: This project is currently under development. All the relevant details will be updated as the project progresses.
@@ -7,7 +7,11 @@
 The Employees Management System (EMS) is a robust, full-stack web application designed to streamline and optimize employee management processes for small- to medium-sized organizations. 
 Built on the MERN stack (MongoDB, Express.js, React.js, Node.js), the EMS provides a seamless, user-friendly experience for employees and HR professionals alike.
 
-## Early Screenshots
+## 🌐 Live Demo
+
+**Frontend Deployment:** [https://condominio-cia.vercel.app/](https://condominio-cia.vercel.app/)
+
+## 📱 Available Screenshots
 
 ### EMS Entry Page : 
 
@@ -38,130 +42,153 @@ Built on the MERN stack (MongoDB, Express.js, React.js, Node.js), the EMS provid
 ![Department-Data](https://github.com/user-attachments/assets/b21a4de2-1993-463f-99e2-c699ea07e0ec)
 
 
-## 🌟 Key Features
+## ✅ Módulos Funcionales Actuales
 
-### 1. Role-Based Access Control (RBAC)
+### Autenticación y Gestión de Usuarios
 
-* Employee Role: Employees can access personalized dashboards to view their attendance, salaries, notices, and other relevant details.
+| Módulo | Descripción |
+|--------|-------------|
+| **Autenticación HR** | Sistema completo de registro, login, verificación de email, recuperación de contraseña e invitación de nuevos usuarios RH |
+| **Autenticación de Empleados** | Sistema de login, verificación de email, recuperación de contraseña y aceptación de invitación |
+| **Control de Acceso Basado en Roles (RBAC)** | Permisos diferenciados entre empleados y RH para acceder a funcionalidades específicas |
 
-* HR Role: HR professionals can manage employees, approve leaves, issue notices, and oversee recruitment with advanced controls.
+### Gestión de Recursos Humanos (RH)
 
-### 2. User Authentication & Authorization
+| Módulo | Descripción |
+|--------|-------------|
+| **Dashboard RH** | Panel principal con estadísticas y resumen de empleados |
+| **Gestión de Empleados** | Alta, modificación y control de empleados |
+| **Gestión de Departamentos** | Creación y administración de departamentos |
+| **Gestión de Perfiles RH** | Administración de perfiles de personal RH |
 
-* Secure login system using JWT-based authentication.
+### Gestión de Horarios
 
-* Role-based permissions ensure sensitive data and functionalities are accessed only by authorized users.
+| Módulo | Descripción |
+|--------|-------------|
+| **Gestión de Horarios** | CRUD completo de horarios laborales, copia de horarios entre empleados, cierre automático de horarios vencidos y registro automático de ausencias |
+| **Visualización de Horario (Empleado)** | Los empleados pueden ver su horario actual y registrado |
 
-### 3. Attendance Management
+### Gestión de Permisos y Ausencias
 
-* Real-time tracking of employee attendance with detailed records.
+| Módulo | Descripción |
+|--------|-------------|
+| **Solicitud de Permisos (Empleado)** | Los empleados pueden solicitar permisos/licencias desde su dashboard |
+| **Aprobación de Permisos (RH)** | RH puede aprobar o rechazar solicitudes con justificaciones |
+| **Registro de Ausencias** | Registro automático de ausencias cuando un empleado no registra entrada |
 
-* Customizable attendance reports for HR and management review.
+### Gestión de Photos de Trabajo
 
-### 4. Leave Management
+| Módulo | Descripción |
+|--------|-------------|
+| **Registro de Photos (Empleado)** | Los empleados pueden registrar photos de trabajo |
+| **Gestión de Photos (RH)** | RH puede visualizar y gestionar las photos registradas |
 
-* Employees can easily apply for leaves via their dashboard.
+### Sistema de Correo Electrónico
 
-* HRs can view, approve, or reject leave requests with appropriate justifications.
+| Módulo | Descripción |
+|--------|-------------|
+| **Transacciones por Email** | Sistema automatizado para recuperación de contraseña, emails de bienvenida, notificaciones de permisos y más |
 
-### 5. Salary Management
+### Dashboard de Empleado
 
-* Employees can access detailed breakdowns of their salaries.
+| Módulo | Descripción |
+|--------|-------------|
+| **Panel de Empleado** | Dashboard personalizado con información de perfil, horario, photos, solicitudes y ausencias |
 
-* HRs can manage and generate payroll efficiently.
+## 🚧 Módulos en Desarrollo
 
-### 6. Dynamic Notifications System
+| Módulo | Estado | Descripción |
+|--------|--------|-------------|
+| **Asistencia y Attendance** | 🔄 Parcial | Backend implementado, integración con frontend en progreso |
+| **Gestión de Salarios** | 🔄 Parcial | Backend implementado, integración con frontend en progreso |
+| **Reclutamiento y Candidatos** | 🔄 Parcial | Backend parcialmente implementado, frontend en desarrollo |
+| **Entrevistas y Perspectivas** | 🔄 Parcial | Backend parcialmente implementado, frontend en desarrollo |
+| **Notificaciones y Avisos** | 🔄 Parcial | Backend parcialmente implementado, frontend en desarrollo |
+| **Calendario Corporativo** | 🔄 Parcial | Backend parcialmente implementado, frontend en desarrollo |
+| **Dashboard Analytics** | 🔄 Parcial | Backend implementado, mejoras y frontend en progreso |
 
-* Employees receive real-time notifications for company updates, salary releases, and approvals.
+## 📅 Roadmap de Desarrollo
 
-* Custom notices can be created and sent by HR.
+### Fase 1: Módulos Core (Completado ✅)
+- Dashboard de Empleado y RH
+- Autenticación (Login, Registro, Verificación)
+- Gestión de Empleados y Departamentos
+- Gestión de Horarios y Permisos
+- Sistema de Photos de Trabajo
+- Sistema de Email Transaccional
 
-### 7. Email Transactions
+### Fase 2: Módulos en Desarrollo (En Progreso 🔄)
+- Asistencia y Attendance
+- Gestión de Salarios
+- Dashboard Analytics
+- Notificaciones y Avisos
 
-* Automated email system for:
+### Fase 3: Módulos Avanzados (Pendiente 📋)
+- Reclutamiento y Gestión de Candidatos
+- Entrevistas y Perspectivas
+- Calendario Corporativo
+- Dashboard Analytics Avanzado
 
-* Password recovery.
+### Fase 4: Producción y Escalabilidad (Pendiente 📋)
+- Optimización de rendimiento
+- Pruebas exhaustivas
+- Despliegue a producción
 
-* Welcome onboarding emails.
+## 💡 Problema que Resuelve
 
-* Notifications for leave and attendance updates.
+El sistema Gestor CIA aborda los principales desafíos de organizaciones pequeñas y medianas:
 
-### 8. Corporate Calendar
-
-* Unified calendar to track company holidays, meetings, and important events.
-
-* Employees and HRs can view and manage the corporate calendar efficiently.
-
-### 9. Employee & Department Management
-
-* HRs can manage departments, add or remove employees, and assign roles dynamically.
-
-* Detailed records of employee profiles and departmental insights.
-
-### 10. Recruitment & Interview Insights
-
-* HRs can track recruitment progress and manage candidate pipelines.
-
-* Insights into interview outcomes and potential hires.
-
-## 💡 Problem Solved
-
-The EMS addresses key challenges faced by small to medium-sized organizations, such as:
-
-* Inefficient Employee Management: By automating attendance, leave, and salary management.
-
-* Communication Gaps: Through dynamic notifications and a centralized corporate calendar.
-
-* Security Concerns: By implementing robust RBAC and secure authentication systems.
-
-* Recruitment Bottlenecks: By providing streamlined tools for HRs to manage recruitment workflows.
+- **Gestión Ineficiente de Empleados**: Automatización de horarios, permisos y gestión de personal
+- **Brechas de Comunicación**: Mediante notificaciones dinámicas y un calendario corporativo centralizado
+- **Preocupaciones de Seguridad**: Implementación de RBAC robusto y sistemas de autenticación seguros
+- **Cuellos de Botella en Reclutamiento**: Herramientas simplificadas para que RH gestione flujos de trabajo de reclutamiento
 
 ## 🔧 Tech Stack
 
-* Frontend: React.js, Redux.js, Tailwind CSS, ShadCN UI Library
+* **Frontend:** React.js, Redux.js, Tailwind CSS, ShadCN UI Library
 
-* Backend: Node.js, Express.js, RESTful APIs
+* **Backend:** Node.js, Express.js, RESTful APIs
 
-* Database: MongoDB (NoSQL)
+* **Base de Datos:** MongoDB (NoSQL)
 
-* Authentication: JSON Web Tokens (JWT)
+* **Autenticación:** JSON Web Tokens (JWT)
 
-* Version Control: Git, GitHub
+* **Control de Versiones:** Git, GitHub
+
+* **Despliegue:** Vercel (Frontend)
 
 ## 📦 Installation & Setup
 
 Follow these steps to set up the project locally:
 
-Prerequisites:
+### Prerequisites:
 
-* Node.js
-
-* MongoDB
-
-* Git
+- Node.js
+- MongoDB
+- Git
 
 > [!IMPORTANT]
 > Note: This project is currently under development. Installation instructions will be updated as the project progresses.
 
-### steps : 
+### Steps: 
 
-#### 1 Clone the repository : 
-
-```
-
-https://github.com/Darsh-Jogi/Employee-Management-System.git
+#### 1 Clone the repository:
 
 ```
 
-#### 2 Navigate to the project directory : 
+https://github.com/Dangelo-JAN/CondominioCIA.git
 
 ```
 
-cd employee-management-system
+#### 2 Navigate to the project directory:
 
 ```
 
-#### 3 Install dependencies :
+cd CondominioCIA
+
+```
+
+#### 3 Install dependencies:
 
 ```
 
@@ -169,6 +196,7 @@ cd client
 npm install
 
 ```
+
 ```
 
 cd server
@@ -178,7 +206,7 @@ npm install
 
 #### 4 Set up environment variables: 
 
-Create a .env file in the server directory and configure the following :
+Create a .env file in the server directory and configure the following:
 
 ```
 
@@ -191,7 +219,7 @@ CLIENT_URL = your client URL
 
 ```
 
-Create a .env file in the client directory and configure the following :
+Create a .env file in the client directory and configure the following:
 
 ```
 
@@ -199,7 +227,7 @@ VITE_BACKEND_API= your employee api (backend)
 
 ```
 
-#### 5 Start the development server: 
+#### 5 Start the development server:
 
 ```
 
@@ -208,7 +236,7 @@ npm run server
 
 ```
 
-#### 6 Navigate to the frontend : 
+#### 6 Navigate to the frontend:
 
 ```
 
@@ -217,48 +245,35 @@ npm run dev
 
 ```
 
+## 🌟 Futuras Mejoras
 
-## 🚀 Future Enhancements
-
-* Analytics Dashboard: Advanced analytics for HR and management.
-
-* Third-Party Integrations: Integration with tools like Slack and Zoom.
-
+* Dashboard Analytics: Análisis avanzado para RH y gestión
+* Integraciones de Terceros: Integración con herramientas como Slack y Zoom
 
 ## 🙌 Contributing
 
-We welcome contributions to enhance the EMS! Feel free to fork the repository and submit pull requests.
+¡Bienvenidas contribuciones para mejorar el EMS! Siéntete libre de bifurcar el repositorio y enviar pull requests.
 
+## 🧑‍💻 Autores y Agradecimientos
 
-### Roadmap
+**Darsh Jogi:** Líder del Proyecto e Ingeniero de Software
 
-Phase 1: Implement core employee features (Dashboard, Attendance, Salary Information).
+**Angelo JAN:** Desarrollador y Contribuidor Principal
 
-Phase 2: Develop HR functionalities (Employee Management, Leave Approvals).
+Special Thanks: A todos los contribuyentes y testers que hicieron este proyecto posible.
 
-Phase 3: Add advanced features like Recruitment and Interview Insights.
+## 📄 Licencia
 
-Phase 4: Optimize for scalability and deploy a production-ready version.
+Este proyecto está licenciado bajo la Licencia MIT.
 
+## 📬 Contacto
 
+Para cualquier pregunta o soporte, no dudes en contactarnos:
 
-## 🧑‍💻 Authors & Acknowledgments
+Email: darshjogi001@gmail.com / dangelojan@outlook.com
 
-Darsh Jogi: Project Lead and Software Engineer
+LinkedIn: [Darsh Jogi](https://www.linkedin.com/in/darsh-jogi-info/)
 
-Special Thanks: To all contributors and testers who made this project possible.
+---
 
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 📬 Contact
-
-For any questions or support, feel free to reach out:
-
-Email: darshjogi001@gmail.com
-
-LinkedIn: [Darsh Jogi](https://www.linkedin.com/in/darsh-jogi-info/).
-
-Thank you for visiting the Employees Management System (EMS) project! We hope it provides valuable insights into how technology can simplify employee management.
+¡Gracias por visitar el proyecto Employees Management System (EMS) - Gestor CIA! Esperamos que proporcione información valiosa sobre cómo la tecnología puede simplificar la gestión de empleados.
