@@ -281,9 +281,7 @@ npm run dev
 
 ## 🧑‍💻 Autores y Agradecimientos
 
-**Darsh Jogi:** Líder del Proyecto e Ingeniero de Software
-
-**Angelo JAN:** Desarrollador y Contribuidor Principal
+**Dangelo Arrivillaga:** Líder del Proyecto e Ingeniero de Software
 
 Special Thanks: A todos los contribuyentes y testers que hicieron este proyecto posible.
 
@@ -295,9 +293,9 @@ Este proyecto está licenciado bajo la Licencia MIT.
 
 Para cualquier pregunta o soporte, no dudes en contactarnos:
 
-Email: darshjogi001@gmail.com / dangelojan@outlook.com
+Email: dangeloarrivillaga@gmail.com / talgidisoluciones@gmail.com
 
-LinkedIn: [Darsh Jogi](https://www.linkedin.com/in/darsh-jogi-info/)
+LinkedIn: [Dangelo Arrivillaga](https://ve.linkedin.com/in/soluciones-empresariales-dangelo-arrivillaga)
 
 ---
 
