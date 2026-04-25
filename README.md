@@ -15,31 +15,56 @@ Built on the MERN stack (MongoDB, Express.js, React.js, Node.js), the EMS provid
 
 ### EMS Entry Page : 
 
-![EMS Entry](https://github.com/user-attachments/assets/75dc7a8d-d816-4597-b89c-6ade8998afd9)
+![EMS Entry](client/public/assets/images/HOME%20-%20LightMode.png)
+![EMS Entry](client/public/assets/images/HOME%20-%20DarkMode.png)
 
 ### EMS HR Sign Up : 
 
-![EMS HR-Sign up](https://github.com/user-attachments/assets/3f576691-78fb-4e66-b409-bd9ed9a1eb2c)
+![EMS HR-Sign up](client/public/assets/images/HR-SIGN%20UP%20-%20DarkMode.png)
 
 ### EMS HR Login : 
 
-![EMS HR-login](https://github.com/user-attachments/assets/c9156026-cd16-4423-a7da-ddc2bdad053e)
+![EMS HR-login](client/public/assets/images/LOGIN%20-%20LightMode.png)
 
 ### EMS HR Dashboard : 
 
-![HR-Dashboard](https://github.com/user-attachments/assets/ca4c14e0-dcfd-41b2-83cd-1ad67a474142)
+![HR-Dashboard](client/public/assets/images/HR-DASHBOARD%20-%20LightMode.png)
+![HR-Dashboard](client/public/assets/images/HR-DASHBOARD%20-%20DarkMode.png)
 
 ### EMS HR Employees Page : 
 
-![Employees-Data](https://github.com/user-attachments/assets/b84d5027-1cc2-4083-aa89-770db32a2b39)
+![Employees-Data](client/public/assets/images/HR-EMPLOYEES%20-%20LightMode.png)
+![Employees-Data](client/public/assets/images/HR-EMPLOYEES%20-%20DarkMode.png)
 
 ### EMS HR Departments Page : 
 
-![Department-Data](https://github.com/user-attachments/assets/30606767-745a-4898-bb44-4dd453a5db24)
+![Department-Data](client/public/assets/images/HR-DEPARTMENTS%20-%20LightMode.png)
+![Department-Data](client/public/assets/images/HR-DEPARTMENTS%20-%20DarkMode.png)
 
-### EMS HR Departments Data : 
+### EMS HR Schedules Page : 
 
-![Department-Data](https://github.com/user-attachments/assets/b21a4de2-1993-463f-99e2-c699ea07e0ec)
+![Schedules-Data](client/public/assets/images/HR-HORARIOS%20-%20LightMode.png)
+![Schedules-Data](client/public/assets/images/HR-HORARIOS%20-%20DarkMode.png)
+
+### EMS EMPLOYEE Dashboard page : 
+
+![Employee-Dashboard](client/public/assets/images/EMPLOYEES-INICIO%20-%20LightMode.png)
+![Employee-Dashboard](client/public/assets/images/EMPLOYEES-INICIO%20-%20DarkMode.png)
+
+### EMS EMPLOYEE Schedule page : 
+
+![Employee-Schedule](client/public/assets/images/EMPLOYEES-HORARIO%20-%20LightMode.png)
+![Employee-Schedule](client/public/assets/images/EMPLOYEES-HORARIO%20-%20DarkMode.png)
+
+### EMS EMPLOYEE Profile page : 
+
+![Employee-Profile](client/public/assets/images/EMPLOYEES-PERFIL%20-%20LightMode.png)
+![Employee-Profile](client/public/assets/images/EMPLOYEES-PERFIL%20-%20DarkMode.png)
+
+### EMS EMPLOYEE Permissions page : 
+
+![Employee-Permissions](client/public/assets/images/EMPLOYEES-PERMISOS%20-%20LightMode.png)
+![Employee-Permissions](client/public/assets/images/EMPLOYEES-PERMISOS%20-%20DarkMode.png)
 
 
 ## ✅ Módulos Funcionales Actuales
